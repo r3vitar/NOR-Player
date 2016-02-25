@@ -36,7 +36,7 @@ public class NORPlayer extends Application {
         
         Scene scene = new Scene(root, 300, 250);
         
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("NOR Player");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
