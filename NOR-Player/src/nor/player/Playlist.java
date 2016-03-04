@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 import javafx.scene.media.AudioClip;
+import static javafx.scene.media.AudioClip.INDEFINITE;
 
 /**
  *
@@ -19,6 +21,8 @@ import javafx.scene.media.AudioClip;
 public class Playlist implements Serializable {
 
     private ArrayList<AudioClip> playlist;
+    private boolean repeatList = false;
+    private boolean repeatCurrent = false;
     private String playlistName = "NoName";
     private Comparator<AudioClip> cFileNameAsc = new Comparator<AudioClip>() {
 
@@ -81,6 +85,14 @@ public class Playlist implements Serializable {
         return playlist;
     }
 
+    public String getPlaylistName() {
+        return playlistName;
+    }
+
+    public void setPlaylistName(String playlistName) {
+        this.playlistName = playlistName;
+    }
+
     public Playlist() {
         this.playlist = new ArrayList<AudioClip>();
 
@@ -125,14 +137,17 @@ public class Playlist implements Serializable {
     }
 
     public void deleteAudioClip(AudioClip audio) {
+        if(audio.equals(this.playlist.get(0))) stopCurrent();
         this.playlist.remove(audio);
     }
 
     public void deleteAudioClip(int index) {
+        if(index == 0) stopCurrent();
         this.playlist.remove(index);
     }
 
     public void deleteAudioClipArray(ArrayList<Object> audioArray) {
+        stopCurrent();
         if (audioArray.isEmpty()) {
             throw new IllegalArgumentException("ArraList is empty");
         } else if (audioArray.get(0) instanceof String) {
@@ -145,31 +160,154 @@ public class Playlist implements Serializable {
         } else {
             throw new IllegalArgumentException("Unsupported Objects in ArrayList");
         }
+        
     }
 
     public void deletePlaylist() {
+        stopCurrent();
         this.playlist.removeAll(this.playlist);
     }
 
     public void clearPlaylist() {
+        stopCurrent();
         this.playlist.clear();
     }
 
     public void sort() {
+        stopCurrent();
         this.playlist.sort(this.cFileNameAsc);
+        playCurrent();
     }
 
     public void sortByNameAsc() {
+        stopCurrent();
         this.playlist.sort(this.cFileNameAsc);
+        playCurrent();
     }
+
     public void sortByNameDesc() {
+        stopCurrent();
         this.playlist.sort(this.cFileNameDesc);
+        playCurrent();
     }
+
     public void sortByPathAsc() {
+        stopCurrent();
         this.playlist.sort(this.cPathNameAsc);
+        playCurrent();
     }
+
     public void sortByPathDesc() {
+        stopCurrent();
         this.playlist.sort(this.cPathNameDesc);
+        playCurrent();
+    }
+
+    public void shuffle() {
+        stopCurrent();
+        Collections.shuffle(this.playlist);
+        playCurrent();
+    }
+
+    public void shuffle(Random randomSeed) {
+        stopCurrent();
+        Collections.shuffle(this.playlist, randomSeed);
+        playCurrent();
+    }
+
+    public AudioClip getCurrentAudioClip() {
+        if (this.playlist.isEmpty()) {
+            return null;
+        } else {
+            return this.playlist.get(0);
+        }
+
+    }
+
+    public void playCurrent() {
+        if (this.playlist.isEmpty()) {
+            throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
+        } else {
+            this.playlist.get(0).play();
+        }
+    }
+
+    public void playOrStopCurrent() {
+        if (this.playlist.isEmpty()) {
+            throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
+        } else {
+            if (this.playlist.get(0).isPlaying()) {
+                this.playlist.get(0).play();
+            } else {
+                this.playlist.get(0).stop();
+            }
+        }
+    }
+
+    public void stopCurrent() {
+        if (this.playlist.isEmpty()) {
+            throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
+        } else {
+            this.playlist.get(0).stop();
+        }
+    }
+
+    public void setRepeat() {
+        if (this.repeatList) {
+            this.repeatList = false;
+        } else {
+            this.repeatList = true;
+        }
+    }
+
+    public void setRepeat(boolean r) {
+        this.repeatList = r;
+    }
+
+    public void nextClip() {
+        stopCurrent();
+
+        AudioClip tmpClip = this.playlist.get(0);
+        playlist.remove(0);
+        playlist.add(tmpClip);
+
+        playCurrent();
+
+    }
+
+    public void prevClip() {
+        stopCurrent();
+
+        AudioClip tmpClip = this.playlist.get(this.playlist.size() - 1);
+        playlist.remove(this.playlist.size() - 1);
+        playlist.add(0, tmpClip);
+
+        playCurrent();
+
+    }
+
+    public void setRepeatCurrent() {
+        if (this.repeatCurrent) {
+            this.repeatCurrent = false;
+            this.playlist.get(0).setCycleCount(0);
+
+        } else {
+            this.playlist.get(0).setCycleCount(INDEFINITE);
+            this.repeatCurrent = true;
+
+        }
+    }
+
+    public void setRepeatCurrent(boolean b) {
+        if (!b) {
+            this.repeatCurrent = false;
+            this.playlist.get(0).setCycleCount(0);
+
+        } else {
+            this.playlist.get(0).setCycleCount(INDEFINITE);
+            this.repeatCurrent = true;
+
+        }
     }
 
 }
