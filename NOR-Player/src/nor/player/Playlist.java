@@ -253,11 +253,7 @@ public class Playlist implements Serializable {
     }
 
     public void setRepeat() {
-        if (this.repeatList) {
-            this.repeatList = false;
-        } else {
-            this.repeatList = true;
-        }
+        this.repeatList = !this.repeatList;
     }
 
     public void setRepeat(boolean r) {
