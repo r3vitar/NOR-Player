@@ -38,7 +38,22 @@ public class Playlist {
         this.playlist.add(audio);
     }
     
+    public void addAudioClip(String filePath){
+        this.addAudioClip(createAudio(filePath));
+    }
+    
+    private AudioClip createAudio(String filePath){
+        return new AudioClip(filePath);
+    }
+    
+    public void addAudioClipArray(ArrayList<AudioClip> audioArray){
+        this.playlist.addAll(playlist);
+        
+    }
     
     
+    public void deleteAudioClip(AudioClip audio){
+        this.playlist.remove(audio);
+    }
     
 }
