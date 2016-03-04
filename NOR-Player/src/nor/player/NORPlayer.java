@@ -23,8 +23,7 @@ import javafx.stage.Stage;
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
 public class NORPlayer extends Application {
-    
-     Media media;
+    Media media;
     MediaPlayer player;
     MediaView view;
     BorderPane root = new BorderPane();
