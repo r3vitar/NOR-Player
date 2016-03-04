@@ -83,7 +83,7 @@ public class NORPlayer extends Application {
                     startB.setText("Pause");
                 } else if (startB.getText().contains("Pause")) {
                     player.pause();
-                    startB.setText("Start");
+                    startB.setText("Start!");
                 }
             }
         });
