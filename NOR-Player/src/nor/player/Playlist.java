@@ -5,6 +5,13 @@
  */
 package nor.player;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -302,6 +309,42 @@ public class Playlist implements Serializable {
         } else {
             this.playlist.get(0).setCycleCount(INDEFINITE);
             this.repeatCurrent = true;
+
+        }
+    }
+    
+    public void safePlaylist(String name){
+        OutputStream fos = null;
+        try {
+            fos = new FileOutputStream(name +".npl");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(this.playlist);
+
+            oos.flush();
+
+        } catch (IOException e) {
+            return;
+        } finally {
+            try {
+                fos.close();
+            } catch (Exception ee) {
+                return;
+            }
+        }
+    }
+    
+    public void loadPlaylist(String name){
+        InputStream fis = null;
+        try {
+            fis = new FileInputStream(name);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            this.playlist = (ArrayList<AudioClip>) ois.readObject();
+        } catch (IOException e) {
+            System.out.println(e);
+
+        } catch (ClassNotFoundException ex) {
+            System.out.println(ex);
 
         }
     }
