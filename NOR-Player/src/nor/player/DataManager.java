@@ -20,17 +20,12 @@ public class DataManager {
     private Desktop desktop = Desktop.getDesktop();
 
     private FileChooser fileChooser = new FileChooser();
-    private Playlist activePlaylist;
 
-    public DataManager(Playlist acitvePlaylist) {
-        this.activePlaylist = acitvePlaylist;
+    public DataManager() {
     }
 
-    public void chooseMultipleFiles() {
-        List<File> list = fileChooser.showOpenMultipleDialog(new Stage());
-        
-        for(File f : list){
-            activePlaylist.addAudioClip(f.getPath());
-        }        
+    public List chooseMultipleFiles() {
+        return fileChooser.showOpenMultipleDialog(new Stage());
+
     }
 }
