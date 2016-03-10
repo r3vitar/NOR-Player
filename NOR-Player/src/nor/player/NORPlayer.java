@@ -29,6 +29,8 @@ public class NORPlayer extends Application {
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 300, 250);
     Slider slide = new Slider();
+    Playlist pList = new Playlist();
+    DataManager manager = new DataManager();
     
 
     @Override
@@ -48,18 +50,17 @@ public class NORPlayer extends Application {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    media = new Media(tf.getText());
-                    player = new MediaPlayer(media);
-
-                    view.setMediaPlayer(player);
-                    view.fitHeightProperty().bind(scene.heightProperty());
-                    view.fitWidthProperty().bind(scene.widthProperty());
-                    
-                    slide = new Slider(0, media.getDuration().toSeconds(), 0);
-                    slide.valueProperty().bind((ObservableNumberValue) player.currentTimeProperty().getValue());
-                    slide.onDragDroppedProperty();
-                    
-                    
+//                    media = new Media(tf.getText());
+//                    player = new MediaPlayer(media);
+//
+//                    view.setMediaPlayer(player);
+//                    view.fitHeightProperty().bind(scene.heightProperty());
+//                    view.fitWidthProperty().bind(scene.widthProperty());
+//                    
+//                    slide = new Slider(0, media.getDuration().toSeconds(), 0);
+//                    slide.valueProperty().bind((ObservableNumberValue) player.currentTimeProperty().getValue());
+//                    slide.onDragDroppedProperty();
+                    manager.chooseMultipleFiles();
                 } catch (Exception e) {
                     sFile.setText("ERROR");
                 }
@@ -102,7 +103,7 @@ public class NORPlayer extends Application {
 
         root.setTop(bottomB);
 
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("NOR-Player");
         primaryStage.setScene(scene);
 
         primaryStage.show();

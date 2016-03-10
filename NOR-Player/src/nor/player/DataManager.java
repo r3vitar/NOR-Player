@@ -1,13 +1,7 @@
 package nor.player;
 
-import java.awt.Desktop;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.scene.media.AudioClip;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -17,20 +11,16 @@ import javafx.stage.Stage;
  */
 public class DataManager {
 
-    private Desktop desktop = Desktop.getDesktop();
+    final private FileChooser fileChooser = new FileChooser();
 
-    private FileChooser fileChooser = new FileChooser();
-    private Playlist activePlaylist;
-
-    public DataManager(Playlist acitvePlaylist) {
-        this.activePlaylist = acitvePlaylist;
+    public DataManager() {
     }
 
-    public void chooseMultipleFiles() {
-        List<File> list = fileChooser.showOpenMultipleDialog(new Stage());
-        
-        for(File f : list){
-            activePlaylist.addAudioClip(f.getPath());
-        }        
+    public List chooseMultipleFiles() {
+        return fileChooser.showOpenMultipleDialog(new Stage());
+
+    }
+    public File chooseSingleFile(){
+        return fileChooser.showOpenDialog(new Stage());
     }
 }
