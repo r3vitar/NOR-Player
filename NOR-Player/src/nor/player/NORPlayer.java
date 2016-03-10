@@ -103,7 +103,7 @@ public class NORPlayer extends Application {
 
         root.setTop(bottomB);
 
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("NOR-Player");
         primaryStage.setScene(scene);
 
         primaryStage.show();
