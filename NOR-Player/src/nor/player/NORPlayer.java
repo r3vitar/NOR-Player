@@ -1,5 +1,7 @@
 package nor.player;
 
+import java.io.File;
+import java.util.List;
 import javafx.application.Application;
 import javafx.beans.value.ObservableNumberValue;
 import javafx.event.ActionEvent;
@@ -9,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -38,8 +41,8 @@ public class NORPlayer extends Application {
         Button startB = new Button("Start");
         Button pauseB = new Button("Stop");
         Button selectB = new Button("Load");
+        Label l1 = new Label();
         
-
         Label sFile = new Label("ERROR");
         TextField tf = new TextField();
 
@@ -60,7 +63,9 @@ public class NORPlayer extends Application {
 //                    slide = new Slider(0, media.getDuration().toSeconds(), 0);
 //                    slide.valueProperty().bind((ObservableNumberValue) player.currentTimeProperty().getValue());
 //                    slide.onDragDroppedProperty();
-                    manager.chooseMultipleFiles();
+                   
+                    File data = manager.chooseSingleFile();
+                    l1.setText(data.getPath());
                 } catch (Exception e) {
                     sFile.setText("ERROR");
                 }
@@ -96,7 +101,7 @@ public class NORPlayer extends Application {
         HBox chooseFile = new HBox();
 
         chooseFile.getChildren().add(selectB);
-        chooseFile.getChildren().add(tf);
+        chooseFile.getChildren().addAll(tf, l1);
         HBox playStop = new HBox(startB, pauseB);
 
         VBox bottomB = new VBox(chooseFile, playStop, slide);
