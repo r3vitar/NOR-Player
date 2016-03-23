@@ -21,17 +21,13 @@ public class DataManager {
 
     public List chooseMultipleFiles() {
         List selectedFiles = fileChooser.showOpenMultipleDialog(new Stage());
-        if(selectedFiles != null)
+        
             return selectedFiles;
-        else
-            return null;
+        
     }
     public File chooseSingleFile(){
-        File selectedFile = fileChooser.showOpenDialog(new Stage());
-        if(selectedFile != null)
-            return selectedFile;
-        else
-            return null;
+        return fileChooser.showOpenDialog(new Stage());
+     
     }
     
 }
