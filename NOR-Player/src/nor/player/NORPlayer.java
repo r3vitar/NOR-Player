@@ -31,17 +31,16 @@ import javafx.stage.Stage;
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
 public class NORPlayer extends Application {
-    
+
     Scanner sc = new Scanner(System.in);
-  
+
     MediaView view;
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 300, 250);
     Slider slide = new Slider();
     Playlist playlist = new Playlist();
     DataManager manager = new DataManager();
-    Label name =  new Label("name");
-    
+    Label name = new Label("name");
 
     @Override
     public void start(Stage primaryStage) {
@@ -51,21 +50,17 @@ public class NORPlayer extends Application {
         Button selectB = new Button("Add");
         Button nextB = new Button("Next");
         Button prevB = new Button("Prev");
-        
-       Button savePlaylistButton = new Button("savePlaylist");
-       Button loadPlaylistButton = new Button("loadPlaylist");
+
+        Button savePlaylistButton = new Button("savePlaylist");
+        Button loadPlaylistButton = new Button("loadPlaylist");
         Label l1 = new Label("test");
-        
+
         Label sFile = new Label("ERROR");
 
-        
         view = new MediaView();
 
-        selectB.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                try {
+        selectB.setOnAction((ActionEvent event) -> {
+            try {
 //                    media = new Media(tf.getText());
 //                    player = new MediaPlayer(media);
 //
@@ -76,90 +71,55 @@ public class NORPlayer extends Application {
 //                    slide = new Slider(0, media.getDuration().toSeconds(), 0);
 //                    slide.valueProperty().bind((ObservableNumberValue) player.currentTimeProperty().getValue());
 //                    slide.onDragDroppedProperty();
-                   
-                    File data = manager.chooseSingleFile();
-                    l1.setText(data.getPath());
-                   playlist.addMedia(data);
-                        
-                    
-                } catch (Exception e) {
-                    sFile.setText("ERROR");
-                }
 
+                File data = manager.chooseSingleFile();
+                l1.setText(data.getPath());
+                playlist.addMedia(data);
+
+            } catch (Exception e) {
+                sFile.setText("ERROR");
             }
         });
 
-        startB.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-
-            public void handle(ActionEvent event) {
-               playlist.playCurrent();
-               chName();
-               
-            }
+        startB.setOnAction((ActionEvent event) -> {
+            playlist.playCurrent();
+            chName();
         });
-        pauseB.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-
-            public void handle(ActionEvent event) {
-                playlist.pauseCurrent();
-            }
+        pauseB.setOnAction((ActionEvent event) -> {
+            playlist.pauseCurrent();
         });
-        
-        nextB.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent event) {
-           playlist.nextClip();
-           chName();
-            
-            }
+        nextB.setOnAction((ActionEvent event) -> {
+            playlist.nextClip();
+            chName();
         });
-        
-        prevB.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent event) {
-
-           playlist.prevClip();
-           chName();            }
+        prevB.setOnAction((ActionEvent event) -> {
+            playlist.prevClip();
+            chName();
         });
-        
-        stopB.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent event) {
-                playlist.stopCurrent();
-            }
+        stopB.setOnAction((ActionEvent event) -> {
+            playlist.stopCurrent();
         });
-        
-        savePlaylistButton.setOnAction(new EventHandler<ActionEvent>() {
 
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.print("Name: ");
-                playlist.savePlaylist(sc.nextLine());
-            }
+        savePlaylistButton.setOnAction((ActionEvent event) -> {
+            System.out.print("Name: ");
+            playlist.savePlaylist(sc.nextLine());
         });
-        loadPlaylistButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.print("Name: ");
-                try {
-                    playlist.loadPlaylist(sc.nextLine());
-                } catch (IOException ex) {
-                    Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        loadPlaylistButton.setOnAction((ActionEvent event) -> {
+            System.out.print("Name: ");
+            try {
+                playlist.loadPlaylist(sc.nextLine());
+            } catch (IOException ex) {
+                Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
 
         root.setCenter(view);
 
         HBox chooseFile = new HBox();
-       
+
         chooseFile.getChildren().add(selectB);
         chooseFile.getChildren().addAll(l1);
         HBox playStop = new HBox(startB, pauseB, stopB, prevB, nextB, savePlaylistButton, loadPlaylistButton);
@@ -173,18 +133,15 @@ public class NORPlayer extends Application {
 
         primaryStage.show();
     }
-    
-    public void chName(){
+
+    public void chName() {
         ObservableMap<String, Object> metadata = this.playlist.getCurrentMedia().getMetadata();
-        
+
         this.name.setText(metadata.toString());
     }
-    
-    
-        
 
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }
