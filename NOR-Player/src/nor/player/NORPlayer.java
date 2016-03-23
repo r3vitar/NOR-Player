@@ -1,7 +1,11 @@
 package nor.player;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.ObservableMap;
@@ -27,6 +31,8 @@ import javafx.stage.Stage;
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
 public class NORPlayer extends Application {
+    
+    Scanner sc = new Scanner(System.in);
   
     MediaView view;
     BorderPane root = new BorderPane();
@@ -45,6 +51,9 @@ public class NORPlayer extends Application {
         Button selectB = new Button("Add");
         Button nextB = new Button("Next");
         Button prevB = new Button("Prev");
+        
+       Button savePlaylistButton = new Button("savePlaylist");
+       Button loadPlaylistButton = new Button("loadPlaylist");
         Label l1 = new Label("test");
         
         Label sFile = new Label("ERROR");
@@ -125,6 +134,25 @@ public class NORPlayer extends Application {
                 playlist.stopCurrent();
             }
         });
+        
+        savePlaylistButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                playlist.savePlaylist(sc.nextLine());
+            }
+        });
+        loadPlaylistButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    playlist.loadPlaylist(sc.nextLine());
+                } catch (IOException ex) {
+                    Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
 
         root.setCenter(view);
 
@@ -132,7 +160,7 @@ public class NORPlayer extends Application {
        
         chooseFile.getChildren().add(selectB);
         chooseFile.getChildren().addAll(l1);
-        HBox playStop = new HBox(startB, pauseB, stopB, prevB, nextB);
+        HBox playStop = new HBox(startB, pauseB, stopB, prevB, nextB, savePlaylistButton, loadPlaylistButton);
 
         VBox bottomB = new VBox(chooseFile, playStop, slide);
         root.setTop(name);

@@ -138,6 +138,7 @@ public class Playlist implements Serializable {
         setCurrentToMediaPlayer();
 
     }
+   
 
     public Playlist(Media audio) {
         this.playlist = new ArrayList<Media>();
@@ -427,13 +428,22 @@ public class Playlist implements Serializable {
         }
     }
 
-    public void safePlaylist(String name) {
+    public void savePlaylist(String name) {
         OutputStream fos = null;
         try {
-            fos = new FileOutputStream(name + ".npl");
+            if(name.contains("npl")){
+                
+            }else
+                name = name +".npl";
+            fos = new FileOutputStream(name);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
 
-            oos.writeObject(this.playlist);
+            ArrayList<String> tmpList = new ArrayList<String>();
+            for(Media m : this.playlist){
+                tmpList.add(m.getSource());
+            }
+            
+            oos.writeObject(tmpList);
 
             oos.flush();
 
@@ -449,6 +459,12 @@ public class Playlist implements Serializable {
             }
         }
     }
+    private void changePlaylist(ArrayList<Media> playlist){
+        stopCurrent();
+        this.playlist = playlist;
+        setCurrentToMediaPlayer();
+        playCurrent();
+    }
 
     public void loadPlaylist(String path) throws FileNotFoundException, IOException {
 
@@ -457,10 +473,10 @@ public class Playlist implements Serializable {
         String fileType = tmpPath[tmpPath.length];
 
         if (fileType.equalsIgnoreCase("npl")) {
-            loadNpl(path);
+            changePlaylist(loadNpl(path));
 
         } else if (fileType.equalsIgnoreCase("m3u8")) {
-            loadM3u8(path);
+            changePlaylist(loadM3u8(path));
         }
     }
 
@@ -491,7 +507,13 @@ public class Playlist implements Serializable {
         try {
             fis = new FileInputStream(path);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            return (ArrayList<Media>) ois.readObject();
+            ArrayList<String> tmpList = (ArrayList<String>) ois.readObject();
+            ArrayList<Media> newPlaylist = new ArrayList<Media>();
+            for(String s : tmpList){
+                newPlaylist.add(createMedia(s));
+            }
+            return newPlaylist;
+            
         } catch (IOException e) {
             System.out.println(e);
 
