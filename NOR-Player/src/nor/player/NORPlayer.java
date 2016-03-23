@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import javafx.application.Application;
 import javafx.beans.value.ObservableNumberValue;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -26,26 +27,29 @@ import javafx.stage.Stage;
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
 public class NORPlayer extends Application {
-    Media media;
-    MediaPlayer player;
+  
     MediaView view;
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 300, 250);
     Slider slide = new Slider();
-    Playlist pList = new Playlist();
+    Playlist playlist = new Playlist();
     DataManager manager = new DataManager();
+    Label name =  new Label("name");
     
 
     @Override
     public void start(Stage primaryStage) {
         Button startB = new Button("Start");
-        Button pauseB = new Button("Stop");
-        Button selectB = new Button("Load");
-        Label l1 = new Label();
+        Button pauseB = new Button("Pause");
+        Button stopB = new Button("Stop");
+        Button selectB = new Button("Add");
+        Button nextB = new Button("Next");
+        Button prevB = new Button("Prev");
+        Label l1 = new Label("test");
         
         Label sFile = new Label("ERROR");
-        TextField tf = new TextField();
 
+        
         view = new MediaView();
 
         selectB.setOnAction(new EventHandler<ActionEvent>() {
@@ -66,6 +70,9 @@ public class NORPlayer extends Application {
                    
                     File data = manager.chooseSingleFile();
                     l1.setText(data.getPath());
+                   playlist.addMedia(data);
+                        
+                    
                 } catch (Exception e) {
                     sFile.setText("ERROR");
                 }
@@ -78,13 +85,9 @@ public class NORPlayer extends Application {
             @Override
 
             public void handle(ActionEvent event) {
-                if (startB.getText().contains("Start")) {
-                    player.play();
-                    startB.setText("Pause");
-                } else if (startB.getText().contains("Pause")) {
-                    player.pause();
-                    startB.setText("Start!");
-                }
+               playlist.playCurrent();
+               chName();
+               
             }
         });
         pauseB.setOnAction(new EventHandler<ActionEvent>() {
@@ -92,27 +95,63 @@ public class NORPlayer extends Application {
             @Override
 
             public void handle(ActionEvent event) {
-                player.stop();
+                playlist.pauseCurrent();
+            }
+        });
+        
+        nextB.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+           playlist.nextClip();
+           chName();
+            
+            }
+        });
+        
+        prevB.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+           playlist.prevClip();
+           chName();            }
+        });
+        
+        stopB.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                playlist.stopCurrent();
             }
         });
 
         root.setCenter(view);
 
         HBox chooseFile = new HBox();
-
+       
         chooseFile.getChildren().add(selectB);
-        chooseFile.getChildren().addAll(tf, l1);
-        HBox playStop = new HBox(startB, pauseB);
+        chooseFile.getChildren().addAll(l1);
+        HBox playStop = new HBox(startB, pauseB, stopB, prevB, nextB);
 
         VBox bottomB = new VBox(chooseFile, playStop, slide);
-
-        root.setTop(bottomB);
+        root.setTop(name);
+        root.setBottom(bottomB);
 
         primaryStage.setTitle("NOR-Player");
         primaryStage.setScene(scene);
 
         primaryStage.show();
     }
+    
+    public void chName(){
+        ObservableMap<String, Object> metadata = this.playlist.getCurrentMedia().getMetadata();
+        
+        this.name.setText(metadata.toString());
+    }
+    
+    
+        
 
     public static void main(String[] args) {
         launch(args);
