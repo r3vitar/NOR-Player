@@ -73,16 +73,6 @@ public class NORPlayer extends Application implements someListener {
 
         selectB.setOnAction((ActionEvent event) -> {
             try {
-//                    media = new Media(tf.getText());
-//                    player = new MediaPlayer(media);
-//
-//                    view.setMediaPlayer(player);
-//                    view.fitHeightProperty().bind(scene.heightProperty());
-//                    view.fitWidthProperty().bind(scene.widthProperty());
-//                    
-//                    slide = new Slider(0, media.getDuration().toSeconds(), 0);
-//                    slide.valueProperty().bind((ObservableNumberValue) player.currentTimeProperty().getValue());
-//                    slide.onDragDroppedProperty();
 
                 File data = manager.chooseSingleFile();
                 l1.setText(data.getPath());
@@ -174,39 +164,26 @@ public class NORPlayer extends Application implements someListener {
                     try {
                         dur = playlist.getNorPlayer().getTotalDuration().toMillis();
                     } catch (Exception e) {
-                        System.err.println("NAAA");
+                        System.err.println(e);
                     }
                 } while (dur == Double.NaN);
                 slide.setMax(dur);
                 slide.setMin(0);
                 
-               InvalidationListener Ili = new InvalidationListener() {
-
-                    @Override
-                    public void invalidated(Observable observable) {
-                        //playlist.getNorPlayer().seek(Duration.millis(slide.getValue()));
-                        slide.setValue(playlist.getNorPlayer().getCurrentTime().toMillis());
-                    }
+               InvalidationListener Ili = (Observable observable) -> {
+                   
+                   slide.setValue(playlist.getNorPlayer().getCurrentTime().toMillis());
                 };
 
                 playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
-                slide.setOnMousePressed(new EventHandler<MouseEvent>() {
-
-                    @Override
-                    public void handle(MouseEvent event) {
-                        playlist.getNorPlayer().currentTimeProperty().removeListener(Ili);
-                    }
+                slide.setOnMousePressed((MouseEvent event) -> {
+                    playlist.getNorPlayer().currentTimeProperty().removeListener(Ili);
                 });
                 
-                slide.setOnMouseReleased(new EventHandler<MouseEvent>() {
-
-                    @Override
-                    public void handle(MouseEvent event) {
-                        playlist.getNorPlayer().seek(Duration.millis(slide.getValue()));  
-                        playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
-                    }
-                }
-                );
+                slide.setOnMouseReleased((MouseEvent event) -> {
+                    playlist.getNorPlayer().seek(Duration.millis(slide.getValue()));
+                    playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
+                });
                 
 
 
