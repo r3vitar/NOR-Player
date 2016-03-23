@@ -37,6 +37,7 @@ public class Playlist implements Serializable {
     private String playlistName = "NoName";
     private MediaPlayer norPlayer;
     private boolean playing = false;
+    private someListener listener;
 
     private Comparator<Media> cFileNameAsc = new Comparator<Media>() {
 
@@ -96,7 +97,6 @@ public class Playlist implements Serializable {
         }
     };
 
-    
     public boolean isRepeatList() {
         return repeatList;
     }
@@ -108,6 +108,7 @@ public class Playlist implements Serializable {
     public MediaPlayer getNorPlayer() {
         return norPlayer;
     }
+
     private void playOrPause() {
         playing = !playing;
     }
@@ -131,6 +132,12 @@ public class Playlist implements Serializable {
 
     public Playlist() {
         this.playlist = new ArrayList<Media>();
+
+    }
+
+    public Playlist(Object o) {
+        this.playlist = new ArrayList<Media>();
+        this.listener = (someListener) o;
 
     }
 
@@ -308,7 +315,10 @@ public class Playlist implements Serializable {
     }
 
     private void setCurrentToMediaPlayer() {
+
         norPlayer = new MediaPlayer(this.playlist.get(0));
+        this.listener.mediaChanged();
+
         norPlayer.setOnEndOfMedia(new Runnable() {
 
             @Override
@@ -316,9 +326,11 @@ public class Playlist implements Serializable {
                 nextClip();
             }
         });
+
     }
 
     public void playCurrent() {
+
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
@@ -326,8 +338,10 @@ public class Playlist implements Serializable {
             if (norPlayer == null) {
                 setCurrentToMediaPlayer();
             }
+
             norPlayer.play();
             this.playing = true;
+
         }
     }
 

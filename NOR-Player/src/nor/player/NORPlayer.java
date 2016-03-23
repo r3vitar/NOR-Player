@@ -7,6 +7,9 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
@@ -16,6 +19,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -25,22 +30,26 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
-public class NORPlayer extends Application {
+public class NORPlayer extends Application implements someListener {
 
     Scanner sc = new Scanner(System.in);
 
+    private Duration duration;
     MediaView view;
     BorderPane root = new BorderPane();
-    Scene scene = new Scene(root, 300, 250);
+    Scene scene = new Scene(root, 600, 250);
     Slider slide = new Slider();
-    Playlist playlist = new Playlist();
+    Slider vol = new Slider();
+    Playlist playlist = new Playlist(this);
     DataManager manager = new DataManager();
     Label name = new Label("name");
+    Label time = new Label("00:00");
 
     @Override
     public void start(Stage primaryStage) {
@@ -50,13 +59,14 @@ public class NORPlayer extends Application {
         Button selectB = new Button("Add");
         Button nextB = new Button("Next");
         Button prevB = new Button("Prev");
-        
-        
+        vol.setRotate(90 * 3);
+        vol.setMax(1);
+        vol.setMin(0);
+        vol.setValue(1);
 
         Button savePlaylistButton = new Button("savePlaylist");
         Button loadPlaylistButton = new Button("loadPlaylist");
         Label l1 = new Label("test");
-
         Label sFile = new Label("ERROR");
 
         view = new MediaView();
@@ -126,9 +136,12 @@ public class NORPlayer extends Application {
         chooseFile.getChildren().addAll(l1);
         HBox playStop = new HBox(startB, pauseB, stopB, prevB, nextB, savePlaylistButton, loadPlaylistButton);
 
-        VBox bottomB = new VBox(chooseFile, playStop, slide);
-        root.setTop(name);
-        root.setBottom(bottomB);
+        VBox bottomB;
+        bottomB = new VBox(chooseFile, playStop, slide);
+        BorderPane bp1 = new BorderPane(bottomB);
+        bp1.setRight(vol);
+        root.setTop(new VBox(time, name));
+        root.setBottom(bp1);
 
         primaryStage.setTitle("NOR-Player");
         primaryStage.setScene(scene);
@@ -144,6 +157,62 @@ public class NORPlayer extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    @Override
+    public void mediaChanged() {
+        this.playlist.getNorPlayer().setOnReady(new Runnable() {
+
+            @Override
+            public void run() {
+
+                playlist.getNorPlayer().volumeProperty().bind(vol.valueProperty());
+                time.textProperty().bind(playlist.getNorPlayer().currentTimeProperty().asString());
+                double dur = Double.NaN;
+
+                do {
+                    try {
+                        dur = playlist.getNorPlayer().getTotalDuration().toMillis();
+                    } catch (Exception e) {
+                        System.err.println("NAAA");
+                    }
+                } while (dur == Double.NaN);
+                slide.setMax(dur);
+                slide.setMin(0);
+                
+               InvalidationListener Ili = new InvalidationListener() {
+
+                    @Override
+                    public void invalidated(Observable observable) {
+                        //playlist.getNorPlayer().seek(Duration.millis(slide.getValue()));
+                        slide.setValue(playlist.getNorPlayer().getCurrentTime().toMillis());
+                    }
+                };
+
+                playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
+                slide.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+                    @Override
+                    public void handle(MouseEvent event) {
+                        playlist.getNorPlayer().currentTimeProperty().removeListener(Ili);
+                    }
+                });
+                
+                slide.setOnMouseReleased(new EventHandler<MouseEvent>() {
+
+                    @Override
+                    public void handle(MouseEvent event) {
+                        playlist.getNorPlayer().seek(Duration.millis(slide.getValue()));  
+                        playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
+                    }
+                }
+                );
+                
+
+
+            }
+        });
+
     }
 
 }
