@@ -324,6 +324,7 @@ public class Playlist implements Serializable {
             @Override
             public void run() {
                 nextClip();
+                
             }
         });
 

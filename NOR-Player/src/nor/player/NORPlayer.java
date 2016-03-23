@@ -2,6 +2,7 @@ package nor.player;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -21,6 +22,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -85,7 +87,7 @@ public class NORPlayer extends Application implements someListener {
 
         startB.setOnAction((ActionEvent event) -> {
             playlist.playCurrent();
-            chName();
+
         });
         pauseB.setOnAction((ActionEvent event) -> {
             playlist.pauseCurrent();
@@ -93,12 +95,12 @@ public class NORPlayer extends Application implements someListener {
 
         nextB.setOnAction((ActionEvent event) -> {
             playlist.nextClip();
-            chName();
+
         });
 
         prevB.setOnAction((ActionEvent event) -> {
             playlist.prevClip();
-            chName();
+
         });
 
         stopB.setOnAction((ActionEvent event) -> {
@@ -129,6 +131,30 @@ public class NORPlayer extends Application implements someListener {
         VBox bottomB;
         bottomB = new VBox(chooseFile, playStop, slide);
         BorderPane bp1 = new BorderPane(bottomB);
+        vol.setOnScroll(new EventHandler<ScrollEvent>() {
+
+            @Override
+            public void handle(ScrollEvent event) {
+                if (event.getDeltaY() > 0) {
+                    vol.setValue(vol.getValue() + 0.04);
+                } else {
+                    vol.setValue(vol.getValue() - 0.04);
+                }
+
+            }
+        });
+        slide.setOnScroll(new EventHandler<ScrollEvent>() {
+
+            @Override
+            public void handle(ScrollEvent event) {
+                if (event.getDeltaY() > 0) {
+                    playlist.getNorPlayer().seek(Duration.millis(slide.getValue() + 5000));
+                } else {
+                    playlist.getNorPlayer().seek(Duration.millis(slide.getValue() - 5000));
+                }
+
+            }
+        });
         bp1.setRight(vol);
         root.setTop(new VBox(time, name));
         root.setBottom(bp1);
@@ -151,13 +177,22 @@ public class NORPlayer extends Application implements someListener {
 
     @Override
     public void mediaChanged() {
+
         this.playlist.getNorPlayer().setOnReady(new Runnable() {
 
             @Override
             public void run() {
-
+                chName();
                 playlist.getNorPlayer().volumeProperty().bind(vol.valueProperty());
-                time.textProperty().bind(playlist.getNorPlayer().currentTimeProperty().asString());
+                playlist.getNorPlayer().currentTimeProperty().addListener((Observable observable) -> {
+                    int min = (int) playlist.getNorPlayer().getCurrentTime().toMinutes();
+                    int sec = (int) playlist.getNorPlayer().getCurrentTime().toSeconds() % 60;
+                    int mili = (int) ((playlist.getNorPlayer().getCurrentTime().toMillis() % 1000));
+                    mili /= 100;
+                    DecimalFormat df = new DecimalFormat("00");
+
+                    time.setText(df.format(min) + ':' + df.format(sec) + ':' + df.format(mili));
+                });
                 double dur = Double.NaN;
 
                 do {
@@ -169,23 +204,21 @@ public class NORPlayer extends Application implements someListener {
                 } while (dur == Double.NaN);
                 slide.setMax(dur);
                 slide.setMin(0);
-                
-               InvalidationListener Ili = (Observable observable) -> {
-                   
-                   slide.setValue(playlist.getNorPlayer().getCurrentTime().toMillis());
+
+                InvalidationListener Ili = (Observable observable) -> {
+
+                    slide.setValue(playlist.getNorPlayer().getCurrentTime().toMillis());
                 };
 
                 playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
                 slide.setOnMousePressed((MouseEvent event) -> {
                     playlist.getNorPlayer().currentTimeProperty().removeListener(Ili);
                 });
-                
+
                 slide.setOnMouseReleased((MouseEvent event) -> {
                     playlist.getNorPlayer().seek(Duration.millis(slide.getValue()));
                     playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
                 });
-                
-
 
             }
         });
