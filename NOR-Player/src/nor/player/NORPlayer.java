@@ -50,6 +50,8 @@ public class NORPlayer extends Application {
         Button selectB = new Button("Add");
         Button nextB = new Button("Next");
         Button prevB = new Button("Prev");
+        
+        
 
         Button savePlaylistButton = new Button("savePlaylist");
         Button loadPlaylistButton = new Button("loadPlaylist");

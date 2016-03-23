@@ -96,6 +96,18 @@ public class Playlist implements Serializable {
         }
     };
 
+    
+    public boolean isRepeatList() {
+        return repeatList;
+    }
+
+    public boolean isRepeatCurrent() {
+        return repeatCurrent;
+    }
+
+    public MediaPlayer getNorPlayer() {
+        return norPlayer;
+    }
     private void playOrPause() {
         playing = !playing;
     }
