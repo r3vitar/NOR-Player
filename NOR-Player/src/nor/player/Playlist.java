@@ -5,8 +5,11 @@
  */
 package nor.player;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -125,8 +128,14 @@ public class Playlist implements Serializable {
     }
 
     public Playlist(Media audio) {
-        this.playlist = new ArrayList<>();
+        this.playlist = new ArrayList<Media>();
         this.playlist.add(audio);
+        setCurrentToMediaPlayer();
+    }
+
+    public Playlist(String filePath) {
+        this.playlist = new ArrayList<Media>();
+        this.playlist.add(createMedia(filePath));
         setCurrentToMediaPlayer();
     }
 
@@ -316,7 +325,7 @@ public class Playlist implements Serializable {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
         } else if (norPlayer == null) {
             setCurrentToMediaPlayer();
-            
+
         } else {
             norPlayer.stop();
             this.playing = false;
@@ -400,12 +409,48 @@ public class Playlist implements Serializable {
         }
     }
 
-    public void loadPlaylist(String name) {
+    public void loadPlaylist(String path) throws FileNotFoundException, IOException {
+
+        String[] tmpPath = path.split(".");
+
+        String fileType = tmpPath[tmpPath.length];
+
+        if (fileType.equalsIgnoreCase("npl")) {
+            loadNpl(path);
+
+        } else if (fileType.equalsIgnoreCase("m3u8")) {
+            loadM3u8(path);
+        }
+    }
+
+    private ArrayList<Media> loadM3u8(String path) throws FileNotFoundException, IOException {
+        FileReader fr = new FileReader(path);
+        BufferedReader br = new BufferedReader(fr);
+        ArrayList<Media> newPlaylist = new ArrayList<Media>();
+        while(br.ready()) {
+            String tmpStr = br.readLine();
+            if(tmpStr.charAt(0) == '#');
+            else if(tmpStr.charAt(0) == '\\'){
+                newPlaylist.add(createMedia(String.format("%s:%s",path.charAt(0), tmpStr)));
+            }
+            else if(tmpStr.charAt(1) == ':'){
+                newPlaylist.add(createMedia(String.format("%s",tmpStr)));
+            }
+            else if(tmpStr.charAt(0) == '.' && tmpStr.charAt(1) == '.' && tmpStr.charAt(2) == '\\' ){
+                newPlaylist.add(createMedia(String.format("%s",tmpStr.)));
+            }
+            
+        }
+        
+        return newPlaylist;
+    }
+
+    private ArrayList<Media> loadNpl(String path) {
         InputStream fis = null;
         try {
-            fis = new FileInputStream(name);
+            fis = new FileInputStream(path);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            this.playlist = (ArrayList<Media>) ois.readObject();
+            return (ArrayList<Media>) ois.readObject();
         } catch (IOException e) {
             System.out.println(e);
 
@@ -413,6 +458,7 @@ public class Playlist implements Serializable {
             System.out.println(ex);
 
         }
+        return null;
     }
 
 }
