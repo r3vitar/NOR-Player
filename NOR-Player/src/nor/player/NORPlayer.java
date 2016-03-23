@@ -139,6 +139,7 @@ public class NORPlayer extends Application {
 
             @Override
             public void handle(ActionEvent event) {
+                System.out.print("Name: ");
                 playlist.savePlaylist(sc.nextLine());
             }
         });
@@ -146,6 +147,7 @@ public class NORPlayer extends Application {
 
             @Override
             public void handle(ActionEvent event) {
+                System.out.print("Name: ");
                 try {
                     playlist.loadPlaylist(sc.nextLine());
                 } catch (IOException ex) {

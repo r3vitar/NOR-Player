@@ -460,17 +460,23 @@ public class Playlist implements Serializable {
         }
     }
     private void changePlaylist(ArrayList<Media> playlist){
-        stopCurrent();
+        boolean b = false;
+        if(this.isPlaying()){
+            b=true;
+        }
+        if(b)
+            stopCurrent();
         this.playlist = playlist;
         setCurrentToMediaPlayer();
-        playCurrent();
+        if(b)
+            playCurrent();
     }
 
     public void loadPlaylist(String path) throws FileNotFoundException, IOException {
 
-        String[] tmpPath = path.split(".");
+        String[] tmpPath = path.split("\\.");
 
-        String fileType = tmpPath[tmpPath.length];
+        String fileType = tmpPath[tmpPath.length-1];
 
         if (fileType.equalsIgnoreCase("npl")) {
             changePlaylist(loadNpl(path));
