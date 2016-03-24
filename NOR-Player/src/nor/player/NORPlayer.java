@@ -3,6 +3,9 @@ package nor.player;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -20,6 +23,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import static javafx.scene.input.KeyCode.T;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -76,8 +80,11 @@ public class NORPlayer extends Application implements someListener {
         selectB.setOnAction((ActionEvent event) -> {
             try {
 
-                File data = manager.chooseSingleFile();
-                l1.setText(data.getPath());
+                List dataList = manager.chooseMultipleFiles();
+                
+                ArrayList<File> data = new ArrayList<File>(dataList);
+
+                System.out.println(data.get(0).getAbsolutePath());
                 playlist.addMedia(data);
 
             } catch (Exception e) {

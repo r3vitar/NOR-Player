@@ -174,6 +174,12 @@ public class Playlist implements Serializable {
         this.addMedia(createMedia(filePath));
     }
 
+    public void addMedia(ArrayList<File> data) {
+        for(File f: data){
+            this.addMedia(f);
+        }
+    }
+
     public void addMedia(File file) {
         this.addMedia(createMedia(file));
     }
@@ -196,11 +202,21 @@ public class Playlist implements Serializable {
                 this.playlist.add(createMedia(filePath.toString()));
             }
         } else if (mediaArray.get(0) instanceof Media) {
-            this.playlist.addAll(playlist);
+            for (Object m : mediaArray) {
+                this.playlist.add((Media) m);
+            }
+
+        } else if (mediaArray.get(0) instanceof File) {
+            for (Object f : mediaArray) {
+                this.addMedia((Media) f);
+                
+            }
+            
 
         } else {
             throw new IllegalArgumentException("Unsupported Objects in ArrayList");
         }
+        setCurrentToMediaPlayer();
 
     }
 
@@ -324,7 +340,7 @@ public class Playlist implements Serializable {
             @Override
             public void run() {
                 nextClip();
-                
+
             }
         });
 
