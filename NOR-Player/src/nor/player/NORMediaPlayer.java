@@ -49,6 +49,7 @@ public class NORMediaPlayer implements Serializable {
     String[] supportedMedia = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
     String[] supportedPlaylists = {".npl", ".m3u", ".m3u8", ".pls"};
     String[] supportedVideo = {".mp4", ".avi", ".mkv"};
+    private int playIndex = 0;
 
     private Comparator<Media> cFileNameAsc = new Comparator<Media>() {
 
@@ -281,42 +282,47 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void deleteMedia(Media audio) {
-        if (audio.equals(this.playlist.get(0))) {
+        if (audio.equals(getCurrentMedia())) {
             stopCurrent();
         }
         this.playlist.remove(audio);
-        if (playlist.isEmpty()) {
-            norPlayer = null;
+        
+        if(this.playIndex >= this.playlist.size()){
+            this.playIndex = this.playlist.size()-1;
+            
         }
     }
 
     public void deleteMedia(int index) {
-        if (index == 0) {
+        if (index == this.playIndex) {
             stopCurrent();
         }
         this.playlist.remove(index);
-        if (playlist.isEmpty()) {
-            norPlayer = null;
+        if(this.playIndex >= this.playlist.size()){
+            this.playIndex = this.playlist.size()-1;
+            
         }
+        
     }
 
     public void deleteMediaArray(ArrayList<Object> mediaArray) {
-        stopCurrent();
-        if (mediaArray.isEmpty()) {
-            throw new IllegalArgumentException("ArrayList is empty");
-        } else if (mediaArray.get(0) instanceof String) {
-            for (Object filePath : mediaArray) {
-                this.playlist.remove(createMedia(filePath.toString()));
-            }
-        } else if (mediaArray.get(0) instanceof Media) {
-            this.playlist.removeAll(playlist);
-
-        } else {
-            throw new IllegalArgumentException("Unsupported Objects in ArrayList");
-        }
-        if (playlist.isEmpty()) {
-            norPlayer = null;
-        }
+        throw new UnsupportedOperationException();
+//        stopCurrent();
+//        if (mediaArray.isEmpty()) {
+//            throw new IllegalArgumentException("ArrayList is empty");
+//        } else if (mediaArray.get(0) instanceof String) {
+//            for (Object filePath : mediaArray) {
+//                this.playlist.remove(createMedia(filePath.toString()));
+//            }
+//        } else if (mediaArray.get(0) instanceof Media) {
+//            this.playlist.removeAll(playlist);
+//
+//        } else {
+//            throw new IllegalArgumentException("Unsupported Objects in ArrayList");
+//        }
+//        if (playlist.isEmpty()) {
+//            norPlayer = null;
+//        }
 
     }
 
@@ -399,7 +405,7 @@ public class NORMediaPlayer implements Serializable {
         if (this.playlist.isEmpty()) {
             return null;
         } else {
-            return this.playlist.get(0);
+            return this.playlist.get(this.playIndex);
         }
 
     }
@@ -511,10 +517,11 @@ public class NORMediaPlayer implements Serializable {
 
     public void nextClip() {
         stopCurrent();
-
-        Media tmpClip = this.playlist.get(0);
-        playlist.remove(0);
-        playlist.add(tmpClip);
+        if(this.playIndex == this.playlist.size()-1){
+            this.playIndex = 0;
+        }else
+            this.playIndex++;
+        
         setCurrentToMediaPlayer();
         playCurrent();
 
@@ -522,10 +529,10 @@ public class NORMediaPlayer implements Serializable {
 
     public void prevClip() {
         stopCurrent();
-
-        Media tmpClip = this.playlist.get(this.playlist.size() - 1);
-        playlist.remove(this.playlist.size() - 1);
-        playlist.add(0, tmpClip);
+        if(this.playIndex == 0){
+            this.playIndex = this.playlist.size()-1;
+        }else
+            this.playIndex--;
         setCurrentToMediaPlayer();
         playCurrent();
 
@@ -605,13 +612,14 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void loadPlaylist(File f, boolean changePl) throws FileNotFoundException, IOException {
-
+        
         String path = f.getAbsolutePath();
         String name = f.getName();
         if (name.contains(Character.toString(dot))) {
 
             if (name.endsWith(".npl")) {
                 if (changePl) {
+                    this.playIndex=0;
                     changePlaylist(loadNpl(path));
                 } else {
                     ArrayList<Media> tmpArM = loadNpl(path);
