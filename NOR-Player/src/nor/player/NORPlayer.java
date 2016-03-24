@@ -59,6 +59,7 @@ public class NORPlayer extends Application implements someListener {
 
     @Override
     public void start(Stage primaryStage) {
+
         Button startB = new Button("Start");
         Button pauseB = new Button("Pause");
         Button stopB = new Button("Stop");
@@ -73,22 +74,21 @@ public class NORPlayer extends Application implements someListener {
         Button savePlaylistButton = new Button("savePlaylist");
         Button loadPlaylistButton = new Button("loadPlaylist");
         Label l1 = new Label("test");
-        Label sFile = new Label("ERROR");
 
         view = new MediaView();
 
         selectB.setOnAction((ActionEvent event) -> {
+
             try {
 
-                List dataList = manager.chooseMultipleFiles();
-                
+                List dataList = manager.chooseMultipleFiles("all");
+
                 ArrayList<File> data = new ArrayList<File>(dataList);
 
-                System.out.println(data.get(0).getAbsolutePath());
                 playlist.addMedia(data);
 
             } catch (Exception e) {
-                sFile.setText("ERROR");
+                name.setText("ERROR");
             }
         });
 
@@ -115,15 +115,16 @@ public class NORPlayer extends Application implements someListener {
         });
 
         savePlaylistButton.setOnAction((ActionEvent event) -> {
-            System.out.print("Name: ");
-            playlist.savePlaylist(sc.nextLine());
+
+            File f = manager.savePlaylist();
+            playlist.savePlaylist(f.getAbsolutePath());
         });
         loadPlaylistButton.setOnAction((ActionEvent event) -> {
-            System.out.print("Name: ");
+            File f = manager.chooseSingleFile("playlist");
             try {
-                playlist.loadPlaylist(sc.nextLine());
+                playlist.loadPlaylist(f, true);
             } catch (IOException ex) {
-                Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
+
             }
         });
 

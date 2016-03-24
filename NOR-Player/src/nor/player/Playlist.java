@@ -18,9 +18,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static javafx.scene.input.KeyCode.T;
 import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -38,6 +42,10 @@ public class Playlist implements Serializable {
     private MediaPlayer norPlayer;
     private boolean playing = false;
     private someListener listener;
+    private final char dot = '.';
+    String[] supportedAudio = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac"};
+    String[] supportedPlaylists = {".npl", ".m3u", ".m3u8", ".pls"};
+    String[] supportedVideo = {".mp4", ".avi", ".mkv"};
 
     private Comparator<Media> cFileNameAsc = new Comparator<Media>() {
 
@@ -130,11 +138,6 @@ public class Playlist implements Serializable {
         this.playlistName = playlistName;
     }
 
-    public Playlist() {
-        this.playlist = new ArrayList<Media>();
-
-    }
-
     public Playlist(Object o) {
         this.playlist = new ArrayList<Media>();
         this.listener = (someListener) o;
@@ -142,55 +145,88 @@ public class Playlist implements Serializable {
     }
 
     public Playlist(ArrayList<Media> playlist) {
-        this.playlist = playlist;
-        setCurrentToMediaPlayer();
+        if (playlist != null) {
+            this.playlist = playlist;
+            setCurrentToMediaPlayer();
+        }
 
     }
 
     public Playlist(Media audio) {
         this.playlist = new ArrayList<Media>();
-        this.playlist.add(audio);
-        setCurrentToMediaPlayer();
+        Media m = audio;
+        if (m != null) {
+            this.playlist.add(m);
+            setCurrentToMediaPlayer();
+        }
     }
 
     public Playlist(String filePath) {
         this.playlist = new ArrayList<Media>();
-        this.playlist.add(createMedia(filePath));
-        setCurrentToMediaPlayer();
+        Media m = createMedia(filePath);
+        if (m != null) {
+            this.playlist.add(m);
+            setCurrentToMediaPlayer();
+        }
     }
 
     public Playlist(File file) {
         this.playlist = new ArrayList<Media>();
-        this.playlist.add(createMedia(file));
-        setCurrentToMediaPlayer();
+        Media m = createMedia(file);
+        if (m != null) {
+            this.playlist.add(m);
+            setCurrentToMediaPlayer();
+        }
     }
 
     public void addMedia(Media audio) {
-
-        this.playlist.add(audio);
+        if (audio != null) {
+            this.playlist.add(audio);
+        }
     }
 
     public void addMedia(String filePath) {
-        this.addMedia(createMedia(filePath));
+        Media m = createMedia(filePath);
+        if (m != null) {
+            this.addMedia(m);
+        };
     }
 
     public void addMedia(ArrayList<File> data) {
-        for(File f: data){
-            this.addMedia(f);
+        for (File f : data) {
+            String name = f.getName();
+            if (isSupported(name, this.supportedPlaylists)) {
+
+                try {
+                    loadPlaylist(f, false);
+                } catch (IOException ex) {
+                    System.err.println(ex);
+                }
+            } else if (isSupported(name, supportedAudio)) {
+                this.addMedia(f);
+            }
         }
     }
 
     public void addMedia(File file) {
-        this.addMedia(createMedia(file));
+        Media m = createMedia(file);
+        if (m != null) {
+            this.addMedia(m);
+        }
     }
 
     private Media createMedia(String filePath) {
+
         return new Media(filePath);
+
     }
 
     private Media createMedia(File file) {
+        if (file.isFile()) {
+            return new Media(file.toURI().toString().replace('\\', '/'));
+        }
 
-        return new Media(file.toURI().toString().replace('\\', '/'));
+        return null;
 
     }
 
@@ -208,15 +244,13 @@ public class Playlist implements Serializable {
 
         } else if (mediaArray.get(0) instanceof File) {
             for (Object f : mediaArray) {
-                this.addMedia((Media) f);
-                
+                this.addMedia(createMedia((File)f));
+
             }
-            
 
         } else {
             throw new IllegalArgumentException("Unsupported Objects in ArrayList");
         }
-        setCurrentToMediaPlayer();
 
     }
 
@@ -462,8 +496,9 @@ public class Playlist implements Serializable {
 
     public void savePlaylist(String name) {
         OutputStream fos = null;
+        this.playlistName = name;
         try {
-            if (name.contains("npl")) {
+            if (name.endsWith(".npl")) {
 
             } else {
                 name = name + ".npl";
@@ -508,17 +543,28 @@ public class Playlist implements Serializable {
         }
     }
 
-    public void loadPlaylist(String path) throws FileNotFoundException, IOException {
+    public void loadPlaylist(File f, boolean changePl) throws FileNotFoundException, IOException {
 
-        String[] tmpPath = path.split("\\.");
+        String path = f.getAbsolutePath();
+        String name = f.getName();
+        if (name.contains(Character.toString(dot))) {
 
-        String fileType = tmpPath[tmpPath.length - 1];
+            if (name.endsWith(".npl")) {
+                if (changePl) {
+                    changePlaylist(loadNpl(path));
+                } else {
+                    ArrayList<Media> tmpArM = loadNpl(path);
+                    ArrayList<Object> tmpArO = new ArrayList<Object>();
+                    for (Media m : tmpArM) {
+                        tmpArO.add((Object)m);
+                    }
 
-        if (fileType.equalsIgnoreCase("npl")) {
-            changePlaylist(loadNpl(path));
+                    addMediaArray(tmpArO);
+                }
 
-        } else if (fileType.equalsIgnoreCase("m3u8")) {
-            changePlaylist(loadM3u8(path));
+            } else if (name.endsWith("m3u8")) {
+                changePlaylist(loadM3u8(path));
+            }
         }
     }
 
@@ -550,7 +596,11 @@ public class Playlist implements Serializable {
             ArrayList<String> tmpList = (ArrayList<String>) ois.readObject();
             ArrayList<Media> newPlaylist = new ArrayList<Media>();
             for (String s : tmpList) {
-                newPlaylist.add(createMedia(s));
+                Media m = createMedia(s);
+                if (m != null) {
+                    newPlaylist.add(m);
+
+                }
             }
             return newPlaylist;
 
@@ -571,6 +621,18 @@ public class Playlist implements Serializable {
             return true;
         }
         return false;
+    }
+
+    private boolean isSupported(String name, String[] supportedList) {
+
+        ArrayList<String> tmpStr = new ArrayList<String>(Arrays.asList(supportedList));
+        for (String s : tmpStr) {
+            if (name.endsWith(s)) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
 }
