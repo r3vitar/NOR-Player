@@ -33,7 +33,7 @@ import javafx.scene.media.MediaPlayer;
  *
  * @author kacpe_000
  */
-public class Playlist implements Serializable {
+public class NORMediaPlayer implements Serializable {
 
     private ArrayList<Media> playlist;
     private boolean repeatList = false;
@@ -44,6 +44,7 @@ public class Playlist implements Serializable {
     private someListener listener;
     private final char dot = '.';
     String[] supportedAudio = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac"};
+    String[] supportedMedia = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
     String[] supportedPlaylists = {".npl", ".m3u", ".m3u8", ".pls"};
     String[] supportedVideo = {".mp4", ".avi", ".mkv"};
 
@@ -138,13 +139,13 @@ public class Playlist implements Serializable {
         this.playlistName = playlistName;
     }
 
-    public Playlist(Object o) {
+    public NORMediaPlayer(Object o) {
         this.playlist = new ArrayList<Media>();
         this.listener = (someListener) o;
 
     }
 
-    public Playlist(ArrayList<Media> playlist) {
+    public NORMediaPlayer(ArrayList<Media> playlist) {
         if (playlist != null) {
             this.playlist = playlist;
             setCurrentToMediaPlayer();
@@ -152,7 +153,7 @@ public class Playlist implements Serializable {
 
     }
 
-    public Playlist(Media audio) {
+    public NORMediaPlayer(Media audio) {
         this.playlist = new ArrayList<Media>();
         Media m = audio;
         if (m != null) {
@@ -161,7 +162,7 @@ public class Playlist implements Serializable {
         }
     }
 
-    public Playlist(String filePath) {
+    public NORMediaPlayer(String filePath) {
         this.playlist = new ArrayList<Media>();
         Media m = createMedia(filePath);
         if (m != null) {
@@ -170,7 +171,7 @@ public class Playlist implements Serializable {
         }
     }
 
-    public Playlist(File file) {
+    public NORMediaPlayer(File file) {
         this.playlist = new ArrayList<Media>();
         Media m = createMedia(file);
         if (m != null) {
@@ -222,7 +223,7 @@ public class Playlist implements Serializable {
     }
 
     private Media createMedia(File file) {
-        if (file.isFile()) {
+        if (isSupported(file.getName(), supportedMedia)) {
             return new Media(file.toURI().toString().replace('\\', '/'));
         }
 
@@ -373,7 +374,12 @@ public class Playlist implements Serializable {
 
             @Override
             public void run() {
-                nextClip();
+                if(!repeatCurrent)
+                    nextClip();
+                else{
+                    stopCurrent();
+                    playCurrent();
+                }
 
             }
         });

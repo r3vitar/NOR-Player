@@ -52,7 +52,7 @@ public class NORPlayer extends Application implements someListener {
     Scene scene = new Scene(root, 600, 250);
     Slider slide = new Slider();
     Slider vol = new Slider();
-    Playlist playlist = new Playlist(this);
+    NORMediaPlayer playlist = new NORMediaPlayer(this);
     DataManager manager = new DataManager();
     Label name = new Label("name");
     Label time = new Label("00:00");
@@ -80,12 +80,20 @@ public class NORPlayer extends Application implements someListener {
         selectB.setOnAction((ActionEvent event) -> {
 
             try {
+                new Thread(new Runnable() {
+List dataList = manager.chooseMultipleFiles("all");
 
-                List dataList = manager.chooseMultipleFiles("all");
+                        ArrayList<File> data = new ArrayList<File>(dataList);
+                    @Override
+                    public void run() {
+                        
 
-                ArrayList<File> data = new ArrayList<File>(dataList);
-
-                playlist.addMedia(data);
+                        playlist.addMedia(data);
+                        if(!playlist.isPlaying()){
+                            playlist.playCurrent();
+                        }
+                    }
+                }).start();
 
             } catch (Exception e) {
                 name.setText("ERROR");
