@@ -91,7 +91,7 @@ public class NORPlayer extends Application implements someListener {
         balanceSlider.setMaxWidth(100);
         
         balanceSlider.setMajorTickUnit(100);
-        balanceSlider.setMinorTickCount(4);
+        balanceSlider.setMinorTickCount(3);
         balanceSlider.setShowTickMarks(true);
 
         balanceSlider.setSnapToTicks(true);
