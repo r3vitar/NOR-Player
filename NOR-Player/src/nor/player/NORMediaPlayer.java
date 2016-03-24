@@ -28,6 +28,7 @@ import static javafx.scene.input.KeyCode.T;
 import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 
 /**
  *
@@ -43,6 +44,7 @@ public class NORMediaPlayer implements Serializable {
     private boolean playing = false;
     private someListener listener;
     private final char dot = '.';
+    private MediaView mv;
     String[] supportedAudio = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac"};
     String[] supportedMedia = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
     String[] supportedPlaylists = {".npl", ".m3u", ".m3u8", ".pls"};
@@ -105,6 +107,26 @@ public class NORMediaPlayer implements Serializable {
             return audioName;
         }
     };
+
+    public MediaView getMv() {
+        return mv;
+    }
+
+    public String[] getSupportedAudio() {
+        return supportedAudio;
+    }
+
+    public String[] getSupportedMedia() {
+        return supportedMedia;
+    }
+
+    public String[] getSupportedPlaylists() {
+        return supportedPlaylists;
+    }
+
+    public String[] getSupportedVideo() {
+        return supportedVideo;
+    }
 
     public boolean isRepeatList() {
         return repeatList;
@@ -205,7 +227,10 @@ public class NORMediaPlayer implements Serializable {
                 }
             } else if (isSupported(name, supportedAudio)) {
                 this.addMedia(f);
-            }
+             
+            } else if (isSupported(name, supportedVideo)) {
+                this.addMedia(f);
+            } 
         }
     }
 
@@ -308,52 +333,66 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void sort() {
+        if(!this.playlist.isEmpty()){
         stopCurrent();
         this.playlist.sort(this.cFileNameAsc);
         setCurrentToMediaPlayer();
         playCurrent();
+        }
     }
 
     public void sortByNameAsc() {
+        if(!this.playlist.isEmpty()){
         stopCurrent();
         this.playlist.sort(this.cFileNameAsc);
         setCurrentToMediaPlayer();
         playCurrent();
+        }
     }
 
     public void sortByNameDesc() {
+        if(!this.playlist.isEmpty()){
         stopCurrent();
         this.playlist.sort(this.cFileNameDesc);
         setCurrentToMediaPlayer();
         playCurrent();
+        }
     }
 
     public void sortByPathAsc() {
+        if(!this.playlist.isEmpty()){
         stopCurrent();
         this.playlist.sort(this.cPathNameAsc);
         setCurrentToMediaPlayer();
         playCurrent();
+        }
     }
 
     public void sortByPathDesc() {
+        if(!this.playlist.isEmpty()){
         stopCurrent();
         this.playlist.sort(this.cPathNameDesc);
         setCurrentToMediaPlayer();
         playCurrent();
+        }
     }
 
     public void shuffle() {
+        if(!this.playlist.isEmpty()){
         stopCurrent();
         Collections.shuffle(this.playlist);
         setCurrentToMediaPlayer();
         playCurrent();
+        }
     }
 
     public void shuffle(Random randomSeed) {
+        if(!this.playlist.isEmpty()){
         stopCurrent();
         Collections.shuffle(this.playlist, randomSeed);
         setCurrentToMediaPlayer();
         playCurrent();
+        }
     }
 
     public Media getCurrentMedia() {
@@ -364,22 +403,38 @@ public class NORMediaPlayer implements Serializable {
         }
 
     }
+    
+    public boolean isVideo(){
+        if(this.mv == null){
+            return false;
+        }
+        return true;
+    }
 
     private void setCurrentToMediaPlayer() {
-
-        norPlayer = new MediaPlayer(this.playlist.get(0));
+       
+        norPlayer = new MediaPlayer(getCurrentMedia());
+        if(isSupported(norPlayer.getMedia().getSource(), supportedVideo)){
+            mv = new MediaView(norPlayer);
+        }else
+            mv= null;
+        
         this.listener.mediaChanged();
+        
 
         norPlayer.setOnEndOfMedia(new Runnable() {
 
             @Override
             public void run() {
+                if(getCurrentMedia() == null)
+                    deleteMedia(getCurrentMedia());
                 if(!repeatCurrent)
                     nextClip();
                 else{
                     stopCurrent();
                     playCurrent();
                 }
+                
 
             }
         });

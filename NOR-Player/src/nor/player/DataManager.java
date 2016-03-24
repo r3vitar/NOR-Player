@@ -19,6 +19,7 @@ public class DataManager {
     private HashMap<String, FileChooser> fileChooser = new HashMap<String, FileChooser>();
 
     public DataManager() {
+        
 
         fileChooser.put("audio", new FileChooser());
         fileChooser.get("audio").getExtensionFilters().add(new ExtensionFilter("All Supported Audio", "*.mp3", "*.mp2", "*.mp1", "*.aac", "*.vlb", "*.wav", "*.flac", "*.alac"));

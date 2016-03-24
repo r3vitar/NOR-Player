@@ -18,6 +18,7 @@ import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -36,6 +37,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 /**
@@ -49,27 +51,51 @@ public class NORPlayer extends Application implements someListener {
     private Duration duration;
     MediaView view;
     BorderPane root = new BorderPane();
-    Scene scene = new Scene(root, 600, 250);
+    Scene scene = new Scene(root, 700, 300);
     Slider slide = new Slider();
     Slider vol = new Slider();
+    Slider balanceSlider = new Slider();
     NORMediaPlayer playlist = new NORMediaPlayer(this);
     DataManager manager = new DataManager();
-    Label name = new Label("name");
-    Label time = new Label("00:00");
+    Label name = new Label("metadata");
+    Label time = new Label("00:00:00");
 
     @Override
     public void start(Stage primaryStage) {
+        File lastSession = new File("lastSession.npl");
+        if (lastSession.isFile()) {
+            playlist.addMedia(lastSession);
+        }
 
-        Button startB = new Button("Start");
+        Button playB = new Button("Start");
         Button pauseB = new Button("Pause");
         Button stopB = new Button("Stop");
         Button selectB = new Button("Add");
         Button nextB = new Button("Next");
         Button prevB = new Button("Prev");
-        vol.setRotate(90 * 3);
-        vol.setMax(1);
+        Button shuffleB = new Button("Shuffle");
+        vol.setOrientation(Orientation.VERTICAL);
+        vol.setMax(100);
         vol.setMin(0);
-        vol.setValue(1);
+        vol.setValue(100);
+          vol.setShowTickLabels(true);
+        vol.setShowTickMarks(true);
+        vol.setMajorTickUnit(25);
+        vol.setMinorTickCount(5);
+        
+        
+        vol.setSnapToTicks(true);
+        balanceSlider.setMax(100);
+        balanceSlider.setMin(-100);
+        balanceSlider.setValue(0);
+        balanceSlider.setMaxWidth(100);
+        
+        balanceSlider.setMajorTickUnit(100);
+        balanceSlider.setMinorTickCount(4);
+        balanceSlider.setShowTickMarks(true);
+
+        balanceSlider.setSnapToTicks(true);
+      
 
         Button savePlaylistButton = new Button("savePlaylist");
         Button loadPlaylistButton = new Button("loadPlaylist");
@@ -81,15 +107,15 @@ public class NORPlayer extends Application implements someListener {
 
             try {
                 new Thread(new Runnable() {
-List dataList = manager.chooseMultipleFiles("all");
+                    List dataList = manager.chooseMultipleFiles("all");
 
-                        ArrayList<File> data = new ArrayList<File>(dataList);
+                    ArrayList<File> data = new ArrayList<File>(dataList);
+
                     @Override
                     public void run() {
-                        
 
                         playlist.addMedia(data);
-                        if(!playlist.isPlaying()){
+                        if (!playlist.isPlaying()) {
                             playlist.playCurrent();
                         }
                     }
@@ -100,7 +126,7 @@ List dataList = manager.chooseMultipleFiles("all");
             }
         });
 
-        startB.setOnAction((ActionEvent event) -> {
+        playB.setOnAction((ActionEvent event) -> {
             playlist.playCurrent();
 
         });
@@ -135,14 +161,15 @@ List dataList = manager.chooseMultipleFiles("all");
 
             }
         });
-
-        root.setCenter(view);
+        shuffleB.setOnAction((ActionEvent event) -> {
+            playlist.shuffle();
+        });
 
         HBox chooseFile = new HBox();
 
         chooseFile.getChildren().add(selectB);
         chooseFile.getChildren().addAll(l1);
-        HBox playStop = new HBox(startB, pauseB, stopB, prevB, nextB, savePlaylistButton, loadPlaylistButton);
+        HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, savePlaylistButton, loadPlaylistButton, shuffleB);
 
         VBox bottomB;
         bottomB = new VBox(chooseFile, playStop, slide);
@@ -152,9 +179,21 @@ List dataList = manager.chooseMultipleFiles("all");
             @Override
             public void handle(ScrollEvent event) {
                 if (event.getDeltaY() > 0) {
-                    vol.setValue(vol.getValue() + 0.04);
+                    vol.setValue(vol.getValue() + 5);
                 } else {
-                    vol.setValue(vol.getValue() - 0.04);
+                    vol.setValue(vol.getValue() - 5);
+                }
+
+            }
+        });
+        balanceSlider.setOnScroll(new EventHandler<ScrollEvent>() {
+
+            @Override
+            public void handle(ScrollEvent event) {
+                if (event.getDeltaY() > 0) {
+                    balanceSlider.setValue(balanceSlider.getValue() + 25);
+                } else {
+                    balanceSlider.setValue(balanceSlider.getValue() - 25);
                 }
 
             }
@@ -172,12 +211,20 @@ List dataList = manager.chooseMultipleFiles("all");
             }
         });
         bp1.setRight(vol);
-        root.setTop(new VBox(time, name));
+        root.setTop(new VBox(time, name, balanceSlider));
+        root.setCenter(view);
         root.setBottom(bp1);
 
         primaryStage.setTitle("NOR-Player");
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
+            @Override
+            public void handle(WindowEvent event) {
+                playlist.savePlaylist("lastSession.npl");
+
+            }
+        });
         primaryStage.show();
     }
 
@@ -198,8 +245,14 @@ List dataList = manager.chooseMultipleFiles("all");
 
             @Override
             public void run() {
+                if (playlist.isVideo()) {
+                    view = new MediaView(playlist.getNorPlayer());
+                }
                 chName();
-                playlist.getNorPlayer().volumeProperty().bind(vol.valueProperty());
+
+                System.out.println(playlist.getNorPlayer().getMedia().getSource());
+                playlist.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
+                playlist.getNorPlayer().balanceProperty().bind(balanceSlider.valueProperty().divide(100.0));
                 playlist.getNorPlayer().currentTimeProperty().addListener((Observable observable) -> {
                     int min = (int) playlist.getNorPlayer().getCurrentTime().toMinutes();
                     int sec = (int) playlist.getNorPlayer().getCurrentTime().toSeconds() % 60;
@@ -229,6 +282,7 @@ List dataList = manager.chooseMultipleFiles("all");
                 playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
                 slide.setOnMousePressed((MouseEvent event) -> {
                     playlist.getNorPlayer().currentTimeProperty().removeListener(Ili);
+                    
                 });
 
                 slide.setOnMouseReleased((MouseEvent event) -> {
