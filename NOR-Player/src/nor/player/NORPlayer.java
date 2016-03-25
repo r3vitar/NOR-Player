@@ -64,22 +64,11 @@ public class NORPlayer extends Application implements someListener {
 
     @Override
     public void start(Stage primaryStage) {
-        try{
-        new MediaPlayer(new NORMediaPlayer().createMedia(new File("NOR.wav"))).play();
-        }catch(Exception e){
+        try {
+            new MediaPlayer(new NORMediaPlayer().createMedia(new File("NOR.wav"))).play();
+        } catch (Exception e) {
             System.err.println(e);
         }
-        
-        
-//        File lastSession = new File("lastSession.npl");
-//        if (lastSession.isFile()) {
-//            try {
-//                playlist.loadPlaylist(lastSession, true);
-//            } catch (IOException ex) {
-//            }
-//        }
-        
-        
 
         Button playB = new Button("Start");
         Button pauseB = new Button("Pause");
@@ -89,16 +78,11 @@ public class NORPlayer extends Application implements someListener {
         Button prevB = new Button("Prev");
         Button shuffleB = new Button("Shuffle");
 
-        
-
         Button savePlaylistButton = new Button("savePlaylist");
         Button loadPlaylistButton = new Button("loadPlaylist");
         Label l1 = new Label("test");
-        
-        
-        initSliders();
 
-        
+        initSliders();
 
         selectB.setOnAction((ActionEvent event) -> {
 
@@ -195,7 +179,7 @@ public class NORPlayer extends Application implements someListener {
 
             }
         });
-        
+
         slide.setOnScroll(new EventHandler<ScrollEvent>() {
 
             @Override
@@ -208,6 +192,15 @@ public class NORPlayer extends Application implements someListener {
 
             }
         });
+
+        File lastSession = new File("lastSession.npl");
+        if (lastSession.isFile()) {
+            try {
+                playlist.loadPlaylist(lastSession, true);
+            } catch (IOException ex) {
+            }
+        }
+
         bp1.setRight(vol);
         root.setTop(new VBox(time, name, balanceSlider, speedSlider));
         root.setCenter(view);
@@ -223,6 +216,7 @@ public class NORPlayer extends Application implements someListener {
 
             }
         });
+
         primaryStage.show();
     }
 
