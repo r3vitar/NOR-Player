@@ -37,12 +37,12 @@ import javafx.scene.media.MediaView;
 public class NORMediaPlayer implements Serializable {
 
     private ArrayList<Media> playlist;
-    private boolean repeatList = false;
+    private boolean repeatList = true;
     private boolean repeatCurrent = false;
     private String playlistName = "NoName";
     private MediaPlayer norPlayer;
     private boolean playing = false;
-    private someListener listener;
+    private MediaChangeListener listener;
     private final char dot = '.';
     private MediaView mv;
     String[] supportedAudio = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac"};
@@ -141,7 +141,7 @@ public class NORMediaPlayer implements Serializable {
         return norPlayer;
     }
 
-    private void playOrPause() {
+    private void changePlayOrPause() {
         playing = !playing;
     }
 
@@ -161,15 +161,15 @@ public class NORMediaPlayer implements Serializable {
     public void setPlaylistName(String playlistName) {
         this.playlistName = playlistName;
     }
-    
-    public NORMediaPlayer(){
-        
+
+    public NORMediaPlayer() {
+
     }
 
     public NORMediaPlayer(Object o) {
         this.playlist = new ArrayList<Media>();
-        
-        this.listener = (someListener) o;
+
+        this.listener = (MediaChangeListener) o;
 
     }
 
@@ -233,10 +233,10 @@ public class NORMediaPlayer implements Serializable {
                 }
             } else if (isSupported(name, supportedAudio)) {
                 this.addMedia(f);
-             
+
             } else if (isSupported(name, supportedVideo)) {
                 this.addMedia(f);
-            } 
+            }
         }
     }
 
@@ -276,7 +276,7 @@ public class NORMediaPlayer implements Serializable {
 
         } else if (mediaArray.get(0) instanceof File) {
             for (Object f : mediaArray) {
-                this.addMedia(createMedia((File)f));
+                this.addMedia(createMedia((File) f));
 
             }
 
@@ -288,26 +288,26 @@ public class NORMediaPlayer implements Serializable {
 
     public void deleteMedia(Media audio) {
         if (audio.equals(getCurrentMedia())) {
-            stopCurrent();
+            stop();
         }
         this.playlist.remove(audio);
-        
-        if(this.playIndex >= this.playlist.size()){
-            this.playIndex = this.playlist.size()-1;
-            
+
+        if (this.playIndex >= this.playlist.size()) {
+            this.playIndex = this.playlist.size() - 1;
+
         }
     }
 
     public void deleteMedia(int index) {
         if (index == this.playIndex) {
-            stopCurrent();
+            stop();
         }
         this.playlist.remove(index);
-        if(this.playIndex >= this.playlist.size()){
-            this.playIndex = this.playlist.size()-1;
-            
+        if (this.playIndex >= this.playlist.size()) {
+            this.playIndex = this.playlist.size() - 1;
+
         }
-        
+
     }
 
     public void deleteMediaArray(ArrayList<Object> mediaArray) {
@@ -332,77 +332,77 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void deletePlaylist() {
-        stopCurrent();
+        stop();
         this.playlist.removeAll(this.playlist);
         norPlayer = null;
     }
 
     public void clearPlaylist() {
-        stopCurrent();
+        stop();
         this.playlist.clear();
         norPlayer = null;
     }
 
     public void sort() {
-        if(!this.playlist.isEmpty()){
-        stopCurrent();
-        this.playlist.sort(this.cFileNameAsc);
-        setCurrentToMediaPlayer();
-        playCurrent();
+        if (!this.playlist.isEmpty()) {
+            stop();
+            this.playlist.sort(this.cFileNameAsc);
+            setCurrentToMediaPlayer();
+            play();
         }
     }
 
     public void sortByNameAsc() {
-        if(!this.playlist.isEmpty()){
-        stopCurrent();
-        this.playlist.sort(this.cFileNameAsc);
-        setCurrentToMediaPlayer();
-        playCurrent();
+        if (!this.playlist.isEmpty()) {
+            stop();
+            this.playlist.sort(this.cFileNameAsc);
+            setCurrentToMediaPlayer();
+            play();
         }
     }
 
     public void sortByNameDesc() {
-        if(!this.playlist.isEmpty()){
-        stopCurrent();
-        this.playlist.sort(this.cFileNameDesc);
-        setCurrentToMediaPlayer();
-        playCurrent();
+        if (!this.playlist.isEmpty()) {
+            stop();
+            this.playlist.sort(this.cFileNameDesc);
+            setCurrentToMediaPlayer();
+            play();
         }
     }
 
     public void sortByPathAsc() {
-        if(!this.playlist.isEmpty()){
-        stopCurrent();
-        this.playlist.sort(this.cPathNameAsc);
-        setCurrentToMediaPlayer();
-        playCurrent();
+        if (!this.playlist.isEmpty()) {
+            stop();
+            this.playlist.sort(this.cPathNameAsc);
+            setCurrentToMediaPlayer();
+            play();
         }
     }
 
     public void sortByPathDesc() {
-        if(!this.playlist.isEmpty()){
-        stopCurrent();
-        this.playlist.sort(this.cPathNameDesc);
-        setCurrentToMediaPlayer();
-        playCurrent();
+        if (!this.playlist.isEmpty()) {
+            stop();
+            this.playlist.sort(this.cPathNameDesc);
+            setCurrentToMediaPlayer();
+            play();
         }
     }
 
     public void shuffle() {
-        if(!this.playlist.isEmpty()){
-        stopCurrent();
-        Collections.shuffle(this.playlist);
-        setCurrentToMediaPlayer();
-        playCurrent();
+        if (!this.playlist.isEmpty()) {
+            stop();
+            Collections.shuffle(this.playlist);
+            setCurrentToMediaPlayer();
+            play();
         }
     }
 
     public void shuffle(Random randomSeed) {
-        if(!this.playlist.isEmpty()){
-        stopCurrent();
-        Collections.shuffle(this.playlist, randomSeed);
-        setCurrentToMediaPlayer();
-        playCurrent();
+        if (!this.playlist.isEmpty()) {
+            stop();
+            Collections.shuffle(this.playlist, randomSeed);
+            setCurrentToMediaPlayer();
+            play();
         }
     }
 
@@ -414,61 +414,61 @@ public class NORMediaPlayer implements Serializable {
         }
 
     }
-    
-    public boolean isVideo(){
-        if(this.mv == null){
+
+    public boolean isVideo() {
+        if (this.mv == null) {
             return false;
         }
         return true;
     }
 
     private void setCurrentToMediaPlayer() {
-       
-        if(getCurrentMedia() == null);
-        else{
-        norPlayer = new MediaPlayer(getCurrentMedia());
-        if(isSupported(norPlayer.getMedia().getSource(), supportedVideo)){
-            mv = new MediaView(norPlayer);
-        }else
-            mv= null;
-        
-        this.listener.mediaChanged();
+
+        if (getCurrentMedia() == null); 
+        else {
+            norPlayer = new MediaPlayer(getCurrentMedia());
+            if (isSupported(norPlayer.getMedia().getSource(), supportedVideo)) {
+                mv = new MediaView(norPlayer);
+            } else {
+                mv = null;
+            }
+
+            this.listener.mediaChanged();
         }
-        
 
         norPlayer.setOnEndOfMedia(new Runnable() {
 
             @Override
             public void run() {
-                if(getCurrentMedia() == null)
+                if (getCurrentMedia() == null) {
                     deleteMedia(getCurrentMedia());
-                
-                if(!repeatCurrent){
-                    if(playIndex == playlist.size()-1){
-                        if(repeatList){
-                            nextClip();
-                        }else{
-                            stopCurrent();
-                            
-                            
-                        }
-                        
-                    }else
-                        nextClip();
-                }                
-                else{
-                    stopCurrent();
-                    playCurrent();
                 }
-                
+
+                if (!repeatCurrent) {
+                    if (playIndex == playlist.size() - 1) {
+                        if (repeatList) {
+                            nextClip();
+                        } else {
+                            stop();
+                            playIndex=0;
+
+                        }
+
+                    } else {
+                        nextClip();
+                    }
+                } else {
+                    stop();
+                    play();
+                }
 
             }
         });
 
     }
 
-    public void playCurrent() {
-        
+    public void play() {
+
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
@@ -484,7 +484,50 @@ public class NORMediaPlayer implements Serializable {
         //this.listener.mediaChanged();
     }
 
-    public void playOrPauseCurrent() {
+    public void play(Media audio) {
+
+        if (this.playlist.isEmpty()) {
+            throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
+
+        } else {
+            if (norPlayer == null && !playlist.contains(audio)) {
+
+            } else if (norPlayer.getMedia().equals(audio)) {
+
+            } else {
+                playIndex = playlist.indexOf(audio);
+                setCurrentToMediaPlayer();
+            }
+
+            norPlayer.play();
+            this.playing = true;
+
+        }
+        //this.listener.mediaChanged();
+    }
+    public void play(int index) {
+
+        if (this.playlist.isEmpty()) {
+            throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
+
+        } else {
+            if (norPlayer == null && playIndex != index) {
+
+            } else if (norPlayer.getMedia().equals(playlist.get(index))) {
+
+            } else {
+                playIndex = index;
+                setCurrentToMediaPlayer();
+            }
+
+            norPlayer.play();
+            this.playing = true;
+
+        }
+        //this.listener.mediaChanged();
+    }
+
+    public void playOrPause() {
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
@@ -498,24 +541,26 @@ public class NORMediaPlayer implements Serializable {
                 norPlayer.pause();
 
             }
-            playOrPause();
+            changePlayOrPause();
         }
     }
 
-    public void stopCurrent() {
+    public void stop() {
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
-        } else {
+        } else if(this.isPlaying()) {
+            
             if (norPlayer == null) {
                 setCurrentToMediaPlayer();
             }
+            
             norPlayer.stop();
             this.playing = false;
         }
     }
 
-    public void pauseCurrent() {
+    public void pause() {
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
@@ -537,25 +582,27 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void nextClip() {
-        stopCurrent();
-        if(this.playIndex == this.playlist.size()-1){
+        stop();
+        if (this.playIndex == this.playlist.size() - 1) {
             this.playIndex = 0;
-        }else
+        } else {
             this.playIndex++;
-        
+        }
+
         setCurrentToMediaPlayer();
-        playCurrent();
+        play();
 
     }
 
     public void prevClip() {
-        stopCurrent();
-        if(this.playIndex == 0){
-            this.playIndex = this.playlist.size()-1;
-        }else
+        stop();
+        if (this.playIndex == 0) {
+            this.playIndex = this.playlist.size() - 1;
+        } else {
             this.playIndex--;
+        }
         setCurrentToMediaPlayer();
-        playCurrent();
+        play();
 
     }
 
@@ -623,30 +670,30 @@ public class NORMediaPlayer implements Serializable {
             b = true;
         }
         if (b) {
-            stopCurrent();
+            stop();
         }
         this.playlist = playlist;
         setCurrentToMediaPlayer();
         if (b) {
-            playCurrent();
+            play();
         }
     }
 
     public void loadPlaylist(File f, boolean changePl) throws FileNotFoundException, IOException {
-        
+
         String path = f.getAbsolutePath();
         String name = f.getName();
         if (name.contains(Character.toString(dot))) {
 
             if (name.endsWith(".npl")) {
                 if (changePl) {
-                    this.playIndex=0;
+                    this.playIndex = 0;
                     changePlaylist(loadNpl(path));
                 } else {
                     ArrayList<Media> tmpArM = loadNpl(path);
                     ArrayList<Object> tmpArO = new ArrayList<Object>();
                     for (Media m : tmpArM) {
-                        tmpArO.add((Object)m);
+                        tmpArO.add((Object) m);
                     }
 
                     addMediaArray(tmpArO);
@@ -724,7 +771,5 @@ public class NORMediaPlayer implements Serializable {
         return false;
 
     }
-
-    
 
 }

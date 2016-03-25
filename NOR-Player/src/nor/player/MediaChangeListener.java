@@ -11,7 +11,7 @@ package nor.player;
  *
  * @author kacpe_000
  */
-public interface someListener {
+public interface MediaChangeListener {
     public void mediaChanged();
     
 }

@@ -45,35 +45,48 @@ import nor.player.NORMediaPlayer.*;
  *
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
-public class NORPlayer extends Application implements someListener {
+public class NORPlayer extends Application implements MediaChangeListener {
 
     Scanner sc = new Scanner(System.in);
 
     private Duration duration;
     MediaView view = new MediaView();
+    MediaPlayer mp ;
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 700, 300);
     Slider slide = new Slider();
     Slider vol = new Slider();
     Slider balanceSlider = new Slider();
     Slider speedSlider = new Slider();
-    NORMediaPlayer playlist = new NORMediaPlayer(this);
+    NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
     DataManager manager = new DataManager();
     Label name = new Label("metadata");
     Label time = new Label("00:00:00");
+    
 
     @Override
     public void start(Stage primaryStage) {
-        try {
-            new MediaPlayer(new NORMediaPlayer().createMedia(new File("NOR.wav"))).play();
-        } catch (Exception e) {
-            System.err.println(e);
-        }
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
+                    mp.play();
+                    
+                } catch (Exception e) {
+                    System.err.println(e);
+                }finally{
+                }
+            }
+        });
 
         Button playB = new Button("Start");
         Button pauseB = new Button("Pause");
         Button stopB = new Button("Stop");
-        Button selectB = new Button("Add");
+        Button addB = new Button("Add");
+        Button openB = new Button("Open");
+
         Button nextB = new Button("Next");
         Button prevB = new Button("Prev");
         Button shuffleB = new Button("Shuffle");
@@ -84,7 +97,7 @@ public class NORPlayer extends Application implements someListener {
 
         initSliders();
 
-        selectB.setOnAction((ActionEvent event) -> {
+        addB.setOnAction((ActionEvent event) -> {
 
             try {
                 new Thread(new Runnable() {
@@ -95,9 +108,39 @@ public class NORPlayer extends Application implements someListener {
                     @Override
                     public void run() {
 
-                        playlist.addMedia(data);
-                        if (!playlist.isPlaying()) {
-                            playlist.playCurrent();
+                        norMediaPlayer.addMedia(data);
+                        if (!norMediaPlayer.isPlaying()) {
+                            norMediaPlayer.play();
+                        }
+                    }
+                }).start();
+
+            } catch (Exception e) {
+                name.setText("ERROR");
+            }
+        });
+
+        openB.setOnAction((ActionEvent event) -> {
+            boolean b = norMediaPlayer.isPlaying();
+           
+            try {
+                new Thread(new Runnable() {
+                    List dataList = manager.chooseMultipleFiles("all");
+
+                    ArrayList<File> data = new ArrayList<File>(dataList);
+
+                    
+                    
+                    @Override
+                    public void run() {
+                   
+                        norMediaPlayer.clearPlaylist();
+
+                        
+
+                        norMediaPlayer.addMedia(data);
+                        if (!b) {
+                            norMediaPlayer.play();
                         }
                     }
                 }).start();
@@ -108,47 +151,48 @@ public class NORPlayer extends Application implements someListener {
         });
 
         playB.setOnAction((ActionEvent event) -> {
-            playlist.playCurrent();
+            norMediaPlayer.play();
 
         });
         pauseB.setOnAction((ActionEvent event) -> {
-            playlist.pauseCurrent();
+            norMediaPlayer.pause();
         });
 
         nextB.setOnAction((ActionEvent event) -> {
-            playlist.nextClip();
+            norMediaPlayer.nextClip();
 
         });
 
         prevB.setOnAction((ActionEvent event) -> {
-            playlist.prevClip();
+            norMediaPlayer.prevClip();
 
         });
 
         stopB.setOnAction((ActionEvent event) -> {
-            playlist.stopCurrent();
+            norMediaPlayer.stop();
         });
 
         savePlaylistButton.setOnAction((ActionEvent event) -> {
 
             File f = manager.savePlaylist();
-            playlist.savePlaylist(f.getAbsolutePath());
+            norMediaPlayer.savePlaylist(f.getAbsolutePath());
         });
         loadPlaylistButton.setOnAction((ActionEvent event) -> {
             File f = manager.chooseSingleFile("playlist");
             try {
-                playlist.loadPlaylist(f, true);
+                norMediaPlayer.loadPlaylist(f, true);
             } catch (IOException ex) {
 
             }
         });
         shuffleB.setOnAction((ActionEvent event) -> {
-            playlist.shuffle();
+            norMediaPlayer.shuffle();
         });
 
         HBox chooseFile = new HBox();
 
-        chooseFile.getChildren().add(selectB);
+        chooseFile.getChildren().add(addB);
+        chooseFile.getChildren().add(openB);
         chooseFile.getChildren().addAll(l1);
         HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, savePlaylistButton, loadPlaylistButton, shuffleB);
 
@@ -179,15 +223,27 @@ public class NORPlayer extends Application implements someListener {
 
             }
         });
+        speedSlider.setOnScroll(new EventHandler<ScrollEvent>() {
+
+            @Override
+            public void handle(ScrollEvent event) {
+                if (event.getDeltaY() > 0) {
+                    speedSlider.setValue(speedSlider.getValue() + 12.5);
+                } else {
+                    speedSlider.setValue(speedSlider.getValue() - 12.5);
+                }
+
+            }
+        });
 
         slide.setOnScroll(new EventHandler<ScrollEvent>() {
 
             @Override
             public void handle(ScrollEvent event) {
                 if (event.getDeltaY() > 0) {
-                    playlist.getNorPlayer().seek(Duration.millis(slide.getValue() + 5000));
+                    norMediaPlayer.getNorPlayer().seek(Duration.millis(slide.getValue() + 5000));
                 } else {
-                    playlist.getNorPlayer().seek(Duration.millis(slide.getValue() - 5000));
+                    norMediaPlayer.getNorPlayer().seek(Duration.millis(slide.getValue() - 5000));
                 }
 
             }
@@ -196,7 +252,7 @@ public class NORPlayer extends Application implements someListener {
         File lastSession = new File("lastSession.npl");
         if (lastSession.isFile()) {
             try {
-                playlist.loadPlaylist(lastSession, true);
+                norMediaPlayer.loadPlaylist(lastSession, true);
             } catch (IOException ex) {
             }
         }
@@ -212,7 +268,7 @@ public class NORPlayer extends Application implements someListener {
 
             @Override
             public void handle(WindowEvent event) {
-                playlist.savePlaylist("lastSession.npl");
+                norMediaPlayer.savePlaylist("lastSession.npl");
 
             }
         });
@@ -221,7 +277,7 @@ public class NORPlayer extends Application implements someListener {
     }
 
     public void chName() {
-        ObservableMap<String, Object> metadata = this.playlist.getCurrentMedia().getMetadata();
+        ObservableMap<String, Object> metadata = this.norMediaPlayer.getCurrentMedia().getMetadata();
 
         this.name.setText(metadata.toString());
     }
@@ -233,24 +289,24 @@ public class NORPlayer extends Application implements someListener {
     @Override
     public void mediaChanged() {
 
-        this.playlist.getNorPlayer().setOnReady(new Runnable() {
+        this.norMediaPlayer.getNorPlayer().setOnReady(new Runnable() {
 
             @Override
             public void run() {
-                if (playlist.isVideo()) {
-                    view.setMediaPlayer(playlist.getNorPlayer());
+                if (norMediaPlayer.isVideo()) {
+                    view.setMediaPlayer(norMediaPlayer.getNorPlayer());
                 }
                 chName();
 
-                System.out.println(playlist.getNorPlayer().getMedia().getSource());
-                playlist.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
-                playlist.getNorPlayer().balanceProperty().bind(balanceSlider.valueProperty().divide(100.0));
-                playlist.getNorPlayer().rateProperty().bind(speedSlider.valueProperty().divide(100.0));
+                System.out.println(norMediaPlayer.getNorPlayer().getMedia().getSource());
+                norMediaPlayer.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
+                norMediaPlayer.getNorPlayer().balanceProperty().bind(balanceSlider.valueProperty().divide(100.0));
+                norMediaPlayer.getNorPlayer().rateProperty().bind(speedSlider.valueProperty().divide(100.0));
 
-                playlist.getNorPlayer().currentTimeProperty().addListener((Observable observable) -> {
-                    int min = (int) playlist.getNorPlayer().getCurrentTime().toMinutes();
-                    int sec = (int) playlist.getNorPlayer().getCurrentTime().toSeconds() % 60;
-                    int mili = (int) ((playlist.getNorPlayer().getCurrentTime().toMillis() % 1000));
+                norMediaPlayer.getNorPlayer().currentTimeProperty().addListener((Observable observable) -> {
+                    int min = (int) norMediaPlayer.getNorPlayer().getCurrentTime().toMinutes();
+                    int sec = (int) norMediaPlayer.getNorPlayer().getCurrentTime().toSeconds() % 60;
+                    int mili = (int) ((norMediaPlayer.getNorPlayer().getCurrentTime().toMillis() % 1000));
                     mili /= 100;
                     DecimalFormat df = new DecimalFormat("00");
 
@@ -260,7 +316,7 @@ public class NORPlayer extends Application implements someListener {
 
                 do {
                     try {
-                        dur = playlist.getNorPlayer().getTotalDuration().toMillis();
+                        dur = norMediaPlayer.getNorPlayer().getTotalDuration().toMillis();
                     } catch (Exception e) {
                         System.err.println(e);
                     }
@@ -270,18 +326,18 @@ public class NORPlayer extends Application implements someListener {
 
                 InvalidationListener Ili = (Observable observable) -> {
 
-                    slide.setValue(playlist.getNorPlayer().getCurrentTime().toMillis());
+                    slide.setValue(norMediaPlayer.getNorPlayer().getCurrentTime().toMillis());
                 };
 
-                playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
+                norMediaPlayer.getNorPlayer().currentTimeProperty().addListener(Ili);
                 slide.setOnMousePressed((MouseEvent event) -> {
-                    playlist.getNorPlayer().currentTimeProperty().removeListener(Ili);
+                    norMediaPlayer.getNorPlayer().currentTimeProperty().removeListener(Ili);
 
                 });
 
                 slide.setOnMouseReleased((MouseEvent event) -> {
-                    playlist.getNorPlayer().seek(Duration.millis(slide.getValue()));
-                    playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
+                    norMediaPlayer.getNorPlayer().seek(Duration.millis(slide.getValue()));
+                    norMediaPlayer.getNorPlayer().currentTimeProperty().addListener(Ili);
                 });
 
             }
