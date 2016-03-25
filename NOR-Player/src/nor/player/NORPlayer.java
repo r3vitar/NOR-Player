@@ -116,7 +116,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }).start();
 
             } catch (Exception e) {
-                name.setText("ERROR");
+                System.err.println(e);
             }
         });
 
@@ -143,7 +143,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }).start();
 
             } catch (Exception e) {
-                name.setText("ERROR");
+                System.err.println(e);
             }
         });
 
