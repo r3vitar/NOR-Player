@@ -33,6 +33,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -71,7 +72,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
             public void run() {
                 try {
                     mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
+                   
                     mp.play();
+                     
 
                 } catch (Exception e) {
                     System.err.println(e);
