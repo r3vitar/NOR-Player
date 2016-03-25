@@ -51,7 +51,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private Duration duration;
     MediaView view = new MediaView();
-    MediaPlayer mp ;
+    MediaPlayer mp;
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 700, 300);
     Slider slide = new Slider();
@@ -62,7 +62,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
     DataManager manager = new DataManager();
     Label name = new Label("metadata");
     Label time = new Label("00:00:00");
-    
 
     @Override
     public void start(Stage primaryStage) {
@@ -73,10 +72,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 try {
                     mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
                     mp.play();
-                    
+
                 } catch (Exception e) {
                     System.err.println(e);
-                }finally{
+                } finally {
                 }
             }
         });
@@ -107,10 +106,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                     @Override
                     public void run() {
-
-                        norMediaPlayer.addMedia(data);
-                        if (!norMediaPlayer.isPlaying()) {
-                            norMediaPlayer.play();
+                        if (data != null && !data.isEmpty()) {
+                            norMediaPlayer.addMedia(data);
+                            if (!norMediaPlayer.isPlaying()) {
+                                norMediaPlayer.play();
+                            }
                         }
                     }
                 }).start();
@@ -122,25 +122,22 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         openB.setOnAction((ActionEvent event) -> {
             boolean b = norMediaPlayer.isPlaying();
-           
+
             try {
                 new Thread(new Runnable() {
-                    List dataList = manager.chooseMultipleFiles("all");
+                    List dataList = manager.chooseMultipleFiles("media");
 
                     ArrayList<File> data = new ArrayList<File>(dataList);
 
-                    
-                    
                     @Override
                     public void run() {
-                   
-                        norMediaPlayer.clearPlaylist();
+                        if (data != null && !data.isEmpty()) {
+                            norMediaPlayer.clearPlaylist();
 
-                        
-
-                        norMediaPlayer.addMedia(data);
-                        if (!b) {
-                            norMediaPlayer.play();
+                            norMediaPlayer.addMedia(data);
+                            if (!b) {
+                                norMediaPlayer.play();
+                            }
                         }
                     }
                 }).start();
