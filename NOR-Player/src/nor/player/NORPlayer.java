@@ -72,9 +72,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
             public void run() {
                 try {
                     mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
-                   
+
                     mp.play();
-                     
 
                 } catch (Exception e) {
                     System.err.println(e);
@@ -127,23 +126,19 @@ public class NORPlayer extends Application implements MediaChangeListener {
             boolean b = norMediaPlayer.isPlaying();
 
             try {
-                new Thread(new Runnable() {
-                    List dataList = manager.chooseMultipleFiles("media");
 
-                    ArrayList<File> data = new ArrayList<File>(dataList);
+                List dataList = manager.chooseMultipleFiles("media");
+                ArrayList<File> data = new ArrayList<File>(dataList);
 
-                    @Override
-                    public void run() {
-                        if (data != null && !data.isEmpty()) {
-                            norMediaPlayer.clearPlaylist();
+                if (data != null && !data.isEmpty()) {
 
-                            norMediaPlayer.addMedia(data);
-                            if (!b) {
-                                norMediaPlayer.play();
-                            }
-                        }
+                    norMediaPlayer.clearPlaylist();
+
+                    norMediaPlayer.addMedia(data);
+                    if (b) {
+                        norMediaPlayer.play();
                     }
-                }).start();
+                }
 
             } catch (Exception e) {
                 System.err.println(e);

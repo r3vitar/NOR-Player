@@ -222,6 +222,7 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void addMedia(ArrayList<File> data) {
+
         for (File f : data) {
             String name = f.getName();
             if (isSupported(name, this.supportedPlaylists)) {
@@ -238,9 +239,14 @@ public class NORMediaPlayer implements Serializable {
                 this.addMedia(f);
             }
         }
+        if (this.playlist == null) {
+            setCurrentToMediaPlayer();
+        }
     }
 
     public void addMedia(File file) {
+        
+        
         Media m = createMedia(file);
         if (m != null) {
             this.addMedia(m);
@@ -334,13 +340,17 @@ public class NORMediaPlayer implements Serializable {
     public void deletePlaylist() {
         stop();
         this.playlist.removeAll(this.playlist);
+        this.playIndex = 0;
         norPlayer = null;
     }
 
     public void clearPlaylist() {
         stop();
-        this.playlist.clear();
         norPlayer = null;
+        this.playlist.clear();
+        this.playIndex = 0;
+
+        
     }
 
     public void sort() {
@@ -424,8 +434,7 @@ public class NORMediaPlayer implements Serializable {
 
     private void setCurrentToMediaPlayer() {
 
-        if (getCurrentMedia() == null); 
-        else {
+        if (getCurrentMedia() == null); else {
             norPlayer = new MediaPlayer(getCurrentMedia());
             if (isSupported(norPlayer.getMedia().getSource(), supportedVideo)) {
                 mv = new MediaView(norPlayer);
@@ -450,7 +459,7 @@ public class NORMediaPlayer implements Serializable {
                             nextClip();
                         } else {
                             stop();
-                            playIndex=0;
+                            playIndex = 0;
 
                         }
 
@@ -505,6 +514,7 @@ public class NORMediaPlayer implements Serializable {
         }
         //this.listener.mediaChanged();
     }
+
     public void play(int index) {
 
         if (this.playlist.isEmpty()) {
@@ -549,12 +559,12 @@ public class NORMediaPlayer implements Serializable {
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
-        } else if(this.isPlaying()) {
-            
+        } else if (this.isPlaying()) {
+
             if (norPlayer == null) {
                 setCurrentToMediaPlayer();
             }
-            
+
             norPlayer.stop();
             this.playing = false;
         }
@@ -664,7 +674,7 @@ public class NORMediaPlayer implements Serializable {
         }
     }
 
-    private void changePlaylist(ArrayList<Media> playlist) {
+    public void changePlaylist(ArrayList<Media> playlist) {
         boolean b = false;
         if (this.isPlaying()) {
             b = true;
@@ -672,6 +682,7 @@ public class NORMediaPlayer implements Serializable {
         if (b) {
             stop();
         }
+        this.playIndex = 0;
         this.playlist = playlist;
         setCurrentToMediaPlayer();
         if (b) {
