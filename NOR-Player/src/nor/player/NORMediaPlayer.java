@@ -164,6 +164,7 @@ public class NORMediaPlayer implements Serializable {
 
     public NORMediaPlayer(Object o) {
         this.playlist = new ArrayList<Media>();
+        
         this.listener = (someListener) o;
 
     }
@@ -419,6 +420,8 @@ public class NORMediaPlayer implements Serializable {
 
     private void setCurrentToMediaPlayer() {
        
+        if(getCurrentMedia() == null);
+        else{
         norPlayer = new MediaPlayer(getCurrentMedia());
         if(isSupported(norPlayer.getMedia().getSource(), supportedVideo)){
             mv = new MediaView(norPlayer);
@@ -426,6 +429,7 @@ public class NORMediaPlayer implements Serializable {
             mv= null;
         
         this.listener.mediaChanged();
+        }
         
 
         norPlayer.setOnEndOfMedia(new Runnable() {
@@ -434,8 +438,17 @@ public class NORMediaPlayer implements Serializable {
             public void run() {
                 if(getCurrentMedia() == null)
                     deleteMedia(getCurrentMedia());
-                if(!repeatCurrent)
-                    nextClip();
+                
+                if(!repeatCurrent){
+                    if(playIndex == playlist.size()-1){
+                        if(repeatList){
+                            nextClip();
+                        }else
+                            stopCurrent();
+                    }else
+                        nextClip();
+                }
+                    
                 else{
                     stopCurrent();
                     playCurrent();
@@ -703,5 +716,7 @@ public class NORMediaPlayer implements Serializable {
         return false;
 
     }
+
+    
 
 }

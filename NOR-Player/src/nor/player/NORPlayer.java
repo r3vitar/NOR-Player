@@ -49,12 +49,13 @@ public class NORPlayer extends Application implements someListener {
     Scanner sc = new Scanner(System.in);
 
     private Duration duration;
-    MediaView view;
+    MediaView view = new MediaView();
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 700, 300);
     Slider slide = new Slider();
     Slider vol = new Slider();
     Slider balanceSlider = new Slider();
+    Slider speedSlider = new Slider();
     NORMediaPlayer playlist = new NORMediaPlayer(this);
     DataManager manager = new DataManager();
     Label name = new Label("metadata");
@@ -62,10 +63,19 @@ public class NORPlayer extends Application implements someListener {
 
     @Override
     public void start(Stage primaryStage) {
-        File lastSession = new File("lastSession.npl");
-        if (lastSession.isFile()) {
-            playlist.addMedia(lastSession);
-        }
+        
+        
+        this.playlist.addMedia(new File("NOR.wav"));
+        
+//        File lastSession = new File("lastSession.npl");
+//        if (lastSession.isFile()) {
+//            try {
+//                playlist.loadPlaylist(lastSession, true);
+//            } catch (IOException ex) {
+//            }
+//        }
+        
+        
 
         Button playB = new Button("Start");
         Button pauseB = new Button("Pause");
@@ -74,34 +84,17 @@ public class NORPlayer extends Application implements someListener {
         Button nextB = new Button("Next");
         Button prevB = new Button("Prev");
         Button shuffleB = new Button("Shuffle");
-        vol.setOrientation(Orientation.VERTICAL);
-        vol.setMax(100);
-        vol.setMin(0);
-        vol.setValue(100);
-          vol.setShowTickLabels(true);
-        vol.setShowTickMarks(true);
-        vol.setMajorTickUnit(25);
-        vol.setMinorTickCount(5);
-        
-        
-        vol.setSnapToTicks(true);
-        balanceSlider.setMax(100);
-        balanceSlider.setMin(-100);
-        balanceSlider.setValue(0);
-        balanceSlider.setMaxWidth(100);
-        
-        balanceSlider.setMajorTickUnit(100);
-        balanceSlider.setMinorTickCount(3);
-        balanceSlider.setShowTickMarks(true);
 
-        balanceSlider.setSnapToTicks(true);
-      
+        
 
         Button savePlaylistButton = new Button("savePlaylist");
         Button loadPlaylistButton = new Button("loadPlaylist");
         Label l1 = new Label("test");
+        
+        
+        initSliders();
 
-        view = new MediaView();
+        
 
         selectB.setOnAction((ActionEvent event) -> {
 
@@ -198,6 +191,7 @@ public class NORPlayer extends Application implements someListener {
 
             }
         });
+        
         slide.setOnScroll(new EventHandler<ScrollEvent>() {
 
             @Override
@@ -211,7 +205,7 @@ public class NORPlayer extends Application implements someListener {
             }
         });
         bp1.setRight(vol);
-        root.setTop(new VBox(time, name, balanceSlider));
+        root.setTop(new VBox(time, name, balanceSlider, speedSlider));
         root.setCenter(view);
         root.setBottom(bp1);
 
@@ -246,13 +240,15 @@ public class NORPlayer extends Application implements someListener {
             @Override
             public void run() {
                 if (playlist.isVideo()) {
-                    view = new MediaView(playlist.getNorPlayer());
+                    view.setMediaPlayer(playlist.getNorPlayer());
                 }
                 chName();
 
                 System.out.println(playlist.getNorPlayer().getMedia().getSource());
                 playlist.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
                 playlist.getNorPlayer().balanceProperty().bind(balanceSlider.valueProperty().divide(100.0));
+                playlist.getNorPlayer().rateProperty().bind(speedSlider.valueProperty().divide(100.0));
+
                 playlist.getNorPlayer().currentTimeProperty().addListener((Observable observable) -> {
                     int min = (int) playlist.getNorPlayer().getCurrentTime().toMinutes();
                     int sec = (int) playlist.getNorPlayer().getCurrentTime().toSeconds() % 60;
@@ -282,7 +278,7 @@ public class NORPlayer extends Application implements someListener {
                 playlist.getNorPlayer().currentTimeProperty().addListener(Ili);
                 slide.setOnMousePressed((MouseEvent event) -> {
                     playlist.getNorPlayer().currentTimeProperty().removeListener(Ili);
-                    
+
                 });
 
                 slide.setOnMouseReleased((MouseEvent event) -> {
@@ -292,6 +288,36 @@ public class NORPlayer extends Application implements someListener {
 
             }
         });
+
+    }
+
+    private void initSliders() {
+
+        vol.setOrientation(Orientation.VERTICAL);
+        vol.setMax(100);
+        vol.setMin(0);
+        vol.setValue(100);
+        vol.setShowTickLabels(true);
+        vol.setShowTickMarks(true);
+        vol.setMajorTickUnit(25);
+        vol.setMinorTickCount(5);
+        vol.setSnapToTicks(true);
+        balanceSlider.setMax(100);
+        balanceSlider.setMin(-100);
+        balanceSlider.setValue(0);
+        balanceSlider.setMaxWidth(100);
+        balanceSlider.setMajorTickUnit(100);
+        balanceSlider.setMinorTickCount(3);
+        balanceSlider.setShowTickMarks(true);
+        balanceSlider.setSnapToTicks(true);
+        speedSlider.setMax(150);
+        speedSlider.setMin(50);
+        speedSlider.setValue(100);
+        speedSlider.setMajorTickUnit(50);
+        speedSlider.setMinorTickCount(3);
+        speedSlider.setShowTickMarks(true);
+        speedSlider.setSnapToTicks(true);
+        speedSlider.setMaxWidth(100);
 
     }
 
