@@ -39,6 +39,7 @@ import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import nor.player.NORMediaPlayer.*;
 
 /**
  *
@@ -63,9 +64,12 @@ public class NORPlayer extends Application implements someListener {
 
     @Override
     public void start(Stage primaryStage) {
+        try{
+        new MediaPlayer(new NORMediaPlayer().createMedia(new File("NOR.wav"))).play();
+        }catch(Exception e){
+            System.err.println(e);
+        }
         
-        
-        this.playlist.addMedia(new File("NOR.wav"));
         
 //        File lastSession = new File("lastSession.npl");
 //        if (lastSession.isFile()) {

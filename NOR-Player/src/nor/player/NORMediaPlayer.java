@@ -161,6 +161,10 @@ public class NORMediaPlayer implements Serializable {
     public void setPlaylistName(String playlistName) {
         this.playlistName = playlistName;
     }
+    
+    public NORMediaPlayer(){
+        
+    }
 
     public NORMediaPlayer(Object o) {
         this.playlist = new ArrayList<Media>();
@@ -243,13 +247,13 @@ public class NORMediaPlayer implements Serializable {
         }
     }
 
-    private Media createMedia(String filePath) {
+    public Media createMedia(String filePath) {
 
         return new Media(filePath);
 
     }
 
-    private Media createMedia(File file) {
+    public Media createMedia(File file) {
         if (isSupported(file.getName(), supportedMedia)) {
             return new Media(file.toURI().toString().replace('\\', '/'));
         }
@@ -443,12 +447,15 @@ public class NORMediaPlayer implements Serializable {
                     if(playIndex == playlist.size()-1){
                         if(repeatList){
                             nextClip();
-                        }else
+                        }else{
                             stopCurrent();
+                            
+                            
+                        }
+                        
                     }else
                         nextClip();
-                }
-                    
+                }                
                 else{
                     stopCurrent();
                     playCurrent();
@@ -461,7 +468,7 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void playCurrent() {
-
+        
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
@@ -474,6 +481,7 @@ public class NORMediaPlayer implements Serializable {
             this.playing = true;
 
         }
+        //this.listener.mediaChanged();
     }
 
     public void playOrPauseCurrent() {
