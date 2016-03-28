@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +40,7 @@ import javax.activation.UnsupportedDataTypeException;
  */
 public class NORMediaPlayer implements Serializable {
 
+    public long serialVerUID = 2L;
     private ArrayList<Media> playlist;
     private boolean repeatList = true;
     private boolean repeatCurrent = false;
@@ -679,25 +682,45 @@ public class NORMediaPlayer implements Serializable {
         }
     }
 
-    public void savePlaylist(String name) {
+    public void savePlaylist(String path) {
 
         OutputStream fos = null;
-        this.playlistName = name;
+        this.playlistName = path;
         try {
-            if (name.endsWith(".npl")) {
+            try {
+                File f = new File(path);
+                try {
+                    this.playlistName = f.getName().split("\\.")[0];
+                } catch (Exception e) {
+                    this.playlistName = f.getName();
+                }
+
+            } catch (Exception e) {
+                this.playlistName = path;
+            }
+
+            if (path.endsWith(".npl")) {
 
             } else {
-                name = name + ".npl";
+                path = path + ".npl";
             }
-            fos = new FileOutputStream(name);
+            fos = new FileOutputStream(path);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
+            HashMap output = new HashMap();
 
             ArrayList<String> tmpList = new ArrayList<String>();
             for (Media m : this.playlist) {
                 tmpList.add(m.getSource());
             }
+            output.put("list", tmpList);
+            output.put("index", this.playIndex);
+            output.put("name", this.playlistName);
+            output.put("repeatList", this.repeatList);
+            output.put("repeatCurrent", this.repeatCurrent);
+            output.put("path", path);
+            output.put("ver", this.serialVerUID);
 
-            oos.writeObject(tmpList);
+            oos.writeObject(output);
 
             oos.flush();
 
@@ -707,21 +730,12 @@ public class NORMediaPlayer implements Serializable {
         } finally {
             try {
                 fos.close();
+                this.listener.playlistChanged();
             } catch (Exception ee) {
                 System.out.println(ee);
 
             }
-            try {
-                File f = new File(name);
-                try {
-                    this.playlistName = f.getName().split("\\.")[0];
-                } catch (Exception e) {
-                    this.playlistName = f.getName();
-                }
 
-            } catch (Exception e) {
-                this.playlistName = name;
-            }
         }
     }
 
@@ -808,16 +822,23 @@ public class NORMediaPlayer implements Serializable {
         try {
             fis = new FileInputStream(path);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            ArrayList<String> tmpList = (ArrayList<String>) ois.readObject();
-            ArrayList<Media> newPlaylist = new ArrayList<Media>();
-            for (String s : tmpList) {
-                Media m = createMedia(s);
-                if (m != null) {
-                    newPlaylist.add(m);
+            HashMap input = (HashMap) ois.readObject();
+            if ((long)input.get("ver") == this.serialVerUID) {
+                ArrayList<String> tmpList = (ArrayList<String>) input.get("list");
+                this.repeatCurrent = (boolean) input.get("repeatCurrent");
+                this.repeatList = (boolean) input.get("repeatList");
+                this.playIndex = (int) input.get("index");
+                this.playlistName = (String) input.get("name");
+                ArrayList<Media> newPlaylist = new ArrayList<Media>();
+                for (String s : tmpList) {
+                    Media m = createMedia(s);
+                    if (m != null) {
+                        newPlaylist.add(m);
 
+                    }
                 }
+                return newPlaylist;
             }
-            return newPlaylist;
 
         } catch (IOException e) {
             System.out.println(e);
