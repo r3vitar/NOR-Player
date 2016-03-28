@@ -96,6 +96,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         Label l1 = new Label("test");
 
         initSliders();
+        showActivePlaylist(new Stage());
 
         addB.setOnAction((ActionEvent event) -> {
 
@@ -285,6 +286,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
         primaryStage.show();
     }
 
+    private void showActivePlaylist(Stage playlistStage){
+        String playlistTitle = norMediaPlayer.getPlaylistName();
+        ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
+        
+        
+        playlistStage.setTitle(playlistTitle);
+        playlistStage.show();
+    }
+    
     public void chName() {
         ObservableMap<String, Object> metadata = this.norMediaPlayer.getCurrentMedia().getMetadata();
 
