@@ -201,7 +201,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
         stopB.setOnAction((ActionEvent event) -> {
-            norMediaPlayer.stop();
+            if(norMediaPlayer.isPlaying())
+                norMediaPlayer.stop();
+            else{
+                norMediaPlayer.play();
+                norMediaPlayer.stop();
+            }
             pauseB.setText("Play");
 
         });
