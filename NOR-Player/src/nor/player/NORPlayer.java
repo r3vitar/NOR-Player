@@ -104,15 +104,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
         Label l1 = new Label("test");
 
         initSliders();
-        
+
         Button playlistStageB = new Button("Playlist");
-        playlistStageB.setOnAction(new EventHandler(){
+        playlistStageB.setOnAction(new EventHandler() {
             @Override
             public void handle(Event event) {
-                showActivePlaylist(norMediaPlayer.getPlaylistName());
+                showActivePlaylist();
             }
         });
-        
 
         addB.setOnAction((ActionEvent event) -> {
 
@@ -302,34 +301,40 @@ public class NORPlayer extends Application implements MediaChangeListener {
         primaryStage.show();
     }
 
-    private void showActivePlaylist(String playlistTitle){
-        ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
-        ObservableList<LineItem> data = FXCollections.observableArrayList();
-        
-        /** FEHLER
-        for(int i = 0; i < playlistMedia.size(); i++){
-            data.add(new LineItem("TEST", "TE"));
+    private void showActivePlaylist() {
+        if (playlistStage.isShowing()) {
+playlistStage.close();
+        } else {
+            
+            playlistStage.show();
         }
-        **/
-        
-        TableView playlistTable = new TableView();
-        TableColumn 
-                titleColumn = new TableColumn("Name"), 
-                interpretColumn = new TableColumn("Interpret");
-        titleColumn.setCellValueFactory(new PropertyValueFactory<LineItem, String>("name"));
-        interpretColumn.setCellValueFactory(new PropertyValueFactory<LineItem, String>("interpret"));
-       
-        playlistTable.getColumns().addAll(titleColumn, interpretColumn);
-        playlistTable.setItems(data);
-        
-        Pane root = new Pane();
-        root.getChildren().add(playlistTable);
-        Scene playlistScene = new Scene(root);
-        playlistStage.setScene(playlistScene);
-        playlistStage.setTitle(playlistTitle);
-        playlistStage.show();
     }
     
+    private void initPlaylist(String playlistTitle){
+    ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
+            ObservableList<LineItem> data = FXCollections.observableArrayList();
+
+            /**
+             * FEHLER for(int i = 0; i < playlistMedia.size(); i++){
+             * data.add(new LineItem("TEST", "TE")); }
+        *
+             */
+            TableView playlistTable = new TableView();
+            TableColumn titleColumn = new TableColumn("Name"),
+                    interpretColumn = new TableColumn("Interpret");
+            titleColumn.setCellValueFactory(new PropertyValueFactory<LineItem, String>("name"));
+            interpretColumn.setCellValueFactory(new PropertyValueFactory<LineItem, String>("interpret"));
+
+            playlistTable.getColumns().addAll(titleColumn, interpretColumn);
+            playlistTable.setItems(data);
+
+            Pane root = new Pane();
+            root.getChildren().add(playlistTable);
+            Scene playlistScene = new Scene(root);
+            playlistStage.setScene(playlistScene);
+            playlistStage.setTitle(playlistTitle);
+    }
+
     public void chName() {
         ObservableMap<String, Object> metadata = this.norMediaPlayer.getCurrentMedia().getMetadata();
 
@@ -393,6 +398,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     norMediaPlayer.getNorPlayer().seek(Duration.millis(slide.getValue()));
                     norMediaPlayer.getNorPlayer().currentTimeProperty().addListener(Ili);
                 });
+                
+                
 
             }
         });
@@ -428,8 +435,21 @@ public class NORPlayer extends Application implements MediaChangeListener {
         speedSlider.setMaxWidth(100);
 
     }
+
+    @Override
+    public void playlistChanged() {
+        this.norMediaPlayer.getNorPlayer().setOnReady(new Runnable() {
+
+            @Override
+            public void run() {
+                initPlaylist(norMediaPlayer.getPlaylistName());
+            }
+        });
+    }
 }
-class LineItem{
+
+class LineItem {
+
     private String name;
     private String interpret;
 
@@ -453,5 +473,5 @@ class LineItem{
     public void setInterpret(String interpret) {
         this.interpret = interpret;
     }
-    
+
 }

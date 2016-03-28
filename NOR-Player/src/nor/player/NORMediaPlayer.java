@@ -49,7 +49,7 @@ public class NORMediaPlayer implements Serializable {
     private MediaView mv;
     String[] supportedAudio = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac"};
     String[] supportedMedia = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
-    String[] supportedPlaylists = {".npl", ".m3u", ".m3u8", ".pls"};
+    String[] supportedPlaylists = {".npl"/*, ".m3u", ".m3u8", ".pls"*/ };
     String[] supportedVideo = {".mp4", ".avi", ".mkv"};
     private int playIndex = 0;
 

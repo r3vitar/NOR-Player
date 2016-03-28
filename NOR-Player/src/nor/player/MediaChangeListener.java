@@ -13,5 +13,6 @@ package nor.player;
  */
 public interface MediaChangeListener {
     public void mediaChanged();
+    public void playlistChanged();
     
 }
