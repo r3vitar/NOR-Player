@@ -255,8 +255,14 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public Media createMedia(String filePath) {
+        Media m;
+        try {
+            m = new Media(filePath);
+        } catch (Exception e) {
+            return null;
+        }
 
-        return new Media(filePath);
+        return m;
 
     }
 
@@ -420,7 +426,7 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public Media getCurrentMedia() {
-        if (this.playlist.isEmpty()) {
+        if (this.playlist.isEmpty() || this.playlist.size() <= this.playIndex) {
             return null;
         } else {
             return this.playlist.get(this.playIndex);
@@ -447,36 +453,37 @@ public class NORMediaPlayer implements Serializable {
 
             this.listener.mediaChanged();
         }
+        if (!isEmpty()) {
+            norPlayer.setOnEndOfMedia(new Runnable() {
 
-        norPlayer.setOnEndOfMedia(new Runnable() {
+                @Override
+                public void run() {
 
-            @Override
-            public void run() {
-                if (getCurrentMedia() == null) {
-                    deleteMedia(getCurrentMedia());
-                }
-
-                if (!repeatCurrent) {
-                    if (playIndex == playlist.size() - 1) {
-                        if (repeatList) {
-                            nextClip();
-                        } else {
-                            stop();
-                            playIndex = 0;
-
-                        }
-
-                    } else {
-                        nextClip();
+                    if (getCurrentMedia() == null) {
+                        deleteMedia(getCurrentMedia());
                     }
-                } else {
-                    stop();
-                    play();
+
+                    if (!repeatCurrent) {
+                        if (playIndex == playlist.size() - 1) {
+                            if (repeatList) {
+                                nextClip();
+                            } else {
+                                stop();
+                                playIndex = 0;
+
+                            }
+
+                        } else {
+                            nextClip();
+                        }
+                    } else {
+                        stop();
+                        play();
+                    }
                 }
 
-            }
-        });
-
+            });
+        }
     }
 
     public void play() {
@@ -739,7 +746,7 @@ public class NORMediaPlayer implements Serializable {
             } catch (Exception e) {
                 this.playlistName = name;
             }
-        }else{
+        } else {
             throw new UnsupportedDataTypeException("FileFormat not Supported");
         }
 
