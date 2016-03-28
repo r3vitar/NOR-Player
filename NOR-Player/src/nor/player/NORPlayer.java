@@ -15,6 +15,8 @@ import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableNumberValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -24,8 +26,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import static javafx.scene.input.KeyCode.T;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -33,6 +37,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.AudioClip;
@@ -299,11 +304,28 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private void showActivePlaylist(String playlistTitle){
         ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
+        ObservableList<LineItem> data = FXCollections.observableArrayList();
+        
+        /** FEHLER
+        for(int i = 0; i < playlistMedia.size(); i++){
+            data.add(new LineItem("TEST", "TE"));
+        }
+        **/
         
         TableView playlistTable = new TableView();
+        TableColumn 
+                titleColumn = new TableColumn("Name"), 
+                interpretColumn = new TableColumn("Interpret");
+        titleColumn.setCellValueFactory(new PropertyValueFactory<LineItem, String>("name"));
+        interpretColumn.setCellValueFactory(new PropertyValueFactory<LineItem, String>("interpret"));
+       
+        playlistTable.getColumns().addAll(titleColumn, interpretColumn);
+        playlistTable.setItems(data);
         
-        
-        
+        Pane root = new Pane();
+        root.getChildren().add(playlistTable);
+        Scene playlistScene = new Scene(root);
+        playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
         playlistStage.show();
     }
@@ -406,5 +428,30 @@ public class NORPlayer extends Application implements MediaChangeListener {
         speedSlider.setMaxWidth(100);
 
     }
+}
+class LineItem{
+    private String name;
+    private String interpret;
 
+    public LineItem(String name, String interpret) {
+        this.name = name;
+        this.interpret = interpret;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getInterpret() {
+        return interpret;
+    }
+
+    public void setInterpret(String interpret) {
+        this.interpret = interpret;
+    }
+    
 }
