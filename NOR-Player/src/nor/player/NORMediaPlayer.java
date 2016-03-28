@@ -282,7 +282,9 @@ public class NORMediaPlayer implements Serializable {
 
         } else if (mediaArray.get(0) instanceof File) {
             for (Object f : mediaArray) {
-                this.addMedia(createMedia((File) f));
+                Media m = createMedia((File) f);
+                if(m != null)
+                    this.addMedia(m);
 
             }
 
