@@ -17,12 +17,14 @@ import javafx.beans.Observable;
 import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import static javafx.scene.input.KeyCode.T;
 import javafx.scene.input.MouseDragEvent;
@@ -62,6 +64,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     DataManager manager = new DataManager();
     Label name = new Label("metadata");
     Label time = new Label("00:00:00");
+    Stage playlistStage = new Stage();
 
     @Override
     public void start(Stage primaryStage) {
@@ -96,7 +99,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
         Label l1 = new Label("test");
 
         initSliders();
-        showActivePlaylist(new Stage());
+        
+        Button playlistStageB = new Button("Playlist");
+        playlistStageB.setOnAction(new EventHandler(){
+            @Override
+            public void handle(Event event) {
+                showActivePlaylist(norMediaPlayer.getPlaylistName());
+            }
+        });
+        
 
         addB.setOnAction((ActionEvent event) -> {
 
@@ -207,7 +218,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, savePlaylistButton, loadPlaylistButton, shuffleB);
 
         VBox bottomB;
-        bottomB = new VBox(chooseFile, playStop, slide);
+        bottomB = new VBox(chooseFile, playStop, slide, playlistStageB);
         BorderPane bp1 = new BorderPane(bottomB);
         vol.setOnScroll(new EventHandler<ScrollEvent>() {
 
@@ -279,16 +290,18 @@ public class NORPlayer extends Application implements MediaChangeListener {
             @Override
             public void handle(WindowEvent event) {
                 norMediaPlayer.savePlaylist("lastSession.npl");
-
+                playlistStage.close();
             }
         });
 
         primaryStage.show();
     }
 
-    private void showActivePlaylist(Stage playlistStage){
-        String playlistTitle = norMediaPlayer.getPlaylistName();
+    private void showActivePlaylist(String playlistTitle){
         ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
+        
+        TableView playlistTable = new TableView();
+        
         
         
         playlistStage.setTitle(playlistTitle);
