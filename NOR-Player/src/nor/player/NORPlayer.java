@@ -83,7 +83,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
         Button playB = new Button("Start");
-        Button pauseB = new Button("Pause");
+        Button pauseB = new Button("Play");
         Button stopB = new Button("Stop");
         Button addB = new Button("Add");
         Button openB = new Button("Open");
@@ -146,11 +146,21 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
         playB.setOnAction((ActionEvent event) -> {
-            norMediaPlayer.play();
+            if(norMediaPlayer.isPlaying()){
+                norMediaPlayer.stop();
+                norMediaPlayer.play();
+                
+            }else
+                norMediaPlayer.play();
 
         });
         pauseB.setOnAction((ActionEvent event) -> {
-            norMediaPlayer.pause();
+            if(norMediaPlayer.isPlaying()){
+                pauseB.setText("Play");
+            }else{
+                pauseB.setText("Pause");
+            }
+            norMediaPlayer.playOrPause();
         });
 
         nextB.setOnAction((ActionEvent event) -> {
