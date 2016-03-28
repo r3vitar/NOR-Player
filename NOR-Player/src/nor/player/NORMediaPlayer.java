@@ -29,10 +29,12 @@ import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javax.activation.UnsupportedDataTypeException;
 
 /**
  *
- * @author kacpe_000
+ * @author Kacper Olszanski
+ *
  */
 public class NORMediaPlayer implements Serializable {
 
@@ -245,8 +247,7 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void addMedia(File file) {
-        
-        
+
         Media m = createMedia(file);
         if (m != null) {
             this.addMedia(m);
@@ -283,8 +284,9 @@ public class NORMediaPlayer implements Serializable {
         } else if (mediaArray.get(0) instanceof File) {
             for (Object f : mediaArray) {
                 Media m = createMedia((File) f);
-                if(m != null)
+                if (m != null) {
                     this.addMedia(m);
+                }
 
             }
 
@@ -352,7 +354,6 @@ public class NORMediaPlayer implements Serializable {
         this.playlist.clear();
         this.playIndex = 0;
 
-        
     }
 
     public void sort() {
@@ -643,6 +644,7 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void savePlaylist(String name) {
+
         OutputStream fos = null;
         this.playlistName = name;
         try {
@@ -672,6 +674,17 @@ public class NORMediaPlayer implements Serializable {
             } catch (Exception ee) {
                 System.out.println(ee);
 
+            }
+            try {
+                File f = new File(name);
+                try {
+                    this.playlistName = f.getName().split("\\.")[0];
+                } catch (Exception e) {
+                    this.playlistName = f.getName();
+                }
+
+            } catch (Exception e) {
+                this.playlistName = name;
             }
         }
     }
@@ -715,7 +728,21 @@ public class NORMediaPlayer implements Serializable {
             } else if (name.endsWith("m3u8")) {
                 changePlaylist(loadM3u8(path));
             }
+            try {
+                File ff = new File(name);
+                try {
+                    this.playlistName = ff.getName().split("\\.")[0];
+                } catch (Exception e) {
+                    this.playlistName = ff.getName();
+                }
+
+            } catch (Exception e) {
+                this.playlistName = name;
+            }
+        }else{
+            throw new UnsupportedDataTypeException("FileFormat not Supported");
         }
+
     }
 
     private ArrayList<Media> loadM3u8(String path) throws FileNotFoundException, IOException {
