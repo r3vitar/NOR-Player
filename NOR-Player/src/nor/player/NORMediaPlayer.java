@@ -213,6 +213,8 @@ public class NORMediaPlayer implements Serializable {
     public void addMedia(Media audio) {
         if (audio != null) {
             this.playlist.add(audio);
+                        this.listener.playlistChanged();
+
         }
     }
 
@@ -220,6 +222,8 @@ public class NORMediaPlayer implements Serializable {
         Media m = createMedia(filePath);
         if (m != null) {
             this.addMedia(m);
+                        this.listener.playlistChanged();
+
         };
     }
 
@@ -244,6 +248,8 @@ public class NORMediaPlayer implements Serializable {
         if (this.playlist == null) {
             setCurrentToMediaPlayer();
         }
+                    this.listener.playlistChanged();
+
     }
 
     public void addMedia(File file) {
@@ -251,6 +257,8 @@ public class NORMediaPlayer implements Serializable {
         Media m = createMedia(file);
         if (m != null) {
             this.addMedia(m);
+                        this.listener.playlistChanged();
+
         }
     }
 
@@ -295,6 +303,7 @@ public class NORMediaPlayer implements Serializable {
                 }
 
             }
+            this.listener.playlistChanged();
 
         } else {
             throw new IllegalArgumentException("Unsupported Objects in ArrayList");
@@ -323,6 +332,8 @@ public class NORMediaPlayer implements Serializable {
             this.playIndex = this.playlist.size() - 1;
 
         }
+                    this.listener.playlistChanged();
+
 
     }
 
@@ -352,6 +363,8 @@ public class NORMediaPlayer implements Serializable {
         this.playlist.removeAll(this.playlist);
         this.playIndex = 0;
         norPlayer = null;
+                    this.listener.playlistChanged();
+
     }
 
     public void clearPlaylist() {
@@ -359,6 +372,8 @@ public class NORMediaPlayer implements Serializable {
         norPlayer = null;
         this.playlist.clear();
         this.playIndex = 0;
+                    this.listener.playlistChanged();
+
 
     }
 
@@ -368,6 +383,8 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cFileNameAsc);
             setCurrentToMediaPlayer();
             play();
+                        this.listener.playlistChanged();
+
         }
     }
 
@@ -377,6 +394,8 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cFileNameAsc);
             setCurrentToMediaPlayer();
             play();
+                        this.listener.playlistChanged();
+
         }
     }
 
@@ -386,6 +405,8 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cFileNameDesc);
             setCurrentToMediaPlayer();
             play();
+                        this.listener.playlistChanged();
+
         }
     }
 
@@ -395,6 +416,8 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cPathNameAsc);
             setCurrentToMediaPlayer();
             play();
+                        this.listener.playlistChanged();
+
         }
     }
 
@@ -404,15 +427,21 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cPathNameDesc);
             setCurrentToMediaPlayer();
             play();
+                        this.listener.playlistChanged();
+
         }
+        
     }
 
     public void shuffle() {
+        
         if (!this.playlist.isEmpty()) {
+            
             stop();
             Collections.shuffle(this.playlist);
             setCurrentToMediaPlayer();
             play();
+            this.listener.playlistChanged();
         }
     }
 
@@ -422,6 +451,8 @@ public class NORMediaPlayer implements Serializable {
             Collections.shuffle(this.playlist, randomSeed);
             setCurrentToMediaPlayer();
             play();
+                        this.listener.playlistChanged();
+
         }
     }
 
@@ -710,6 +741,8 @@ public class NORMediaPlayer implements Serializable {
         if (b) {
             play();
         }
+                    this.listener.playlistChanged();
+
     }
 
     public void loadPlaylist(File f, boolean changePl) throws FileNotFoundException, IOException {
