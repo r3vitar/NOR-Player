@@ -49,7 +49,7 @@ public class NORMediaPlayer implements Serializable {
     private MediaView mv;
     String[] supportedAudio = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac"};
     String[] supportedMedia = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
-    String[] supportedPlaylists = {".npl"/*, ".m3u", ".m3u8", ".pls"*/ };
+    String[] supportedPlaylists = {".npl"/*, ".m3u", ".m3u8", ".pls"*/};
     String[] supportedVideo = {".mp4", ".avi", ".mkv"};
     private int playIndex = 0;
 
@@ -213,7 +213,7 @@ public class NORMediaPlayer implements Serializable {
     public void addMedia(Media audio) {
         if (audio != null) {
             this.playlist.add(audio);
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         }
     }
@@ -222,7 +222,7 @@ public class NORMediaPlayer implements Serializable {
         Media m = createMedia(filePath);
         if (m != null) {
             this.addMedia(m);
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         };
     }
@@ -248,7 +248,7 @@ public class NORMediaPlayer implements Serializable {
         if (this.playlist == null) {
             setCurrentToMediaPlayer();
         }
-                    this.listener.playlistChanged();
+        this.listener.playlistChanged();
 
     }
 
@@ -257,7 +257,7 @@ public class NORMediaPlayer implements Serializable {
         Media m = createMedia(file);
         if (m != null) {
             this.addMedia(m);
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         }
     }
@@ -332,8 +332,7 @@ public class NORMediaPlayer implements Serializable {
             this.playIndex = this.playlist.size() - 1;
 
         }
-                    this.listener.playlistChanged();
-
+        this.listener.playlistChanged();
 
     }
 
@@ -363,7 +362,7 @@ public class NORMediaPlayer implements Serializable {
         this.playlist.removeAll(this.playlist);
         this.playIndex = 0;
         norPlayer = null;
-                    this.listener.playlistChanged();
+        this.listener.playlistChanged();
 
     }
 
@@ -372,8 +371,7 @@ public class NORMediaPlayer implements Serializable {
         norPlayer = null;
         this.playlist.clear();
         this.playIndex = 0;
-                    this.listener.playlistChanged();
-
+        this.listener.playlistChanged();
 
     }
 
@@ -383,7 +381,7 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cFileNameAsc);
             setCurrentToMediaPlayer();
             play();
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         }
     }
@@ -394,7 +392,7 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cFileNameAsc);
             setCurrentToMediaPlayer();
             play();
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         }
     }
@@ -405,7 +403,7 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cFileNameDesc);
             setCurrentToMediaPlayer();
             play();
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         }
     }
@@ -416,7 +414,7 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cPathNameAsc);
             setCurrentToMediaPlayer();
             play();
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         }
     }
@@ -427,16 +425,16 @@ public class NORMediaPlayer implements Serializable {
             this.playlist.sort(this.cPathNameDesc);
             setCurrentToMediaPlayer();
             play();
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         }
-        
+
     }
 
     public void shuffle() {
-        
+
         if (!this.playlist.isEmpty()) {
-            
+
             stop();
             Collections.shuffle(this.playlist);
             setCurrentToMediaPlayer();
@@ -451,7 +449,7 @@ public class NORMediaPlayer implements Serializable {
             Collections.shuffle(this.playlist, randomSeed);
             setCurrentToMediaPlayer();
             play();
-                        this.listener.playlistChanged();
+            this.listener.playlistChanged();
 
         }
     }
@@ -741,7 +739,7 @@ public class NORMediaPlayer implements Serializable {
         if (b) {
             play();
         }
-                    this.listener.playlistChanged();
+        this.listener.playlistChanged();
 
     }
 
