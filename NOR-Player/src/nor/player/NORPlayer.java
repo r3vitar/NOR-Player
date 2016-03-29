@@ -1,5 +1,7 @@
 package nor.player;
 
+import java.awt.Graphics;
+import java.awt.Shape;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -47,6 +49,9 @@ import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Position;
+import javax.swing.text.View;
 
 /**
  *
@@ -66,6 +71,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
     Slider balanceSlider = new Slider();
     Slider speedSlider = new Slider();
 
+    
+    
     Button playB = new Button("Start");
     Button pauseB = new Button("Play");
     Button stopB = new Button("Stop");

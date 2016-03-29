@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.image.Image;
 import static javafx.scene.input.KeyCode.T;
 import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.scene.media.Media;
@@ -296,6 +297,21 @@ public class NORMediaPlayer implements Serializable {
             
         }
         return m;
+
+    }
+    public Image createImage(File file) {
+        Image img = null;
+        try{
+     
+            
+            img= new Image(file.toURI().toString());
+        
+        }catch(MediaException e){
+            System.err.println(e);
+            
+            
+        }
+        return img;
 
     }
 
