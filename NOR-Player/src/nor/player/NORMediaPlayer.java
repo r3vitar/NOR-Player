@@ -176,6 +176,8 @@ public class NORMediaPlayer implements Serializable {
         this.playlist = new ArrayList<Media>();
 
         this.listener = (MediaChangeListener) o;
+        
+        
 
     }
 
@@ -184,6 +186,9 @@ public class NORMediaPlayer implements Serializable {
             this.playlist = playlist;
             setCurrentToMediaPlayer();
         }
+        
+        
+        
 
     }
 

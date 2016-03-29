@@ -171,8 +171,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
             if (norMediaPlayer.isPlaying()) {
                 norMediaPlayer.stop();
                 norMediaPlayer.play();
-
-            } else {
+            
+            } else  {
                 norMediaPlayer.play();
                 norMediaPlayer.stop();
                 norMediaPlayer.play();
