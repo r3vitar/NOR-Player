@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import static javafx.scene.input.KeyCode.T;
 import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javax.activation.UnsupportedDataTypeException;
@@ -278,11 +279,18 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public Media createMedia(File file) {
+        Media m = null;
+        try{
         if (isSupported(file.getName(), supportedMedia)) {
-            return new Media(file.toURI().toString().replace('\\', '/'));
+            
+            m= new Media(file.toURI().toString());
         }
-
-        return null;
+        }catch(MediaException e){
+            System.err.println(e);
+            
+            
+        }
+        return m;
 
     }
 
@@ -710,8 +718,16 @@ public class NORMediaPlayer implements Serializable {
 
             ArrayList<String> tmpList = new ArrayList<String>();
             for (Media m : this.playlist) {
-                tmpList.add(m.getSource());
+                String src;
+                try{
+                    src = m.getSource();
+                }catch(Exception e){
+                    src = null;
+                }
+                if(src != null)
+                    tmpList.add(src);
             }
+            
             output.put("list", tmpList);
             output.put("index", this.playIndex);
             output.put("name", this.playlistName);
@@ -747,7 +763,8 @@ public class NORMediaPlayer implements Serializable {
         if (b) {
             stop();
         }
-        this.playIndex = 0;
+//        if(this.playIndex > playlist.size()-1);
+//            this.playIndex = 0;
         this.playlist = playlist;
         setCurrentToMediaPlayer();
         if (b) {
@@ -765,7 +782,7 @@ public class NORMediaPlayer implements Serializable {
 
             if (name.endsWith(".npl")) {
                 if (changePl) {
-                    this.playIndex = 0;
+                    //this.playIndex = 0;
                     changePlaylist(loadNpl(path));
                 } else {
                     ArrayList<Media> tmpArM = loadNpl(path);
@@ -778,9 +795,24 @@ public class NORMediaPlayer implements Serializable {
                 }
 
             } else if (name.endsWith("m3u8")) {
-                changePlaylist(loadM3u8(path));
+                if(changePl){
+                    //this.playIndex = 0;
+                    changePlaylist(loadM3u8(path));
+                }else{
+                    ArrayList<Media> tmpArM = loadM3u8(path);
+                    ArrayList<Object> tmpArO = new ArrayList<Object>();
+                    for (Media m : tmpArM) {
+                        tmpArO.add((Object) m);
+                    }
+
+                    addMediaArray(tmpArO);
+                }
             }
-            try {
+            
+        } else {
+            throw new UnsupportedDataTypeException("FileFormat not Supported");
+        }
+        try {
                 File ff = new File(name);
                 try {
                     this.playlistName = ff.getName().split("\\.")[0];
@@ -791,9 +823,6 @@ public class NORMediaPlayer implements Serializable {
             } catch (Exception e) {
                 this.playlistName = name;
             }
-        } else {
-            throw new UnsupportedDataTypeException("FileFormat not Supported");
-        }
 
     }
 
@@ -803,10 +832,11 @@ public class NORMediaPlayer implements Serializable {
         ArrayList<Media> newPlaylist = new ArrayList<Media>();
         while (br.ready()) {
             String tmpStr = br.readLine();
-            if (tmpStr.charAt(0) == '#'); else if (tmpStr.charAt(0) == '\\') {
-                newPlaylist.add(createMedia(String.format("%s:%s", path.charAt(0), tmpStr)));
+            if (tmpStr.charAt(0) == '#'); 
+            else if (tmpStr.charAt(0) == '\\') {
+                newPlaylist.add(createMedia(new File(String.format("%s:%s", path.charAt(0), tmpStr))));
             } else if (tmpStr.charAt(1) == ':') {
-                newPlaylist.add(createMedia(String.format("%s", tmpStr)));
+                newPlaylist.add(createMedia(new File(tmpStr)));
             }
 //            else if(tmpStr.charAt(0) == '.' && tmpStr.charAt(1) == '.' && tmpStr.charAt(2) == '\\' ){
 //                newPlaylist.add(createMedia(String.format("%s:\\%s",.path.charAt(0), tmpStr.)));

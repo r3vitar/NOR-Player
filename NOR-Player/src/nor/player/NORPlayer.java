@@ -307,7 +307,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             @Override
             public void handle(WindowEvent event) {
-                norMediaPlayer.savePlaylist("lastSession.npl");
+                if(!norMediaPlayer.isEmpty())
+                    norMediaPlayer.savePlaylist("lastSession.npl");
                 playlistStage.close();
             }
         });
