@@ -78,6 +78,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     Button stopB = new Button("Stop");
     Button addB = new Button("Add");
     Button openB = new Button("Open");
+    Button clearB = new Button("Clear");
 
     Button nextB = new Button("Next");
     Button prevB = new Button("Prev");
@@ -142,6 +143,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         }
                     }
                 }).start();
+                
 
             } catch (Exception e) {
                 System.err.println(e);
@@ -224,15 +226,22 @@ public class NORPlayer extends Application implements MediaChangeListener {
             norMediaPlayer.savePlaylist(f.getAbsolutePath());
         });
         loadPlaylistButton.setOnAction((ActionEvent event) -> {
-            File f = manager.chooseSingleFile("playlist");
+            
             try {
-                norMediaPlayer.loadPlaylist(f, true);
-            } catch (IOException ex) {
+                File f = manager.chooseSingleFile("playlist");
+                    norMediaPlayer.loadPlaylist(f, true);
+               
+               
+            } catch (Exception ex) {
 
             }
         });
         shuffleB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.shuffle();
+        });
+        clearB.setOnAction((ActionEvent event) -> {
+            pauseB.setText("Play");
+            norMediaPlayer.clearPlaylist();
         });
 
         HBox chooseFile = new HBox();
@@ -304,7 +313,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         }
 
         bp1.setRight(vol);
-        root.setTop(new VBox(time, name, balanceSlider, speedSlider));
+        root.setTop(new VBox(time, name, balanceSlider, speedSlider, clearB));
         root.setCenter(view);
         root.setBottom(bp1);
 

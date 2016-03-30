@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import static javafx.scene.input.KeyCode.T;
 import static javafx.scene.media.AudioClip.INDEFINITE;
@@ -796,7 +797,7 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void loadPlaylist(File f, boolean changePl) throws FileNotFoundException, IOException {
-
+        
         String path = f.getAbsolutePath();
         String name = f.getName();
         if (name.contains(Character.toString(dot))) {
@@ -864,6 +865,10 @@ public class NORMediaPlayer implements Serializable {
 //            }
 
         }
+        
+        
+        br.close();
+        fr.close();
 
         return newPlaylist;
     }
