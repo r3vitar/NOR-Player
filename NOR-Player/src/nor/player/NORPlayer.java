@@ -1,22 +1,15 @@
 package nor.player;
 
-import java.awt.Graphics;
-import java.awt.Shape;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -30,28 +23,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import static javafx.scene.input.KeyCode.T;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Position;
-import javax.swing.text.View;
 
 /**
  *
@@ -336,11 +320,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
         ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
         ObservableList<LineItem> data = FXCollections.observableArrayList();
 
-        /**
-         * FEHLER for(int i = 0; i < playlistMedia.size(); i++){ data.add(new
-         * LineItem("TEST", "TE")); }
-         *
-         */
+        /** FEHLER  */
+        for(int i = 0; i < playlistMedia.size(); i++){ 
+            data.add(new LineItem("TEST", "TE")); 
+        }
+         
+        
         TableView playlistTable = new TableView();
         TableColumn titleColumn = new TableColumn("Name"),
                 interpretColumn = new TableColumn("Interpret");
@@ -451,7 +436,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initSliders() {
-
         vol.setOrientation(Orientation.VERTICAL);
         vol.setMax(100);
         vol.setMin(0);
