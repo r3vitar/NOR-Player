@@ -297,7 +297,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         }
 
         bp1.setRight(vol);
-        root.setTop(new VBox(time, name, balanceSlider, speedSlider, clearB));
+        root.setTop(new VBox(mytime, name, balanceSlider, speedSlider, clearB));
         root.setCenter(view);
         root.setBottom(bp1);
 
@@ -380,9 +380,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         this.name.setText(metadata.toString());
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    
 
     @Override
     public void mediaChanged() {

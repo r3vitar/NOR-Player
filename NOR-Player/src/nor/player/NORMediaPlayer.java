@@ -515,7 +515,7 @@ public class NORMediaPlayer implements Serializable {
 
             this.listener.mediaChanged();
         }
-        if (!isEmpty()) {
+        if (!isEmpty() && getCurrentMedia() != null) {
             norPlayer.setOnEndOfMedia(new Runnable() {
 
                 @Override
