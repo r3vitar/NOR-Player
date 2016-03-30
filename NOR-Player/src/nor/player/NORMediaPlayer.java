@@ -5,6 +5,7 @@
  */
 package nor.player;
 
+import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,8 +55,8 @@ public class NORMediaPlayer implements Serializable {
     private final char dot = '.';
     private MediaView mv;
     String[] supportedAudio = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac"};
-    String[] supportedMedia = {".mp3", ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
-    String[] supportedPlaylists = {".npl"/*, ".m3u", ".m3u8", ".pls"*/};
+    String[] supportedMedia = {".mp3"/*, ".mp2", ".mp1", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"*/};
+    String[] supportedPlaylists = {".npl", ".m3u8"/*, ".m3u", ".pls"*/};
     String[] supportedVideo = {".mp4", ".avi", ".mkv"};
     private int playIndex = 0;
 
@@ -178,8 +179,6 @@ public class NORMediaPlayer implements Serializable {
         this.playlist = new ArrayList<Media>();
 
         this.listener = (MediaChangeListener) o;
-        
-        
 
     }
 
@@ -188,9 +187,6 @@ public class NORMediaPlayer implements Serializable {
             this.playlist = playlist;
             setCurrentToMediaPlayer();
         }
-        
-        
-        
 
     }
 
@@ -287,30 +283,28 @@ public class NORMediaPlayer implements Serializable {
 
     public Media createMedia(File file) {
         Media m = null;
-        try{
-        if (isSupported(file.getName(), supportedMedia)) {
-            
-            m= new Media(file.toURI().toString());
-        }
-        }catch(MediaException e){
+        try {
+            if (isSupported(file.getName(), supportedMedia)) {
+
+                m = new Media(file.toURI().toString());
+            }
+        } catch (MediaException e) {
             System.err.println(e);
-            
-            
+
         }
         return m;
 
     }
+
     public Image createImage(File file) {
         Image img = null;
-        try{
-     
-            
-            img= new Image(file.toURI().toString());
-        
-        }catch(MediaException e){
+        try {
+
+            img = new Image(file.toURI().toString());
+
+        } catch (Exception e) {
             System.err.println(e);
-            
-            
+
         }
         return img;
 
@@ -741,15 +735,16 @@ public class NORMediaPlayer implements Serializable {
             ArrayList<String> tmpList = new ArrayList<String>();
             for (Media m : this.playlist) {
                 String src;
-                try{
+                try {
                     src = m.getSource();
-                }catch(Exception e){
+                } catch (Exception e) {
                     src = null;
                 }
-                if(src != null)
+                if (src != null) {
                     tmpList.add(src);
+                }
             }
-            
+
             output.put("list", tmpList);
             output.put("index", this.playIndex);
             output.put("name", this.playlistName);
@@ -797,7 +792,7 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public void loadPlaylist(File f, boolean changePl) throws FileNotFoundException, IOException {
-        
+
         String path = f.getAbsolutePath();
         String name = f.getName();
         if (name.contains(Character.toString(dot))) {
@@ -817,10 +812,10 @@ public class NORMediaPlayer implements Serializable {
                 }
 
             } else if (name.endsWith("m3u8")) {
-                if(changePl){
+                if (changePl) {
                     //this.playIndex = 0;
                     changePlaylist(loadM3u8(path));
-                }else{
+                } else {
                     ArrayList<Media> tmpArM = loadM3u8(path);
                     ArrayList<Object> tmpArO = new ArrayList<Object>();
                     for (Media m : tmpArM) {
@@ -830,47 +825,88 @@ public class NORMediaPlayer implements Serializable {
                     addMediaArray(tmpArO);
                 }
             }
-            
+
         } else {
             throw new UnsupportedDataTypeException("FileFormat not Supported");
         }
         try {
-                File ff = new File(name);
-                try {
-                    this.playlistName = ff.getName().split("\\.")[0];
-                } catch (Exception e) {
-                    this.playlistName = ff.getName();
-                }
-
+            File ff = new File(name);
+            try {
+                this.playlistName = ff.getName().split("\\.")[0];
             } catch (Exception e) {
-                this.playlistName = name;
+                this.playlistName = ff.getName();
             }
+
+        } catch (Exception e) {
+            this.playlistName = name;
+        }
+        this.listener.playlistChanged();
 
     }
 
     private ArrayList<Media> loadM3u8(String path) throws FileNotFoundException, IOException {
-        FileReader fr = new FileReader(path);
-        BufferedReader br = new BufferedReader(fr);
-        ArrayList<Media> newPlaylist = new ArrayList<Media>();
-        while (br.ready()) {
-            String tmpStr = br.readLine();
-            if (tmpStr.charAt(0) == '#'); 
-            else if (tmpStr.charAt(0) == '\\') {
-                newPlaylist.add(createMedia(new File(String.format("%s:%s", path.charAt(0), tmpStr))));
-            } else if (tmpStr.charAt(1) == ':') {
-                newPlaylist.add(createMedia(new File(tmpStr)));
-            }
+        ArrayList<String> newPlaylist = new ArrayList<>();
+            ArrayList<Media>  outputPlaylist = new ArrayList<>();
+        try {
+            FileReader fr = new FileReader(path);
+            BufferedReader br = new BufferedReader(fr);
+            
+            
+            Thread t1 = new Thread(new Runnable() {
+                
+                @Override
+                public void run() {
+                     
+                     
+                    try {
+                        while (br.ready()) {
+                            
+                            String tmpStr = br.readLine();
+                            System.out.println(tmpStr);
+                            
+                            if (tmpStr.charAt(0) == '#'); else if (tmpStr.charAt(0) == '\\') {
+                                newPlaylist.add(String.format("%s:%s", path.charAt(0), tmpStr));
+                            } else if (tmpStr.charAt(1) == ':') {
+                                newPlaylist.add((tmpStr));
+                            }
 //            else if(tmpStr.charAt(0) == '.' && tmpStr.charAt(1) == '.' && tmpStr.charAt(2) == '\\' ){
 //                newPlaylist.add(createMedia(String.format("%s:\\%s",.path.charAt(0), tmpStr.)));
 //            }
 
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(NORMediaPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+            t1.start();
+            Thread t2 = new Thread(new Runnable() {
+                
+                @Override
+                public void run() {
+                    
+                    
+                     if(newPlaylist != null && !newPlaylist.isEmpty())
+                    for (String s : newPlaylist) {
+                        outputPlaylist.add(createMedia(new File(s)));
+                    }
+                    
+                }
+            });
+            t1.join();
+            br.close();
+            fr.close();
+            t2.start();
+            
+            
+            
+            
+            
+        } catch (InterruptedException ex) {
+            Logger.getLogger(NORMediaPlayer.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return outputPlaylist;
         
-        
-        br.close();
-        fr.close();
-
-        return newPlaylist;
     }
 
     private ArrayList<Media> loadNpl(String path) {
@@ -879,7 +915,7 @@ public class NORMediaPlayer implements Serializable {
             fis = new FileInputStream(path);
             ObjectInputStream ois = new ObjectInputStream(fis);
             HashMap input = (HashMap) ois.readObject();
-            if ((long)input.get("ver") == this.serialVerUID) {
+            if ((long) input.get("ver") == this.serialVerUID) {
                 ArrayList<String> tmpList = (ArrayList<String>) input.get("list");
                 this.repeatCurrent = (boolean) input.get("repeatCurrent");
                 this.repeatList = (boolean) input.get("repeatList");
