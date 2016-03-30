@@ -318,13 +318,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private void initPlaylist(String playlistTitle) {
         ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
-        ObservableList<LineItem> data = FXCollections.observableArrayList();
-
+        ArrayList<LineItem> temp = new ArrayList<LineItem>();
         /** FEHLER  */
         for(int i = 0; i < playlistMedia.size(); i++){ 
-            data.add(new LineItem("TEST", "TE")); 
+            temp.add(new LineItem("TEST", "TE")); 
         }
-         
+        final ObservableList<LineItem> data = FXCollections.observableArrayList(temp);
         
         TableView playlistTable = new TableView();
         TableColumn titleColumn = new TableColumn("Name"),
@@ -474,32 +473,4 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
         });
     }
-}
-
-class LineItem {
-
-    private String name;
-    private String interpret;
-
-    public LineItem(String name, String interpret) {
-        this.name = name;
-        this.interpret = interpret;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getInterpret() {
-        return interpret;
-    }
-
-    public void setInterpret(String interpret) {
-        this.interpret = interpret;
-    }
-
 }
