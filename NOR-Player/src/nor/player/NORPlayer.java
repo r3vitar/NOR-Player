@@ -1,22 +1,15 @@
 package nor.player;
 
-import java.awt.Graphics;
-import java.awt.Shape;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -30,28 +23,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import static javafx.scene.input.KeyCode.T;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Position;
-import javax.swing.text.View;
 
 /**
  *
@@ -92,16 +76,16 @@ public class NORPlayer extends Application implements MediaChangeListener {
     NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
     DataManager manager = new DataManager();
     Label name = new Label("metadata");
-    Label time = new Label("00:00:00");
+    Label mytime = new Label("00:00:00");
     Stage playlistStage = new Stage();
 
     @Override
     public void start(Stage primaryStage) {
         Platform.runLater(new Runnable() {
-
             @Override
             public void run() {
                 try {
+                    mytime.setId("font");
                     mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
 
                     mp.play();
@@ -318,6 +302,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         root.setBottom(bp1);
 
         primaryStage.setTitle("NOR-Player");
+        scene.getStylesheets().add("styles.css");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
@@ -343,13 +328,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private void initPlaylist(String playlistTitle) {
         ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
-        ObservableList<LineItem> data = FXCollections.observableArrayList();
+        final ObservableList<LineItem> data = FXCollections.observableArrayList();
 
-        /**
-         * FEHLER for(int i = 0; i < playlistMedia.size(); i++){ data.add(new
-         * LineItem("TEST", "TE")); }
-         *
-         */
+        for(int i = 0; i < playlistMedia.size(); i++){ 
+            data.add(new LineItem("TEST", "TE")); 
+        }
+        
         TableView playlistTable = new TableView();
         TableColumn titleColumn = new TableColumn("Name"),
                 interpretColumn = new TableColumn("Interpret");
@@ -424,7 +408,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     mili /= 100;
                     DecimalFormat df = new DecimalFormat("00");
 
-                    time.setText(df.format(min) + ':' + df.format(sec) + ':' + df.format(mili));
+                    mytime.setText(df.format(min) + ':' + df.format(sec) + ':' + df.format(mili));
                 });
                 double dur = Double.NaN;
 
@@ -460,7 +444,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initSliders() {
-
         vol.setOrientation(Orientation.VERTICAL);
         vol.setMax(100);
         vol.setMin(0);
@@ -499,32 +482,4 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
         });
     }
-}
-
-class LineItem {
-
-    private String name;
-    private String interpret;
-
-    public LineItem(String name, String interpret) {
-        this.name = name;
-        this.interpret = interpret;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getInterpret() {
-        return interpret;
-    }
-
-    public void setInterpret(String interpret) {
-        this.interpret = interpret;
-    }
-
 }
