@@ -293,6 +293,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         root.setBottom(bp1);
 
         primaryStage.setTitle("NOR-Player");
+        scene.getStylesheets().add("styles.css");
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
