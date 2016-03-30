@@ -75,16 +75,16 @@ public class NORPlayer extends Application implements MediaChangeListener {
     NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
     DataManager manager = new DataManager();
     Label name = new Label("metadata");
-    Label time = new Label("00:00:00");
+    Label mytime = new Label("00:00:00");
     Stage playlistStage = new Stage();
 
     @Override
     public void start(Stage primaryStage) {
         Platform.runLater(new Runnable() {
-
             @Override
             public void run() {
                 try {
+                    mytime.setId("font");
                     mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
 
                     mp.play();
@@ -288,7 +288,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         }
 
         bp1.setRight(vol);
-        root.setTop(new VBox(time, name, balanceSlider, speedSlider));
+        root.setTop(new VBox(mytime, name, balanceSlider, speedSlider));
         root.setCenter(view);
         root.setBottom(bp1);
 
@@ -399,7 +399,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     mili /= 100;
                     DecimalFormat df = new DecimalFormat("00");
 
-                    time.setText(df.format(min) + ':' + df.format(sec) + ':' + df.format(mili));
+                    mytime.setText(df.format(min) + ':' + df.format(sec) + ':' + df.format(mili));
                 });
                 double dur = Double.NaN;
 
