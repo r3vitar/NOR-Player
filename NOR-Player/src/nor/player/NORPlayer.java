@@ -336,20 +336,29 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private void initPlaylist(String playlistTitle) {
         ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
         final ObservableList<LineItem> data = FXCollections.observableArrayList();
-
+        String[] requiredData = {"artist=", "title=", "album="};
         for (int i = 0; i < playlistMedia.size(); i++) {
-            data.add(new LineItem("TEST", "TE"));
+            String[] temp = readMetadata(requiredData, playlistMedia.get(i).getMetadata().toString());
+            data.add(new LineItem(i+1, temp[1], temp[0], temp[2]));
         }
 
         TableView playlistTable = new TableView();
         TableColumn titleColumn = new TableColumn("Name"),
-                interpretColumn = new TableColumn("Interpret");
-        titleColumn.setCellValueFactory(new PropertyValueFactory<LineItem, String>("name"));
-        interpretColumn.setCellValueFactory(new PropertyValueFactory<LineItem, String>("interpret"));
+                interpretColumn = new TableColumn("Interpret"),
+                albumColumn = new TableColumn("Album"),
+                indexColumn = new TableColumn("Nr");
 
-        playlistTable.getColumns().addAll(titleColumn, interpretColumn);
-        playlistTable.setItems(data);
+        indexColumn.setCellValueFactory(
+                new PropertyValueFactory<LineItem, Integer>("index"));
+        titleColumn.setCellValueFactory(
+                new PropertyValueFactory<LineItem, String>("name"));
+        interpretColumn.setCellValueFactory(
+                new PropertyValueFactory<LineItem, String>("interpret"));
+        albumColumn.setCellValueFactory(
+                new PropertyValueFactory<LineItem, String>("album"));
 
+        playlistTable.getColumns()
+                .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         Pane root = new Pane();
         root.getChildren().add(playlistTable);
         Scene playlistScene = new Scene(root);
@@ -380,7 +389,30 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
     }
+   private String[] readMetadata(String[] requiredData, String meta) {
+        String[] data = new String[requiredData.length];
+        /** 0 -> artist; 1 --> title; 2 --> album**/
+        
+        /**
+         * searching for requiredData *
+         */
+        System.out.println(meta);
+        for (int x = 0; x < requiredData.length; x++) {
+            for (int i = 0; i < meta.length() && (meta.length() - i) >= requiredData[x].length(); i++) {
+                if (meta.substring(i, i + requiredData[x].length()).equalsIgnoreCase(requiredData[x])) {
+                    i += requiredData[x].length();
+                    String temp = "";
+                    for (; meta.charAt(i) != ',' && meta.charAt(i) != '}'; i++) {
+                        temp += meta.charAt(i);
+                    }
+                    data[x] = temp;
+                    i--;
+                }
+            }
+        }
 
+        return data;
+    }
     public void chName() {
         ObservableMap<String, Object> metadata = this.norMediaPlayer.getCurrentMedia().getMetadata();
 

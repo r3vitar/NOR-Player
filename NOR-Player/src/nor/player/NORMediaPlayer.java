@@ -5,7 +5,6 @@
  */
 package nor.player;
 
-import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
