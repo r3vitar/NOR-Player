@@ -208,12 +208,14 @@ public class NORMediaPlayer implements Serializable {
     }
 
     public NORMediaPlayer(File file) {
+        
         this.playlist = new ArrayList<Media>();
         Media m = createMedia(file);
         if (m != null) {
             this.playlist.add(m);
             setCurrentToMediaPlayer();
         }
+        this.listener.playlistChanged();
     }
 
     public void addMedia(Media audio) {
@@ -266,6 +268,7 @@ public class NORMediaPlayer implements Serializable {
             this.listener.playlistChanged();
 
         }
+        
     }
 
     public Media createMedia(String filePath) {
