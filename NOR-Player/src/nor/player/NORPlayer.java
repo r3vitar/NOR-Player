@@ -532,4 +532,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
         });
     }
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
