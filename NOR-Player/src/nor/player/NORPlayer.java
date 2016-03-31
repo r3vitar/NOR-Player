@@ -13,6 +13,7 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -76,8 +77,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     Label name = new Label("metadata");
     Label mytime = new Label("00:00:00");
     Stage playlistStage = new Stage();
-    
-    
+
     boolean playInit = false;
 
     @Override
@@ -322,7 +322,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void showActivePlaylist() {
-        if(!this.playInit){
+        if (!this.playInit) {
             initPlaylist(this.norMediaPlayer.getPlaylistName());
         }
         if (playlistStage.isShowing()) {
@@ -339,7 +339,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         String[] requiredData = {"artist=", "title=", "album="};
         for (int i = 0; i < playlistMedia.size(); i++) {
             String[] temp = readMetadata(requiredData, playlistMedia.get(i).getMetadata().toString());
-            data.add(new LineItem(i+1, temp[1], temp[0], temp[2]));
+            data.add(new LineItem(i + 1, temp[1], temp[0], temp[2]));
         }
 
         TableView playlistTable = new TableView();
@@ -359,12 +359,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         playlistTable.getColumns()
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
+        playlistTable.setItems(data);
         Pane root = new Pane();
         root.getChildren().add(playlistTable);
         Scene playlistScene = new Scene(root);
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
-        //playlistStage.setResizable(false);
         playlistStage.setOnHiding(new EventHandler<WindowEvent>() {
 
             @Override
@@ -389,10 +389,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
     }
-   private String[] readMetadata(String[] requiredData, String meta) {
+
+    private String[] readMetadata(String[] requiredData, String meta) {
         String[] data = new String[requiredData.length];
-        /** 0 -> artist; 1 --> title; 2 --> album**/
-        
+        /**
+         * 0 -> artist; 1 --> title; 2 --> album*
+         */
+
         /**
          * searching for requiredData *
          */
@@ -413,6 +416,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         return data;
     }
+
     public void chName() {
         ObservableMap<String, Object> metadata = this.norMediaPlayer.getCurrentMedia().getMetadata();
 
@@ -509,12 +513,23 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     @Override
     public void playlistChanged() {
-        new Thread(new Runnable() {
+//        new Thread(new Task() {
+//
+//            @Override
+//            protected Object call() throws Exception {
+//                initPlaylist(norMediaPlayer.getPlaylistName());
+//                return true;
+//            }
+//
+//        }).start();
+        
+        
+        new Thread(new Runnable(){
 
             @Override
             public void run() {
                 initPlaylist(norMediaPlayer.getPlaylistName());
             }
-        }).start();
+        });
     }
 }
