@@ -440,8 +440,20 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
 
         } else if (data[1] == null) {
-            data[1] = f.getName().replace("%20", " ");
+            if (f.getName().contains("-")) {
+                data[1] = f.getName().split("-")[1].replace("%20", " ");
+            } else {
+                data[1] = f.getName().replace("%20", " ");
 
+            }
+        
+        } else if (data[0] == null) {
+            if (f.getName().contains("-")) {
+                data[0] = f.getName().split("-")[0].replace("%20", " ");
+            } else {
+                data[0] = f.getName().replace("%20", " ");
+
+            }
         }
 
 //        if(data[2] == null){
