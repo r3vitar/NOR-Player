@@ -29,6 +29,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
@@ -56,7 +57,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     MediaView view = new MediaView();
     MediaPlayer mp;
     BorderPane root = new BorderPane();
-    Scene scene = new Scene(root, 700, 300);
+    Scene scene = new Scene(root, 400, 200);
     Slider slide = new Slider();
     Slider vol = new Slider();
     Slider balanceSlider = new Slider();
@@ -85,13 +86,17 @@ public class NORPlayer extends Application implements MediaChangeListener {
     Stage playlistStage = new Stage();
     String[] requiredData = {"artist=", "title=", "album="};
     TableView playlistTable = new TableView();
+    Stage primaryStage;
 
     ObservableList<LineItem> playlistData = FXCollections.observableArrayList();
 
     boolean playInit = false;
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage ps) {
+        
+        primaryStage = ps;
+        primaryStage.setResizable(false);
         new Thread(new Task() {
             @Override
             protected Object call() {
@@ -243,10 +248,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         HBox chooseFile = new HBox();
 
-        chooseFile.getChildren().add(addB);
         chooseFile.getChildren().add(openB);
         chooseFile.getChildren().addAll(l1);
-        HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, savePlaylistButton, loadPlaylistButton, shuffleB);
+        HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB);
 
         VBox bottomB;
         bottomB = new VBox(chooseFile, playStop, slide, playlistStageB);
@@ -371,11 +375,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable.getColumns()
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
-
-        playlistTable.setPrefWidth(357);
+        
+        playlistTable.setPrefWidth(500);
         Pane root = new Pane();
-        root.getChildren().add(playlistTable);
-        Scene playlistScene = new Scene(root, playlistTable.getPrefWidth(), 200);
+        BorderPane bp = new BorderPane(playlistTable);
+        HBox hb = new HBox();
+        hb.getChildren().addAll(addB, loadPlaylistButton, clearB, savePlaylistButton, shuffleB);
+        bp.setBottom(hb);
+        root.getChildren().add(bp);
+        Scene playlistScene = new Scene(root, playlistTable.getPrefWidth(), playlistTable.getPrefHeight());
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
         playlistStage.setOnHiding(new EventHandler<WindowEvent>() {
@@ -422,6 +430,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
         }
         
+      
+        
         if(data[1] == null && data[0] == null){
             if(f.getName().contains("-")){
                 data[0] = f.getName().split("-")[0].replace("%20", " ");
@@ -433,16 +443,21 @@ public class NORPlayer extends Application implements MediaChangeListener {
             
             
         }else if(data[1] == null){
-            data[1] = f.getName();
-        }
+            data[1] = f.getName().replace("%20", " ");
         
-        if(data[2] == null){
-            data[2] = "";
         }
+  
+//        if(data[2] == null){
+//           data[2] = "";
+//        }
         
-        if(data[1].startsWith(" ")){
+        
+        
+        
             data[1] = data[1].trim();
-        }
+        
+        
+        
 
         return data;
     }
@@ -452,8 +467,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
         String[] requiredDataName = {"artist=", "title="};
 
         String[] data = readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
-
-        this.name.setText(String.format("%s - %s", data[0], data[1]));
+String s = String.format("%s - %s", data[0], data[1]);
+        this.name.setText(s);
+        primaryStage.setTitle(s);
     }
 
     @Override
@@ -526,6 +542,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         vol.setMax(100);
         vol.setMin(0);
         vol.setValue(100);
+        vol.setMaxHeight(100);
         vol.setShowTickLabels(true);
         vol.setShowTickMarks(true);
         vol.setMajorTickUnit(25);
@@ -560,7 +577,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
                 for (int i = 0; i < playlistMedia.size(); i++) {
                     String[] temp = readMetadata(requiredData, playlistMedia.get(i));
-                    playlistData.add(new LineItem(i + 1, temp[1], temp[0], temp[2]));
+                    LineItem li = new LineItem(i + 1, temp[1], temp[0], temp[2]);
+                    playlistData.add(li);
                 }
                 playlistTable.setItems(playlistData);
 
