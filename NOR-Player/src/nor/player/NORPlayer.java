@@ -94,7 +94,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     @Override
     public void start(Stage ps) {
-        
+
         primaryStage = ps;
         primaryStage.setResizable(false);
         new Thread(new Task() {
@@ -375,7 +375,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable.getColumns()
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
-        
+
         playlistTable.setPrefWidth(500);
         Pane root = new Pane();
         BorderPane bp = new BorderPane(playlistTable);
@@ -429,35 +429,25 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }
             }
         }
-        
-      
-        
-        if(data[1] == null && data[0] == null){
-            if(f.getName().contains("-")){
+
+        if (data[1] == null && data[0] == null) {
+            if (f.getName().contains("-")) {
                 data[0] = f.getName().split("-")[0].replace("%20", " ");
                 data[1] = f.getName().split("-")[1].replace("%20", " ");
-            }else{
+            } else {
                 data[1] = f.getName().replace("%20", " ");
                 data[0] = "";
             }
-            
-            
-        }else if(data[1] == null){
+
+        } else if (data[1] == null) {
             data[1] = f.getName().replace("%20", " ");
-        
+
         }
-  
+
 //        if(data[2] == null){
 //           data[2] = "";
 //        }
-        
-        
-        
-        
-            data[1] = data[1].trim();
-        
-        
-        
+        data[1] = data[1].trim();
 
         return data;
     }
@@ -467,7 +457,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         String[] requiredDataName = {"artist=", "title="};
 
         String[] data = readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
-String s = String.format("%s - %s", data[0], data[1]);
+        String s = String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", "");
         this.name.setText(s);
         primaryStage.setTitle(s);
     }
