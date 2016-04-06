@@ -359,6 +359,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initPlaylist(String playlistTitle) {
+        
+        
+        playlistTable = new TableView();
 
         TableColumn titleColumn = new TableColumn("Name"),
                 interpretColumn = new TableColumn("Interpret"),
@@ -408,6 +411,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             }
         });
+        this.playInit = true;
     }
 
     private String[] readMetadata(String[] requiredData, Media m) {
