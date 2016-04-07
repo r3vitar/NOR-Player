@@ -213,7 +213,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private void initPlaylistTable() {
         playlistTable = new TableView();
         playlistTable.setPrefWidth(300);
-        playlistTable.setPrefHeight(600);
+        playlistTable.setMaxHeight(600);
 
         TableColumn titleColumn = new TableColumn("Name"),
                 interpretColumn = new TableColumn("Interpret"),
@@ -245,7 +245,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         root.getChildren().add(bp);
         
         
-        Scene playlistScene = new Scene(root, playlistTable.getPrefWidth(), playlistTable.getPrefHeight() + playlistMenuBar.getHeight());
+        Scene playlistScene = new Scene(root, playlistTable.getPrefWidth(), playlistTable.getPrefHeight() + playlistMenuBar.getHeight()*2);
         
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
