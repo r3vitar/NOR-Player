@@ -228,7 +228,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable = new TableView();
         playlistTable.setPrefWidth(playlistScene.getWidth());
 
-        playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight()*2);
+        playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
+        playlistTable.setMaxHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
         
         playlistScene.widthProperty().addListener(new InvalidationListener() {
 
@@ -242,6 +243,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             @Override
             public void invalidated(Observable observable) {
+                
+                        playlistTable.setMaxHeight(Double.MAX_VALUE);
+
                 
                 playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
             }
