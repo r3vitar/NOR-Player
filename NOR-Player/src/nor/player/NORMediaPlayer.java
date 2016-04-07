@@ -26,7 +26,6 @@ import java.util.Random;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 
 import javafx.scene.image.Image;
 import static javafx.scene.media.AudioClip.INDEFINITE;
@@ -611,7 +610,9 @@ public class NORMediaPlayer implements Serializable {
                 playIndex = index;
                 setCurrentToMediaPlayer();
             }
-
+            
+            norPlayer.play();
+            norPlayer.stop();
             norPlayer.play();
             this.playing = true;
 
@@ -649,7 +650,7 @@ public class NORMediaPlayer implements Serializable {
             if (norPlayer == null) {
                 setCurrentToMediaPlayer();
             }
-
+            norPlayer.play();
             norPlayer.stop();
             this.playing = false;
             
