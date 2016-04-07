@@ -26,6 +26,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -109,6 +110,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     boolean playInit = false;
 
+    
+    
+    //Tests für audio per link abspielen
+    Button linkB = new Button("playByLink");
+    TextField linkTf = new TextField();
+    
     @Override
     public void start(Stage ps) {
         
@@ -158,7 +165,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
         HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, openB);
 
         VBox bottomB;
-        bottomB = new VBox(playStop, slide, playlistStageB);
+        HBox linkBox = new HBox(linkB, linkTf);
+        bottomB = new VBox(playStop, slide, playlistStageB, linkBox);
         BorderPane bp1 = new BorderPane(bottomB);
 
         File lastSession = new File("lastSession.npl");
@@ -258,8 +266,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable.getColumns()
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
-
-        
     }
 
     private void initPlaylist(String playlistTitle) {
@@ -589,6 +595,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
         stopB.setId("stopButton");
         openB.setMinSize(35, 35);
         openB.setId("loadButton");
+        
+        //Audio by link
+        linkB.setOnAction(new EventHandler<ActionEvent>() {
+
+            public void handle(ActionEvent event) {
+                norMediaPlayer.addMedia(norMediaPlayer.createMedia(new File(linkTf.getText())));
+            }
+        });
+        
         
         
         playlistStageB.setOnAction((ActionEvent event) -> {
