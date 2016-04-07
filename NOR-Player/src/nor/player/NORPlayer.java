@@ -76,15 +76,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
     Menu sortMenu = new Menu("Sort", null, shuffleB, sortAscB, sortDescB);
     MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
 
-    Button playB = new Button("Start");
-    Button pauseB = new Button("Play");
-    Button stopB = new Button("Stop");
+    Button playB = new Button();
+    Button pauseB = new Button();
+    Button stopB = new Button();
     //Button addB = new Button("Add");
     Button openB = new Button("Open");
     //Button clearB = new Button("Clear");
 
-    Button nextB = new Button("Next");
-    Button prevB = new Button("Prev");
+    Button nextB = new Button();
+    Button prevB = new Button();
    // Button shuffleB = new Button("Shuffle");
 
     //Button savePlaylistButton = new Button("savePlaylist");
@@ -107,7 +107,17 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     @Override
     public void start(Stage ps) {
-
+        playB.setMinSize(35, 35);
+        playB.setId("playButton");
+        pauseB.setMinSize(35, 35);
+        pauseB.setId("pauseButton");
+        nextB.setMinSize(35, 35);
+        nextB.setId("nextButton");
+        prevB.setMinSize(35, 35);
+        prevB.setId("prevButton");
+        stopB.setMinSize(35, 35);
+        stopB.setId("stopButton");
+        
         primaryStage = ps;
         primaryStage.setResizable(false);
         new Thread(new Task() {
