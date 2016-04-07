@@ -4,18 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -24,12 +20,10 @@ import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
@@ -38,7 +32,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -358,9 +351,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         }
     }
 
-    private void initPlaylist(String playlistTitle) {
-        
-        
+    private void initPlaylistTable() {
         playlistTable = new TableView();
 
         TableColumn titleColumn = new TableColumn("Name"),
@@ -380,6 +371,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable.setItems(playlistData);
 
         playlistTable.setPrefWidth(500);
+    }
+
+    private void initPlaylist(String playlistTitle) {
+        // Init the PlaylistTable
+        initPlaylistTable();
+
         Pane root = new Pane();
         BorderPane bp = new BorderPane(playlistTable);
         HBox hb = new HBox();
@@ -450,7 +447,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 data[1] = f.getName().replace("%20", " ");
 
             }
-        
+
         } else if (data[0] == null) {
             if (f.getName().contains("-")) {
                 data[0] = f.getName().split("-")[0].replace("%20", " ");
@@ -460,9 +457,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
         }
 
-//        if(data[2] == null){
-//           data[2] = "";
-//        }
         data[1] = data[1].trim();
 
         return data;
@@ -478,6 +472,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         primaryStage.setTitle(s);
     }
 
+    
     @Override
     public void mediaChanged() {
 
