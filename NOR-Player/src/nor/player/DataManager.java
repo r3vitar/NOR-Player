@@ -43,7 +43,7 @@ public class DataManager {
         fileChooser.get("media").setTitle("Media");
 
         fileChooser.put("all", new FileChooser());
-        fileChooser.get("all").getExtensionFilters().add(new ExtensionFilter("All Supported Files", "*.mp3", "*.aac", "*.vlb", "*.wav", "*.flac", "*.alac", "*.mp4", "*.avi", "*.mkv", "*.npl", "*.m3u", "*.m3u8", "*.pls"));
+        fileChooser.get("all").getExtensionFilters().add(new ExtensionFilter("All Supported Files", "*.mp3", "*.aac", "*.vlb", "*.wav", "*.flac", "*.alac", "*.mp4", "*.avi", "*.mkv", "*.npl","*.m3u8"));
         fileChooser.get("all").getExtensionFilters().add(new ExtensionFilter("All Supported Audio", "*.mp3", "*.aac", "*.vlb", "*.wav", "*.flac", "*.alac"));
         fileChooser.get("all").getExtensionFilters().add(new ExtensionFilter("MPEG", "*.mp3",  "*.aac", "*.vlb"));
         fileChooser.get("all").getExtensionFilters().add(new ExtensionFilter("LossLess", "*.wav", "*.flac", "*.alac"));

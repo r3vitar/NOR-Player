@@ -718,7 +718,18 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
         prevB.setOnAction((ActionEvent event) -> {
-            norMediaPlayer.prevClip();
+            
+            
+                Duration currDur = norMediaPlayer.getNorPlayer().getCurrentTime();
+                
+            
+                if(currDur.toSeconds() > 5 ){
+                    norMediaPlayer.stop();
+                    norMediaPlayer.play();
+                }else{
+            
+                norMediaPlayer.prevClip();
+                }
 
         });
 
