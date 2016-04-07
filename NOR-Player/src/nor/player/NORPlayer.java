@@ -84,7 +84,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     Button pauseB = new Button();
     Button stopB = new Button();
     //Button addB = new Button("Add");
-    Button openB = new Button("Open");
+    Button openB = new Button();
     //Button clearB = new Button("Clear");
 
     Button nextB = new Button();
@@ -93,7 +93,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     //Button savePlaylistButton = new Button("savePlaylist");
     // Button loadPlaylistButton = new Button("loadPlaylist");
-    Label l1 = new Label("test");
+    //Label l1 = new Label("test");
 
     Button playlistStageB = new Button("Playlist");
     NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
@@ -111,16 +111,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     @Override
     public void start(Stage ps) {
-        playB.setMinSize(35, 35);
-        playB.setId("playButton");
-        pauseB.setMinSize(35, 35);
-        pauseB.setId("pauseButton");
-        nextB.setMinSize(35, 35);
-        nextB.setId("nextButton");
-        prevB.setMinSize(35, 35);
-        prevB.setId("prevButton");
-        stopB.setMinSize(35, 35);
-        stopB.setId("stopButton");
+        
         
         primaryStage = ps;
         primaryStage.setResizable(false);
@@ -160,14 +151,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         mytime.setId("font");
 
-        HBox chooseFile = new HBox();
+        //HBox chooseFile = new HBox();
 
-        chooseFile.getChildren().add(openB);
-        chooseFile.getChildren().addAll(l1);
-        HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB);
+        //chooseFile.getChildren().add(openB);
+        //chooseFile.getChildren().addAll(l1);
+        HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, openB);
 
         VBox bottomB;
-        bottomB = new VBox(chooseFile, playStop, slide, playlistStageB);
+        bottomB = new VBox(playStop, slide, playlistStageB);
         BorderPane bp1 = new BorderPane(bottomB);
 
         File lastSession = new File("lastSession.npl");
@@ -585,6 +576,21 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initButtons() {
+        
+        playB.setMinSize(35, 35);
+        playB.setId("playButton");
+        pauseB.setMinSize(35, 35);
+        pauseB.setId("pauseButton2");
+        nextB.setMinSize(35, 35);
+        nextB.setId("nextButton");
+        prevB.setMinSize(35, 35);
+        prevB.setId("prevButton");
+        stopB.setMinSize(35, 35);
+        stopB.setId("stopButton");
+        openB.setMinSize(35, 35);
+        openB.setId("loadButton");
+        
+        
         playlistStageB.setOnAction((ActionEvent event) -> {
             showActivePlaylist();
         });
@@ -778,8 +784,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     public void run() {
 
                         try {
-
-                            pauseB.setText("Pause");
+                            pauseB.setId("pauseButton1");
                         } catch (Exception e) {
                         }
 
@@ -792,7 +797,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     public void run() {
 
                         try {
-                            pauseB.setText("Play");
+                            pauseB.setId("pauseButton2");
                         } catch (Exception e) {
                         }
 

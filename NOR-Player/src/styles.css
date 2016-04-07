@@ -2,11 +2,16 @@
     -fx-font-family: "Roboto";
 }
 
-#pauseButton{
+#pauseButton1{
     -fx-background-image: url('images/pause20.png');
     -fx-background-position: center center;
-    -fx-background-repeat: stretch;
-    
+    -fx-background-repeat: stretch;   
+}
+
+#pauseButton2{
+    -fx-background-image: url('images/play20.png');
+    -fx-background-position: center center;
+    -fx-background-repeat: stretch; 
 }
 
 #playButton{
@@ -32,6 +37,13 @@
 
 #prevButton{
     -fx-background-image: url('images/prev20.png');
+    -fx-background-position: center center;
+    -fx-background-repeat: stretch;
+    
+}
+
+#loadButton{
+    -fx-background-image: url('images/load20.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     
