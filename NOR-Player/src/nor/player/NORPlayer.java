@@ -228,7 +228,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable = new TableView();
         playlistTable.setPrefWidth(playlistScene.getWidth());
 
-        playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
+        playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight()*2);
         
         playlistScene.widthProperty().addListener(new InvalidationListener() {
 
