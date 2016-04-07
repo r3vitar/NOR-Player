@@ -58,26 +58,24 @@ public class NORPlayer extends Application implements MediaChangeListener {
     Slider vol = new Slider();
     Slider balanceSlider = new Slider();
     Slider speedSlider = new Slider();
-    
-    MenuItem 
-            addB = new MenuItem("Add Media"),
+
+    MenuItem addB = new MenuItem("Add Media"),
             addAndPlayB = new MenuItem("Add & Play"),
             addsB = new MenuItem("Add More Media"),
-            delB = new MenuItem("Del"),
+            delB = new MenuItem("Delete Current Media"),
             addLink = new MenuItem("Open Media From URL"),
             loadPlaylistButton = new MenuItem("Load Playlist"),
             savePlaylistButton = new MenuItem("Save Playlist"),
             clearB = new MenuItem("Clear Playlist"),
             shuffleB = new MenuItem("Shuffle"),
-            sortB = new MenuItem("Sort ABC");
-            
-            
-    
+            sortAscB = new MenuItem("Sort ABC"),
+            sortDescB = new MenuItem("Sort ZYX");
+
     Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
     Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
-    Menu sortMenu = new Menu("Sort", null, shuffleB, sortB);
+    Menu sortMenu = new Menu("Sort", null, shuffleB, sortAscB, sortDescB);
     MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
-    
+
     Button playB = new Button("Start");
     Button pauseB = new Button("Play");
     Button stopB = new Button("Stop");
@@ -90,7 +88,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
    // Button shuffleB = new Button("Shuffle");
 
     //Button savePlaylistButton = new Button("savePlaylist");
-   // Button loadPlaylistButton = new Button("loadPlaylist");
+    // Button loadPlaylistButton = new Button("loadPlaylist");
     Label l1 = new Label("test");
 
     Button playlistStageB = new Button("Playlist");
@@ -116,43 +114,37 @@ public class NORPlayer extends Application implements MediaChangeListener {
             @Override
             protected Object call() {
                 try {
-                    
+
                     mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
 
                     mp.play();
-                    
-                    
 
                 } catch (Exception e) {
                     System.err.println(e);
                     return false;
                 } finally {
                 }
-                
-                try{
+
+                try {
                     initListener();
-                }catch(Exception e){
-                    
+                } catch (Exception e) {
+
                 }
-                try{
+                try {
                     initButtons();
-                }catch(Exception e){
+                } catch (Exception e) {
                 }
-                try{
-                   initSliders();
-                }catch(Exception e){
+                try {
+                    initSliders();
+                } catch (Exception e) {
                 }
-                
+
                 return true;
             }
 
         }).start();
-        
+
         mytime.setId("font");
-
-      
-
-        
 
         HBox chooseFile = new HBox();
 
@@ -163,7 +155,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
         VBox bottomB;
         bottomB = new VBox(chooseFile, playStop, slide, playlistStageB);
         BorderPane bp1 = new BorderPane(bottomB);
-       
 
         File lastSession = new File("lastSession.npl");
         if (lastSession.exists()) {
@@ -221,6 +212,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private void initPlaylistTable() {
         playlistTable = new TableView();
+        playlistTable.setPrefWidth(300);
+        playlistTable.setPrefHeight(600);
 
         TableColumn titleColumn = new TableColumn("Name"),
                 interpretColumn = new TableColumn("Interpret"),
@@ -250,9 +243,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
         
         bp.setBottom(playlistMenuBar);
         root.getChildren().add(bp);
-        Scene playlistScene = new Scene(root, playlistTable.getPrefWidth(), playlistTable.getPrefHeight());
+        
+        
+        Scene playlistScene = new Scene(root, playlistTable.getPrefWidth(), playlistTable.getPrefHeight() + playlistMenuBar.getHeight());
+        
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
+        playlistStage.setResizable(false);
         playlistStage.setOnHiding(new EventHandler<WindowEvent>() {
 
             @Override
@@ -339,7 +336,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
         primaryStage.setTitle(s);
     }
 
-    
     @Override
     public void mediaChanged() {
 
@@ -432,9 +428,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
         speedSlider.setShowTickMarks(true);
         speedSlider.setSnapToTicks(true);
         speedSlider.setMaxWidth(100);
-        
-        
-         vol.setOnScroll(new EventHandler<ScrollEvent>() {
+
+        vol.setOnScroll(new EventHandler<ScrollEvent>() {
 
             @Override
             public void handle(ScrollEvent event) {
@@ -505,16 +500,58 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
     }
-    
-    private void initButtons(){
-        playlistStageB.setOnAction(new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                showActivePlaylist();
+
+    private void initButtons() {
+        playlistStageB.setOnAction((ActionEvent event) -> {
+            showActivePlaylist();
+        });
+
+        addAndPlayB.setOnAction((ActionEvent event) -> {
+
+            try {
+
+                File f = manager.chooseSingleFile("media");
+
+                if (f != null) {
+
+                    norMediaPlayer.addMedia(f);
+                    norMediaPlayer.setPlayIndexToLast();
+
+                    norMediaPlayer.play();
+
+                }
+
+            } catch (Exception e) {
+                System.err.println(e);
             }
         });
 
         addB.setOnAction((ActionEvent event) -> {
+            boolean b = norMediaPlayer.isPlaying();
+
+            try {
+
+                File f = manager.chooseSingleFile("media");
+
+                if (f != null) {
+
+                    norMediaPlayer.clearPlaylist();
+
+                    norMediaPlayer.addMedia(f);
+                    if (b) {
+                        norMediaPlayer.play();
+                        //pauseB.setText("Pause");
+                    } else {
+                        //pauseB.setText("Play");
+                    }
+                }
+
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        });
+
+        addsB.setOnAction((ActionEvent event) -> {
 
             try {
                 Thread t = new Thread(new Runnable() {
@@ -544,6 +581,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
             } catch (Exception e) {
                 System.err.println(e);
             }
+        });
+        
+        addLink.setOnAction((ActionEvent event) -> {
+            throw new UnsupportedOperationException();
         });
 
         openB.setOnAction((ActionEvent event) -> {
@@ -628,6 +669,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
         shuffleB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.shuffle();
         });
+        sortAscB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByNameAsc();
+        });
+        
+        sortDescB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByPathDesc();
+        });
+        
         clearB.setOnAction((ActionEvent event) -> {
             // pauseB.setText("Play");
             norMediaPlayer.stop();
