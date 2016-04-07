@@ -235,7 +235,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
             @Override
             public void invalidated(Observable observable) {
                 
-                playlistTable.setPrefSize(playlistScene.getWidth(), playlistScene.getHeight()-playlistMenuBar.getHeight());
+                playlistTable.setPrefWidth(playlistScene.getWidth());
+            }
+        });
+        playlistScene.heightProperty().addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+                
+                playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
             }
         });
 
