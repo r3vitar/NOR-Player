@@ -117,6 +117,18 @@ public class NORMediaPlayer implements Serializable {
         }
     };
 
+    public int getPlayIndex() {
+        return playIndex;
+    }
+
+    public void setPlayIndex(int playIndex) {
+        this.playIndex = playIndex;
+    }
+    
+    public void setPlayIndexToLast() {
+        this.playIndex = playIndex;
+    }
+
     public MediaView getMv() {
         return mv;
     }
