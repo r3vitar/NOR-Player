@@ -27,8 +27,11 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -40,6 +43,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
+
 /**
  *
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
@@ -48,7 +52,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     Scanner sc = new Scanner(System.in);
     boolean listenerSet = false;
-
+ Scene playlistScene;
     private Duration duration;
     MediaView view = new MediaView();
     MediaPlayer mp;
@@ -212,8 +216,19 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private void initPlaylistTable() {
         playlistTable = new TableView();
-        playlistTable.setPrefWidth(300);
-        playlistTable.setMaxHeight(600);
+        playlistTable.setPrefWidth(playlistScene.getWidth());
+
+        playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
+        
+        playlistScene.widthProperty().addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+                
+                playlistTable.setPrefSize(playlistScene.getWidth(), playlistScene.getHeight()-playlistMenuBar.getHeight());
+            }
+        });
+
 
         TableColumn titleColumn = new TableColumn("Name"),
                 interpretColumn = new TableColumn("Interpret"),
@@ -231,25 +246,70 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
 
-        playlistTable.setPrefWidth(500);
+        
     }
 
     private void initPlaylist(String playlistTitle) {
+         Pane root = new Pane();
+         
+         playlistScene= new Scene(root, 750,500);
+        
         // Init the PlaylistTable
         initPlaylistTable();
 
-        Pane root = new Pane();
+       
         BorderPane bp = new BorderPane(playlistTable);
         
         bp.setBottom(playlistMenuBar);
         root.getChildren().add(bp);
         
         
-        Scene playlistScene = new Scene(root, playlistTable.getPrefWidth(), playlistTable.getPrefHeight() + playlistMenuBar.getHeight()*2);
+       
         
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
-        playlistStage.setResizable(false);
+       // playlistStage.setResizable(false);
+        
+        
+        
+        playlistScene.setOnDragOver(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                Dragboard db = event.getDragboard();
+                if (db.hasFiles()) {
+                    event.acceptTransferModes(TransferMode.ANY);
+                } else {
+                    event.consume();
+                }
+            }
+        });
+        
+        // Dropping over surface
+        playlistScene.setOnDragDropped(new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                Dragboard db = event.getDragboard();
+                boolean success = false;
+                if (db.hasFiles()) {
+                    success = true;
+                    
+                    ArrayList<File> data = new ArrayList<File>();
+                    for (File file:db.getFiles()) {
+                        data.add(file);
+                        
+                    }
+                    
+                    if (data != null && !data.isEmpty()) {
+                            norMediaPlayer.addMedia(data);
+
+                        }
+                }
+                event.setDropCompleted(success);
+                event.consume();
+            }
+        });
+        
+        
         playlistStage.setOnHiding(new EventHandler<WindowEvent>() {
 
             @Override
@@ -258,7 +318,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 double y = playlistStage.getY();
                 double h = playlistStage.getHeight();
                 double w = playlistStage.getWidth();
-
+                
                 playlistStage.setOnShowing(new EventHandler<WindowEvent>() {
 
                     @Override
@@ -272,6 +332,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             }
         });
+        
         this.playInit = true;
     }
 
@@ -535,15 +596,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                 if (f != null) {
 
-                    norMediaPlayer.clearPlaylist();
+                    //norMediaPlayer.clearPlaylist();
 
                     norMediaPlayer.addMedia(f);
-                    if (b) {
-                        norMediaPlayer.play();
-                        //pauseB.setText("Pause");
-                    } else {
-                        //pauseB.setText("Play");
-                    }
+//                    if (b) {
+//                        norMediaPlayer.play();
+//                        //pauseB.setText("Pause");
+//                    } else {
+//                        //pauseB.setText("Play");
+//                    }
                 }
 
             } catch (Exception e) {
