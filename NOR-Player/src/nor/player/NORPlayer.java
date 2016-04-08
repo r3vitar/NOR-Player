@@ -841,7 +841,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     public void run() {
 
                         try {
-                            pauseB.setText("Play");
+                            pauseB.setId("pauseButton2");
                         } catch (Exception e) {
                         }
 
