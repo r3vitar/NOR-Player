@@ -9,7 +9,7 @@
 }
 
 #pauseButton2{
-    -fx-background-image: url('images/play20.png');
+    -fx-background-image: url('images/pause120.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch; 
 }
