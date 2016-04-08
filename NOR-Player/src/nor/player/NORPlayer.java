@@ -27,6 +27,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -583,16 +584,21 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private void initButtons() {
         
-        playB.setMinSize(35, 35);
+       playB.setMinSize(35, 35);
         playB.setId("playButton");
+        playB.setTooltip(new Tooltip("Play"));
         pauseB.setMinSize(35, 35);
         pauseB.setId("pauseButton2");
+        pauseB.setTooltip(new Tooltip("Pause"));
         nextB.setMinSize(35, 35);
         nextB.setId("nextButton");
+        nextB.setTooltip(new Tooltip("Next"));
         prevB.setMinSize(35, 35);
         prevB.setId("prevButton");
+        prevB.setTooltip(new Tooltip("Preview"));
         stopB.setMinSize(35, 35);
         stopB.setId("stopButton");
+        stopB.setTooltip(new Tooltip("Stop"));
         openB.setMinSize(35, 35);
         openB.setId("loadButton");
         
