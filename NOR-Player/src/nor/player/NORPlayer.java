@@ -51,6 +51,8 @@ import javafx.util.Duration;
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
 public class NORPlayer extends Application implements MediaChangeListener {
+    
+    
 
     Scanner sc = new Scanner(System.in);
     boolean listenerSet = false;
@@ -117,9 +119,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
     Button linkB = new Button("playByLink");
     TextField linkTf = new TextField();
     
+    
+    
     @Override
     public void start(Stage ps) {
-        
+        try{
         
         primaryStage = ps;
         primaryStage.setResizable(false);
@@ -210,6 +214,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
         primaryStage.show();
+        }catch(Exception e){
+            new File("lastSession.npl").delete();
+            System.err.println(e);
+            System.err.println("lastSession deleted!");
+        }
     }
 
     private void showActivePlaylist() {
@@ -244,13 +253,16 @@ public class NORPlayer extends Application implements MediaChangeListener {
             @Override
             public void invalidated(Observable observable) {
                 
-                        playlistTable.setMaxHeight(Double.MAX_VALUE);
+                playlistTable.setMaxHeight(Double.MAX_VALUE);
+
 
                 
                 playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
             }
         });
-
+        playlistTable.setPrefWidth(playlistScene.getWidth());
+        playlistTable.setPrefHeight(playlistScene.getHeight()-25.0);
+        playlistTable.setMaxHeight(playlistScene.getHeight());
 
         TableColumn titleColumn = new TableColumn("Name"),
                 interpretColumn = new TableColumn("Interpret"),
@@ -278,9 +290,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
         initPlaylistTable();
 
        
-        BorderPane bp = new BorderPane(playlistTable);
+        BorderPane bp = new BorderPane();
         
         bp.setBottom(playlistMenuBar);
+        bp.setCenter(playlistTable);
         root.getChildren().add(bp);
         
         
@@ -606,11 +619,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
         linkB.setOnAction(new EventHandler<ActionEvent>() {
 
             public void handle(ActionEvent event) {
-                norMediaPlayer.addMedia(norMediaPlayer.createMedia(new File(linkTf.getText())));
+                norMediaPlayer.addMedia(norMediaPlayer.createMediaByLink(linkTf.getText()));
             }
         });
         
-        
+         delB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.deleteMedia(norMediaPlayer.getPlayIndex());
+        });
         
         playlistStageB.setOnAction((ActionEvent event) -> {
             showActivePlaylist();

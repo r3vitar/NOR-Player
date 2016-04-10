@@ -124,9 +124,9 @@ public class NORMediaPlayer implements Serializable {
     public void setPlayIndex(int playIndex) {
         this.playIndex = playIndex;
     }
-    
+
     public void setPlayIndexToLast() {
-        this.playIndex = playlist.size()-1;
+        this.playIndex = playlist.size() - 1;
     }
 
     public MediaView getMv() {
@@ -234,8 +234,7 @@ public class NORMediaPlayer implements Serializable {
         if (audio != null) {
             this.playlist.add(audio);
             //this.listener.playlistChanged();
-                    this.listener.playlistChanged();
-
+            this.listener.playlistChanged();
 
         }
     }
@@ -247,7 +246,7 @@ public class NORMediaPlayer implements Serializable {
             //this.listener.playlistChanged();
 
         };
-                this.listener.playlistChanged();
+        this.listener.playlistChanged();
 
     }
 
@@ -283,8 +282,7 @@ public class NORMediaPlayer implements Serializable {
             this.addMedia(m);
 
         }
-                this.listener.playlistChanged();
-
+        this.listener.playlistChanged();
 
     }
 
@@ -312,20 +310,6 @@ public class NORMediaPlayer implements Serializable {
 
         }
         return m;
-
-    }
-
-    public Image createImage(File file) {
-        Image img = null;
-        try {
-
-            img = new Image(file.toURI().toString());
-
-        } catch (Exception e) {
-            System.err.println(e);
-
-        }
-        return img;
 
     }
 
@@ -372,10 +356,15 @@ public class NORMediaPlayer implements Serializable {
     public void deleteMedia(int index) {
         if (index == this.playIndex) {
             stop();
+
         }
         this.playlist.remove(index);
         if (this.playIndex >= this.playlist.size()) {
             this.playIndex = this.playlist.size() - 1;
+
+        }
+        if (index == this.playIndex) {
+            nextClip();
 
         }
         this.listener.playlistChanged();
@@ -417,17 +406,20 @@ public class NORMediaPlayer implements Serializable {
         norPlayer = null;
         this.playlist.clear();
         this.playIndex = 0;
-        
+
         this.listener.playlistChanged();
 
     }
 
     public void sort() {
         if (!this.playlist.isEmpty()) {
-            stop();
+            Media tmpM = getCurrentMedia();
+
+           
             this.playlist.sort(this.cFileNameAsc);
-            setCurrentToMediaPlayer();
-            play();
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+          
             this.listener.playlistChanged();
 
         }
@@ -435,10 +427,13 @@ public class NORMediaPlayer implements Serializable {
 
     public void sortByNameAsc() {
         if (!this.playlist.isEmpty()) {
-            stop();
+            Media tmpM = getCurrentMedia();
+
+            
             this.playlist.sort(this.cFileNameAsc);
-            setCurrentToMediaPlayer();
-            play();
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+            
             this.listener.playlistChanged();
 
         }
@@ -446,10 +441,13 @@ public class NORMediaPlayer implements Serializable {
 
     public void sortByNameDesc() {
         if (!this.playlist.isEmpty()) {
-            stop();
+            Media tmpM = getCurrentMedia();
+
+          
             this.playlist.sort(this.cFileNameDesc);
-            setCurrentToMediaPlayer();
-            play();
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+          
             this.listener.playlistChanged();
 
         }
@@ -457,10 +455,13 @@ public class NORMediaPlayer implements Serializable {
 
     public void sortByPathAsc() {
         if (!this.playlist.isEmpty()) {
-            stop();
+            Media tmpM = getCurrentMedia();
+
+           
             this.playlist.sort(this.cPathNameAsc);
-            setCurrentToMediaPlayer();
-            play();
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+          
             this.listener.playlistChanged();
 
         }
@@ -468,10 +469,13 @@ public class NORMediaPlayer implements Serializable {
 
     public void sortByPathDesc() {
         if (!this.playlist.isEmpty()) {
-            stop();
+            Media tmpM = getCurrentMedia();
+
+            
             this.playlist.sort(this.cPathNameDesc);
-            setCurrentToMediaPlayer();
-            play();
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+          
             this.listener.playlistChanged();
 
         }
@@ -481,19 +485,22 @@ public class NORMediaPlayer implements Serializable {
     public void shuffle() {
 
         if (!this.playlist.isEmpty()) {
-
-            stop();
+            Media tmpM = getCurrentMedia();
+           
             Collections.shuffle(this.playlist);
-            setCurrentToMediaPlayer();
-            play();
+            this.playIndex = this.playlist.indexOf(tmpM);
+           
             this.listener.playlistChanged();
+
         }
     }
 
     public void shuffle(Random randomSeed) {
         if (!this.playlist.isEmpty()) {
+            Media tmpM = getCurrentMedia();
             stop();
             Collections.shuffle(this.playlist, randomSeed);
+            this.playIndex = this.playlist.indexOf(tmpM);
             setCurrentToMediaPlayer();
             play();
             this.listener.playlistChanged();
@@ -572,17 +579,17 @@ public class NORMediaPlayer implements Serializable {
                 setCurrentToMediaPlayer();
             }
             if (norPlayer != null) {
-                if(this.playing){
+                if (this.playing) {
                     norPlayer.stop();
                     norPlayer.play();
-                }else
+                } else {
                     norPlayer.play();
+                }
                 this.playing = true;
             }
-           
 
         }
-         
+
         //this.listener.mediaChanged();
     }
 
@@ -622,7 +629,7 @@ public class NORMediaPlayer implements Serializable {
                 playIndex = index;
                 setCurrentToMediaPlayer();
             }
-            
+
             norPlayer.play();
             norPlayer.stop();
             norPlayer.play();
@@ -644,7 +651,7 @@ public class NORMediaPlayer implements Serializable {
                 norPlayer.pause();
                 this.playing = false;
             } else {
-                
+
                 norPlayer.play();
                 this.playing = true;
 
@@ -665,7 +672,7 @@ public class NORMediaPlayer implements Serializable {
             norPlayer.play();
             norPlayer.stop();
             this.playing = false;
-            
+
         }
     }
 
@@ -987,6 +994,12 @@ public class NORMediaPlayer implements Serializable {
             }
         }
         return false;
+
+    }
+
+    Media createMediaByLink(String text) {
+
+        return new Media(text);
 
     }
 
