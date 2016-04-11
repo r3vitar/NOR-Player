@@ -48,3 +48,10 @@
     -fx-background-repeat: stretch;
     
 }
+
+#playlistButton{
+    -fx-background-image: url('images/playlist20.png');
+    -fx-background-position: center center;
+    -fx-background-repeat: stretch;
+    
+}
