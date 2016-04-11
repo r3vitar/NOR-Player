@@ -56,7 +56,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     Scanner sc = new Scanner(System.in);
     boolean listenerSet = false;
- Scene playlistScene;
+    Scene playlistScene;
     private Duration duration;
     MediaView view = new MediaView();
     MediaPlayer mp;
@@ -99,7 +99,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     // Button loadPlaylistButton = new Button("loadPlaylist");
     //Label l1 = new Label("test");
 
-    Button playlistStageB = new Button("Playlist");
+    Button playlistStageB = new Button();
     NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
     DataManager manager = new DataManager();
     Label name = new Label("metadata");
@@ -167,11 +167,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         //chooseFile.getChildren().add(openB);
         //chooseFile.getChildren().addAll(l1);
-        HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, openB);
+        HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, openB, playlistStageB);
 
         VBox bottomB;
         HBox linkBox = new HBox(linkB, linkTf);
-        bottomB = new VBox(playStop, slide, playlistStageB, linkBox);
+        bottomB = new VBox(playStop, slide, linkBox);
         BorderPane bp1 = new BorderPane(bottomB);
 
         File lastSession = new File("lastSession.npl");
@@ -597,7 +597,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private void initButtons() {
         
-       playB.setMinSize(35, 35);
+        playB.setMinSize(35, 35);
         playB.setId("playButton");
         playB.setTooltip(new Tooltip("Play"));
         pauseB.setMinSize(35, 35);
@@ -614,6 +614,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
         stopB.setTooltip(new Tooltip("Stop"));
         openB.setMinSize(35, 35);
         openB.setId("loadButton");
+        openB.setTooltip(new Tooltip("Open"));
+        playlistStageB.setMinSize(35, 35);
+        playlistStageB.setId("playlistButton");
+        playlistStageB.setTooltip(new Tooltip("Playlist"));
         
         //Audio by link
         linkB.setOnAction(new EventHandler<ActionEvent>() {
