@@ -721,7 +721,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             try {
 
-                List dataList = manager.chooseMultipleFiles("media");
+                List dataList = manager.chooseMultipleFiles("all");
                 ArrayList<File> data = new ArrayList<File>(dataList);
 
                 if (data != null && !data.isEmpty()) {
