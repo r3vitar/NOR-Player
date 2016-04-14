@@ -545,6 +545,7 @@ public class NORMediaPlayer{
     public void deleteMedia(int index) {
         if (index == this.playIndex) {
             stop();
+            
 
         }
         this.playlist.remove(index);
@@ -552,7 +553,9 @@ public class NORMediaPlayer{
             this.playIndex = this.playlist.size() - 1;
 
         }
+        
         if (index == this.playIndex) {
+            this.setCurrentToMediaPlayer();
             nextClip();
 
         }

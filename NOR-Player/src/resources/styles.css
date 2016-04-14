@@ -1,7 +1,9 @@
 *{
     -fx-font-family: "Roboto";
+    -fx-text-fill: #1e7cff;
     
 }
+
 
 #pauseButton{
     -fx-background-image: url('pause20.png');
@@ -53,19 +55,24 @@
 
 #name{
     
+     -fx-text-fill: #dbdbdb;
+     
     -fx-font-size: 15px;
-    -fx-padding: 5px;
-    -fx-border-insets: 5px;
-    -fx-background-insets: 5px;
+    -fx-padding: 2px;
+    -fx-border-insets: 2px;
+    -fx-background-insets: 2px;
+    
 
     
 }
 
 #time{
-    -fx-font-size: 25px;
-    -fx-padding: 5px;
-    -fx-border-insets: 5px;
-    -fx-background-insets: 5px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #dbdbdb;
+    -fx-font-size: 30px;
+    -fx-padding: 2px;
+    -fx-border-insets: 2px;
+    -fx-background-insets: 2x;
 }
 #slider1{
     -fx-padding: 5px;
@@ -76,4 +83,12 @@
     -fx-padding: 5px;
     -fx-border-insets: 5px;
     -fx-background-insets: 5px;
+}
+.button{
+    -fx-padding: 5px;
+    -fx-border-insets: 5px;
+    -fx-background-insets: 5px;
+}
+#bg{
+    -fx-background-image: url('bg.png');
 }

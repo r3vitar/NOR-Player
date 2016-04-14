@@ -230,7 +230,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             //chooseFile.getChildren().add(openB);
             //chooseFile.getChildren().addAll(l1);
             HBox playStop = new HBox(prevB, pauseB, stopB, nextB, openB, playlistStageB);
-
+            
             VBox bottomB;
             //HBox linkBox = new HBox(linkB, linkTf);
             bottomB = new VBox(slide, playStop);
@@ -252,13 +252,17 @@ public class NORPlayer extends Application implements MediaChangeListener {
             sliderBox.setId("slider1");
             sliderBox.setTranslateX(-10);
             sliderBox.translateYProperty().bind(sliderBox.translateXProperty().negate());
-             BorderPane topPane = new BorderPane(null, null,sliderBox , null, new VBox(mytime, name));
+            VBox displayBox = new VBox(mytime, name);
+            
+            displayBox.setTranslateX(17);
+            displayBox.setTranslateY(7);
+             BorderPane topPane = new BorderPane(null, null,sliderBox , null, displayBox);
             root.setTop(topPane);
 
             primaryStage.setTitle(displayTitle.toString());
             scene.getStylesheets().add("resources/styles.css");
             primaryStage.getIcons().add(new Image("resources/nor.png"));
-            
+            root.setId("bg");
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
@@ -373,7 +377,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         bp.setBottom(playlistMenuBar);
         bp.setCenter(playlistTable);
         root.getChildren().add(bp);
-
+        
         playlistStage.getIcons().add(primaryStage.getIcons().get(0));
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
@@ -604,6 +608,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
         vol.setMinorTickCount(5);
         vol.setSnapToTicks(true);
         vol.setTranslateY(56);
+        
+        vol.setTooltip(new Tooltip("Volume"));
+        
         balanceSlider.setMax(100);
         balanceSlider.setMin(-100);
         balanceSlider.setValue(0);
@@ -612,6 +619,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         balanceSlider.setMinorTickCount(3);
         balanceSlider.setShowTickMarks(true);
         balanceSlider.setSnapToTicks(true);
+        balanceSlider.setTooltip(new Tooltip("Balance"));
       
         speedSlider.setMax(150);
         speedSlider.setMin(50);
@@ -621,6 +629,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
         speedSlider.setShowTickMarks(true);
         speedSlider.setSnapToTicks(true);
         speedSlider.setMaxWidth(100);
+        speedSlider.setTooltip(new Tooltip("SPEED!"));
+        
         slide.setMaxWidth(scene.getWidth()/20 *18);
 
         vol.setOnScroll(new EventHandler<ScrollEvent>() {
