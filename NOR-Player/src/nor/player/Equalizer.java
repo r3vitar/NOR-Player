@@ -2,7 +2,7 @@ package nor.player;
 
 /**
  *
- * @author Julian
+ * @author Julian Nenning
  */
 public class Equalizer {
     
