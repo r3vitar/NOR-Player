@@ -56,22 +56,22 @@ import javafx.util.Duration;
  */
 public class NORPlayer extends Application implements MediaChangeListener {
 
-    Scanner sc = new Scanner(System.in);
+    private Scanner sc = new Scanner(System.in);
     private static final String settingPath = "settings.norc";
-    boolean listenerSet = false;
-    Scene playlistScene;
+    private boolean listenerSet = false;
+    private Scene playlistScene;
     private Duration duration;
-    MediaView view = new MediaView();
-    MediaPlayer mp;
-    BorderPane root = new BorderPane();
-    Scene scene = new Scene(root, 400, 200);
+    private MediaView view = new MediaView();
+    private MediaPlayer mp;
+    private BorderPane root = new BorderPane();
+    private Scene scene = new Scene(root, 400, 200);
     
-    Slider slide = new Slider();
-    Slider vol = new Slider();
-    Slider balanceSlider = new Slider();
-    Slider speedSlider = new Slider();
+    private Slider slide = new Slider();
+    private Slider vol = new Slider();
+    private Slider balanceSlider = new Slider();
+    private Slider speedSlider = new Slider();
 
-    MenuItem addB = new MenuItem("Add Media"),
+    private MenuItem addB = new MenuItem("Add Media"),
             addAndPlayB = new MenuItem("Add & Play"),
             addsB = new MenuItem("Add More Media"),
             delB = new MenuItem("Delete Current Media"),
@@ -89,42 +89,42 @@ public class NORPlayer extends Application implements MediaChangeListener {
             sortAlbumAscB = new MenuItem("Album asc"),
             sortAlbumDescB = new MenuItem("Album desc");
 
-    Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
-    Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
-    Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
-    MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
+    private Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
+    private Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
+    private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
+    private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
 
-    Button playB = new Button();
-    Button pauseB = new Button();
-    Button stopB = new Button();
+    private Button playB = new Button();
+   private  Button pauseB = new Button();
+   private  Button stopB = new Button();
     //Button addB = new Button("Add");
-    Button openB = new Button();
+    private Button openB = new Button();
     //Button clearB = new Button("Clear");
 
-    Button nextB = new Button();
-    Button prevB = new Button();
+    private Button nextB = new Button();
+    private Button prevB = new Button();
    // Button shuffleB = new Button("Shuffle");
 
     //Button savePlaylistButton = new Button("savePlaylist");
     // Button loadPlaylistButton = new Button("loadPlaylist");
     //Label l1 = new Label("test");
-    Button playlistStageB = new Button();
-    NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
-    DataManager manager = new DataManager();
-    Label name = new Label("metadata");
-    Label mytime = new Label("00:00:00");
-    Stage playlistStage = new Stage();
-    String[] requiredData = {"artist=", "title=", "album="};
-    TableView playlistTable = new TableView();
-    Stage primaryStage;
+    private Button playlistStageB = new Button();
+    private NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
+    private DataManager manager = new DataManager();
+    private Label name = new Label("metadata");
+    private Label mytime = new Label("00:00:00");
+    private Stage playlistStage = new Stage();
+    private String[] requiredData = {"artist=", "title=", "album="};
+    private TableView playlistTable = new TableView();
+    private Stage primaryStage;
 
-    ObservableList<LineItem> playlistData = FXCollections.observableArrayList();
+    private ObservableList<LineItem> playlistData = FXCollections.observableArrayList();
 
-    boolean playInit = false;
+    private boolean playInit = false;
 
     //Tests für audio per link abspielen
-    Button linkB = new Button("playByLink");
-    TextField linkTf = new TextField();
+    private Button linkB = new Button("playByLink");
+    private TextField linkTf = new TextField();
 
     @Override
     public void start(Stage ps) {
@@ -364,71 +364,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
         this.playInit = true;
     }
 
-    private String[] readMetadata(String[] requiredData, Media m) {
-        String meta = m.getMetadata().toString();
-        String[] data = new String[requiredData.length];
-        // 0 -> artist; 1 --> title; 2 --> album
-        // searching for requiredData
-        File f = new File(m.getSource());
-        for (int x = 0; x < requiredData.length; x++) {
-            for (int i = 0; i < meta.length() && (meta.length() - i) >= requiredData[x].length(); i++) {
-                if (meta.substring(i, i + requiredData[x].length()).equalsIgnoreCase(requiredData[x])) {
-                    i += requiredData[x].length();
-                    String temp = "";
-                    for (; meta.charAt(i) != ',' && meta.charAt(i) != '}'; i++) {
-                        temp += meta.charAt(i);
-                    }
-                    data[x] = temp;
-                    i--;
-                }
-            }
-        }
-
-        if (data[1] == null && data[0] == null) {
-            if (f.getName().contains("-")) {
-                if (f.getName().split("-").length > 3) {
-                    data[0] = (f.getName().split("-")[0].replace("%20", " ") + f.getName().split("-")[1].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
-                    data[1] = (f.getName().split("-")[2].replace("%20", " ") + f.getName().split("-")[3].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
-                } else if (f.getName().split("-").length > 2) {
-                    data[0] = (f.getName().split("-")[0].replace("%20", " ") + f.getName().split("-")[1].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
-                    data[1] = f.getName().split("-")[2].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-                } else {
-                    data[0] = f.getName().split("-")[0].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-                    data[1] = f.getName().split("-")[1].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-                }
-            } else {
-                data[1] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-                data[0] = "";
-            }
-
-        } else if (data[1] == null) {
-            if (f.getName().contains("-")) {
-                data[1] = f.getName().split("-")[1].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-            } else {
-                data[1] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-
-            }
-
-        } else if (data[0] == null) {
-            if (f.getName().contains("-")) {
-                data[0] = f.getName().split("-")[0].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-            } else {
-                data[0] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-
-            }
-        }
-
-        data[1] = data[1].trim();
-        data[0] = data[0].trim();
-
-        return data;
-    }
+    
 
     public void chName() {
 
         String[] requiredDataName = {"artist=", "title="};
 
-        String[] data = readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
+        String[] data = NORMediaPlayer.readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
         String s = String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", "");
         this.name.setText(s);
         primaryStage.setTitle(s);
@@ -588,7 +530,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 playlistData = FXCollections.observableArrayList();
                 ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
                 for (int i = 0; i < playlistMedia.size(); i++) {
-                    String[] temp = readMetadata(requiredData, playlistMedia.get(i));
+                    String[] temp = NORMediaPlayer.readMetadata(requiredData, playlistMedia.get(i));
                     LineItem li = new LineItem(i + 1, temp[1], temp[0], temp[2]);
                     playlistData.add(li);
                 }
