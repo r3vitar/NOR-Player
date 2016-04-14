@@ -1,9 +1,15 @@
 package nor.player;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import javafx.application.Application;
@@ -29,6 +35,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
@@ -45,29 +52,28 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
-
 /**
  *
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
 public class NORPlayer extends Application implements MediaChangeListener {
-    
-    
 
-    Scanner sc = new Scanner(System.in);
-    boolean listenerSet = false;
-    Scene playlistScene;
+    private Scanner sc = new Scanner(System.in);
+    private static final String settingPath = "settings.norc";
+    private boolean listenerSet = false;
+    private Scene playlistScene;
     private Duration duration;
-    MediaView view = new MediaView();
-    MediaPlayer mp;
-    BorderPane root = new BorderPane();
-    Scene scene = new Scene(root, 400, 200);
-    Slider slide = new Slider();
-    Slider vol = new Slider();
-    Slider balanceSlider = new Slider();
-    Slider speedSlider = new Slider();
+    private MediaView view = new MediaView();
+    private MediaPlayer mp;
+    private BorderPane root = new BorderPane();
+    private Scene scene = new Scene(root, 400, 200);
 
-    MenuItem addB = new MenuItem("Add Media"),
+    private Slider slide = new Slider();
+    private Slider vol = new Slider();
+    private Slider balanceSlider = new Slider();
+    private Slider speedSlider = new Slider();
+
+    private MenuItem addB = new MenuItem("Add Media"),
             addAndPlayB = new MenuItem("Add & Play"),
             addsB = new MenuItem("Add More Media"),
             delB = new MenuItem("Delete Current Media"),
@@ -76,145 +82,171 @@ public class NORPlayer extends Application implements MediaChangeListener {
             savePlaylistButton = new MenuItem("Save Playlist"),
             clearB = new MenuItem("Clear Playlist"),
             shuffleB = new MenuItem("Shuffle"),
-            sortAscB = new MenuItem("Sort ABC"),
-            sortDescB = new MenuItem("Sort ZYX");
+            sortFileAscB = new MenuItem("FileName asc"),
+            sortFileDescB = new MenuItem("FileName desc"),
+            sortTitleAscB = new MenuItem("Title asc"),
+            sortTitleDescB = new MenuItem("Title desc"),
+            sortArtistAscB = new MenuItem("Artist asc"),
+            sortArtistDescB = new MenuItem("Artist desc"),
+            sortAlbumAscB = new MenuItem("Album asc"),
+            sortAlbumDescB = new MenuItem("Album desc");
 
-    Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
-    Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
-    Menu sortMenu = new Menu("Sort", null, shuffleB, sortAscB, sortDescB);
-    MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
+    private Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
+    private Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
+    private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
+    private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
 
-    Button playB = new Button();
-    Button pauseB = new Button();
-    Button stopB = new Button();
+    private Button playB = new Button();
+    private Button pauseB = new Button();
+    private Button stopB = new Button();
     //Button addB = new Button("Add");
-    Button openB = new Button();
+    private Button openB = new Button();
     //Button clearB = new Button("Clear");
 
-    Button nextB = new Button();
-    Button prevB = new Button();
+    private Button nextB = new Button();
+    private Button prevB = new Button();
    // Button shuffleB = new Button("Shuffle");
 
     //Button savePlaylistButton = new Button("savePlaylist");
     // Button loadPlaylistButton = new Button("loadPlaylist");
     //Label l1 = new Label("test");
+    private Button playlistStageB = new Button();
+    private NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
+    private DataManager manager = new DataManager();
+    private Label name = new Label("metadata");
+    private Label mytime = new Label("00:00:00");
+    private Stage playlistStage = new Stage();
+    private String[] requiredData = {"artist=", "title=", "album="};
+    private TableView playlistTable = new TableView();
+    private Stage primaryStage;
 
-    Button playlistStageB = new Button();
-    NORMediaPlayer norMediaPlayer = new NORMediaPlayer(this);
-    DataManager manager = new DataManager();
-    Label name = new Label("metadata");
-    Label mytime = new Label("00:00:00");
-    Stage playlistStage = new Stage();
-    String[] requiredData = {"artist=", "title=", "album="};
-    TableView playlistTable = new TableView();
-    Stage primaryStage;
+    private ObservableList<LineItem> playlistData = FXCollections.observableArrayList();
 
-    ObservableList<LineItem> playlistData = FXCollections.observableArrayList();
+    private boolean playInit = false;
 
-    boolean playInit = false;
-
-    
-    
     //Tests für audio per link abspielen
-    Button linkB = new Button("playByLink");
-    TextField linkTf = new TextField();
-    
-    
-    
+    private Button linkB = new Button("playByLink");
+    private TextField linkTf = new TextField();
+
     @Override
     public void start(Stage ps) {
-        try{
-        
-        primaryStage = ps;
-        primaryStage.setResizable(false);
-        new Thread(new Task() {
-            @Override
-            protected Object call() {
-                try {
+        try {
 
-                    mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
-
-                    mp.play();
-
-                } catch (Exception e) {
-                    System.err.println(e);
-                    return false;
-                } finally {
-                }
-
-                try {
-                    initListener();
-                } catch (Exception e) {
-
-                }
-                try {
-                    initButtons();
-                } catch (Exception e) {
-                }
-                try {
-                    initSliders();
-                } catch (Exception e) {
-                }
-
-                return true;
-            }
-
-        }).start();
-
-        mytime.setId("font");
-
-        //HBox chooseFile = new HBox();
-
-        //chooseFile.getChildren().add(openB);
-        //chooseFile.getChildren().addAll(l1);
-        HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, openB, playlistStageB);
-
-        VBox bottomB;
-        HBox linkBox = new HBox(linkB, linkTf);
-        bottomB = new VBox(playStop, slide, linkBox);
-        BorderPane bp1 = new BorderPane(bottomB);
-
-        File lastSession = new File("lastSession.npl");
-        if (lastSession.exists()) {
+            primaryStage = ps;
+            primaryStage.setResizable(false);
             new Thread(new Task() {
-
                 @Override
-                protected Object call() throws Exception {
+                protected Object call() {
+                    try {
+
+                        mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
+
+                        mp.play();
+
+                    } catch (Exception e) {
+                        System.err.println(e);
+                        return false;
+                    } finally {
+                    }
 
                     try {
-                        norMediaPlayer.loadPlaylist(lastSession, true);
-                        playlistChanged();
-                    } catch (IOException ex) {
-                        return false;
+                        initListener();
+                    } catch (Exception e) {
+
                     }
+                    try {
+                        initButtons();
+                    } catch (Exception e) {
+                    }
+                    try {
+                        
+                    } catch (Exception e) {
+                    }
+
                     return true;
                 }
+
             }).start();
+            initSliders();
 
-        }
+            mytime.setId("font");
 
-        bp1.setRight(vol);
-        root.setTop(new VBox(mytime, name, balanceSlider, speedSlider));
-        root.setCenter(view);
-        root.setBottom(bp1);
+            //HBox chooseFile = new HBox();
+            //chooseFile.getChildren().add(openB);
+            //chooseFile.getChildren().addAll(l1);
+            HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, openB, playlistStageB);
 
-        primaryStage.setTitle("NOR-Player");
-        scene.getStylesheets().add("styles.css");
-        primaryStage.setScene(scene);
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            VBox bottomB;
+            HBox linkBox = new HBox(linkB, linkTf);
+            bottomB = new VBox(playStop, slide, linkBox);
+            BorderPane bp1 = new BorderPane(bottomB);
 
-            @Override
-            public void handle(WindowEvent event) {
-                if (!norMediaPlayer.isEmpty()) {
-                    norMediaPlayer.savePlaylist("lastSession.npl");
-                }
-                playlistStage.close();
-                Platform.exit();
+      
+            if (new File(settingPath).exists()) {
+                new Thread(new Task() {
+
+                    @Override
+                    protected Object call() throws Exception {
+
+                        try {
+                            loadSettings();
+                        } catch (Exception e) {
+                            return false;
+                        }
+                        return true;
+                    }
+                }).start();
+
             }
-        });
+            
+            File lastSession = new File("lastSession.npl");
+            if (lastSession.exists()) {
+                new Thread(new Task() {
 
-        primaryStage.show();
-        }catch(Exception e){
+                    @Override
+                    protected Object call() throws Exception {
+
+                        try {
+                            norMediaPlayer.loadPlaylist(lastSession, true);
+                            playlistChanged();
+                        } catch (IOException ex) {
+                            return false;
+                        }
+                        return true;
+                    }
+                }).start();
+
+            }
+
+            bp1.setRight(vol);
+            root.setTop(new VBox(mytime, name, balanceSlider, speedSlider));
+            root.setCenter(view);
+            root.setBottom(bp1);
+
+            primaryStage.setTitle("NOR-Player");
+            scene.getStylesheets().add("styles.css");
+            primaryStage.getIcons().add(new Image("images/nor.png"));
+
+            primaryStage.setScene(scene);
+            primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+
+                @Override
+                public void handle(WindowEvent event) {
+                    try{
+                        saveSettings();
+                    }catch(Exception e){
+                        System.err.println(e);
+                    }
+                    if (!norMediaPlayer.isEmpty()) {
+                        norMediaPlayer.savePlaylist("lastSession.npl");
+                    }
+                    playlistStage.close();
+                    Platform.exit();
+                }
+            });
+
+            primaryStage.show();
+        } catch (Exception e) {
             new File("lastSession.npl").delete();
             System.err.println(e);
             System.err.println("lastSession deleted!");
@@ -235,16 +267,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private void initPlaylistTable() {
         playlistTable = new TableView();
-        playlistTable.setPrefWidth(playlistScene.getWidth());
 
-        playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
-        playlistTable.setMaxHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
-        
         playlistScene.widthProperty().addListener(new InvalidationListener() {
 
             @Override
             public void invalidated(Observable observable) {
-                
+
                 playlistTable.setPrefWidth(playlistScene.getWidth());
             }
         });
@@ -252,16 +280,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             @Override
             public void invalidated(Observable observable) {
-                
+
                 playlistTable.setMaxHeight(Double.MAX_VALUE);
 
-
-                
-                playlistTable.setPrefHeight(playlistScene.getHeight()-playlistMenuBar.getHeight());
+                playlistTable.setPrefHeight(playlistScene.getHeight() - playlistMenuBar.getHeight());
             }
         });
         playlistTable.setPrefWidth(playlistScene.getWidth());
-        playlistTable.setPrefHeight(playlistScene.getHeight()-25.0);
+        playlistTable.setPrefHeight(playlistScene.getHeight() - 25.0);
         playlistTable.setMaxHeight(playlistScene.getHeight());
 
         TableColumn titleColumn = new TableColumn("Name"),
@@ -282,29 +308,25 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initPlaylist(String playlistTitle) {
-         Pane root = new Pane();
-         
-         playlistScene= new Scene(root, 750,500);
-        
+        Pane root = new Pane();
+
+        playlistScene = new Scene(root, 750, 500);
+        playlistScene.getStylesheets().add("styles.css");
+
         // Init the PlaylistTable
         initPlaylistTable();
 
-       
         BorderPane bp = new BorderPane();
-        
+
         bp.setBottom(playlistMenuBar);
         bp.setCenter(playlistTable);
         root.getChildren().add(bp);
-        
-        
-       
-        
+
+        playlistStage.getIcons().add(primaryStage.getIcons().get(0));
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
-       // playlistStage.setResizable(false);
-        
-        
-        
+        // playlistStage.setResizable(false);
+
         playlistScene.setOnDragOver(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
@@ -316,7 +338,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }
             }
         });
-        
+
         // Dropping over surface
         playlistScene.setOnDragDropped(new EventHandler<DragEvent>() {
             @Override
@@ -325,24 +347,23 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 boolean success = false;
                 if (db.hasFiles()) {
                     success = true;
-                    
-                    ArrayList<File> data = new ArrayList<File>();
-                    for (File file:db.getFiles()) {
-                        data.add(file);
-                        
-                    }
-                    
-                    if (data != null && !data.isEmpty()) {
-                            norMediaPlayer.addMedia(data);
 
-                        }
+                    ArrayList<File> data = new ArrayList<File>();
+                    for (File file : db.getFiles()) {
+                        data.add(file);
+
+                    }
+
+                    if (data != null && !data.isEmpty()) {
+                        norMediaPlayer.addMedia(data);
+
+                    }
                 }
                 event.setDropCompleted(success);
                 event.consume();
             }
         });
-        
-        
+
         playlistStage.setOnHiding(new EventHandler<WindowEvent>() {
 
             @Override
@@ -351,7 +372,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 double y = playlistStage.getY();
                 double h = playlistStage.getHeight();
                 double w = playlistStage.getWidth();
-                
+
                 playlistStage.setOnShowing(new EventHandler<WindowEvent>() {
 
                     @Override
@@ -365,66 +386,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             }
         });
-        
+
         this.playInit = true;
-    }
-
-    private String[] readMetadata(String[] requiredData, Media m) {
-        String meta = m.getMetadata().toString();
-        String[] data = new String[requiredData.length];
-        // 0 -> artist; 1 --> title; 2 --> album
-        // searching for requiredData
-        File f = new File(m.getSource());
-        for (int x = 0; x < requiredData.length; x++) {
-            for (int i = 0; i < meta.length() && (meta.length() - i) >= requiredData[x].length(); i++) {
-                if (meta.substring(i, i + requiredData[x].length()).equalsIgnoreCase(requiredData[x])) {
-                    i += requiredData[x].length();
-                    String temp = "";
-                    for (; meta.charAt(i) != ',' && meta.charAt(i) != '}'; i++) {
-                        temp += meta.charAt(i);
-                    }
-                    data[x] = temp;
-                    i--;
-                }
-            }
-        }
-
-        if (data[1] == null && data[0] == null) {
-            if (f.getName().contains("-")) {
-                data[0] = f.getName().split("-")[0].replace("%20", " ");
-                data[1] = f.getName().split("-")[1].replace("%20", " ");
-            } else {
-                data[1] = f.getName().replace("%20", " ");
-                data[0] = "";
-            }
-
-        } else if (data[1] == null) {
-            if (f.getName().contains("-")) {
-                data[1] = f.getName().split("-")[1].replace("%20", " ");
-            } else {
-                data[1] = f.getName().replace("%20", " ");
-
-            }
-
-        } else if (data[0] == null) {
-            if (f.getName().contains("-")) {
-                data[0] = f.getName().split("-")[0].replace("%20", " ");
-            } else {
-                data[0] = f.getName().replace("%20", " ");
-
-            }
-        }
-
-        data[1] = data[1].trim();
-
-        return data;
     }
 
     public void chName() {
 
         String[] requiredDataName = {"artist=", "title="};
 
-        String[] data = readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
+        String[] data = NORMediaPlayer.readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
         String s = String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", "");
         this.name.setText(s);
         primaryStage.setTitle(s);
@@ -584,7 +554,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 playlistData = FXCollections.observableArrayList();
                 ArrayList<Media> playlistMedia = norMediaPlayer.getPlaylist();
                 for (int i = 0; i < playlistMedia.size(); i++) {
-                    String[] temp = readMetadata(requiredData, playlistMedia.get(i));
+                    String[] temp = NORMediaPlayer.readMetadata(requiredData, playlistMedia.get(i));
                     LineItem li = new LineItem(i + 1, temp[1], temp[0], temp[2]);
                     playlistData.add(li);
                 }
@@ -596,7 +566,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initButtons() {
-        
+
         playB.setMinSize(35, 35);
         playB.setId("playButton");
         playB.setTooltip(new Tooltip("Play"));
@@ -618,7 +588,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistStageB.setMinSize(35, 35);
         playlistStageB.setId("playlistButton");
         playlistStageB.setTooltip(new Tooltip("Playlist"));
-        
+
         //Audio by link
         linkB.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -626,11 +596,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 norMediaPlayer.addMedia(norMediaPlayer.createMediaByLink(linkTf.getText()));
             }
         });
-        
-         delB.setOnAction((ActionEvent event) -> {
+
+        delB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.deleteMedia(norMediaPlayer.getPlayIndex());
         });
-        
+
         playlistStageB.setOnAction((ActionEvent event) -> {
             showActivePlaylist();
         });
@@ -665,7 +635,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 if (f != null) {
 
                     //norMediaPlayer.clearPlaylist();
-
                     norMediaPlayer.addMedia(f);
 //                    if (b) {
 //                        norMediaPlayer.play();
@@ -711,7 +680,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 System.err.println(e);
             }
         });
-        
+
         addLink.setOnAction((ActionEvent event) -> {
             throw new UnsupportedOperationException();
         });
@@ -721,20 +690,20 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             try {
 
-                List dataList = manager.chooseMultipleFiles("all");
-                ArrayList<File> data = new ArrayList<File>(dataList);
+                File f = manager.chooseSingleFile("media");
 
-                if (data != null && !data.isEmpty()) {
-
-                    norMediaPlayer.clearPlaylist();
-
-                    norMediaPlayer.addMedia(data);
-                    if (b) {
-                        norMediaPlayer.play();
-                        //pauseB.setText("Pause");
-                    } else {
-                        //pauseB.setText("Play");
+                if (f != null) {
+                    if (!norMediaPlayer.isEmpty()) {
+                        norMediaPlayer.clearPlaylist();
                     }
+
+                    norMediaPlayer.addMedia(f);
+//                    if (b) {
+//                        norMediaPlayer.play();
+//                        //pauseB.setText("Pause");
+//                    } else {
+//                        //pauseB.setText("Play");
+//                    }
                 }
 
             } catch (Exception e) {
@@ -758,18 +727,16 @@ public class NORPlayer extends Application implements MediaChangeListener {
         });
 
         prevB.setOnAction((ActionEvent event) -> {
-            
-            
-                Duration currDur = norMediaPlayer.getNorPlayer().getCurrentTime();
-                
-            
-                if(currDur.toSeconds() > 5 ){
-                    norMediaPlayer.stop();
-                    norMediaPlayer.play();
-                }else{
-            
+
+            Duration currDur = norMediaPlayer.getNorPlayer().getCurrentTime();
+
+            if (currDur.toSeconds() > 5) {
+                norMediaPlayer.stop();
+                norMediaPlayer.play();
+            } else {
+
                 norMediaPlayer.prevClip();
-                }
+            }
 
         });
 
@@ -809,14 +776,35 @@ public class NORPlayer extends Application implements MediaChangeListener {
         shuffleB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.shuffle();
         });
-        sortAscB.setOnAction((ActionEvent event) -> {
+        sortFileAscB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.sortByNameAsc();
         });
-        
-        sortDescB.setOnAction((ActionEvent event) -> {
+
+        sortFileDescB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.sortByPathDesc();
         });
-        
+        sortTitleAscB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByTitleAsc();
+        });
+
+        sortTitleDescB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByTitleDesc();
+        });
+        sortArtistAscB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByArtistAsc();
+        });
+
+        sortArtistDescB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByArtistDesc();
+        });
+        sortAlbumAscB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByAlbumAsc();
+        });
+
+        sortAlbumDescB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByAlbumDesc();
+        });
+
         clearB.setOnAction((ActionEvent event) -> {
             // pauseB.setText("Play");
             norMediaPlayer.stop();
@@ -874,6 +862,72 @@ public class NORPlayer extends Application implements MediaChangeListener {
         }
         ).start();
 
+    }
+
+    private void loadSettings(){
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(settingPath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            HashMap<String, Double> input = (HashMap<String, Double>) ois.readObject();
+            this.balanceSlider.setValue(input.get("balance"));
+            this.vol.setValue(input.get("volume"));
+            this.speedSlider.setValue(input.get("speed"));
+            this.primaryStage.setX(input.get("x"));
+            this.primaryStage.setY(input.get("y"));
+            if(input.get("pOpen") > 0){
+                showActivePlaylist();
+                this.playlistStage.setX(input.get("pX"));
+                this.playlistStage.setY(input.get("pY"));
+            }
+            
+        } catch (IOException e) {
+            System.err.println(e);
+
+        }catch(ClassNotFoundException ec){
+            System.err.println(ec);
+        }finally {
+            try {
+                fis.close();
+            } catch (Exception ee) {
+                System.err.println(ee);
+
+            }
+        }
+    }
+
+    private void saveSettings() {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(settingPath);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            HashMap<String, Double> output = new HashMap<String, Double>();
+
+            output.put("balance", this.balanceSlider.getValue());
+            output.put("volume", this.vol.getValue());
+            output.put("speed", this.speedSlider.getValue());
+            output.put("x", this.primaryStage.getX());
+            output.put("y", this.primaryStage.getY());
+            output.put("pX", this.playlistStage.getX());
+            output.put("pY", this.playlistStage.getY());
+            output.put("pOpen", this.playlistStage.isShowing() ? -1.0 : 1.0);
+
+            oos.writeObject(output);
+
+            oos.flush();
+
+        } catch (IOException e) {
+            System.err.println(e);
+
+        } finally {
+            try {
+                fos.close();
+            } catch (Exception ee) {
+                System.out.println(ee);
+
+            }
+
+        }
     }
 
     public static void main(String[] args) {

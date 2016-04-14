@@ -53,13 +53,109 @@ public class NORMediaPlayer implements Serializable {
     private MediaChangeListener listener;
     private final char dot = '.';
     private MediaView mv;
-    String[] supportedAudio = {".mp3", ".aac", ".vlb", ".wav", ".flac", ".alac"};
-    String[] supportedMedia = {".mp3", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
-    String[] supportedPlaylists = {".npl", ".m3u8"/*, ".m3u", ".pls"*/};
-    String[] supportedVideo = {".mp4", ".avi", ".mkv"};
+    public static final String[] supportedAudio = {".mp3", ".aac", ".vlb", ".wav", ".flac", ".alac"};
+    public static final String[] supportedMedia = {".mp3", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
+    public static final String[] supportedPlaylists = {".npl", ".m3u8"/*, ".m3u", ".pls"*/};
+    public static final String[] supportedVideo = {".mp4", ".avi", ".mkv"};
     private int playIndex = 0;
 
-    private Comparator<Media> cFileNameAsc = new Comparator<Media>() {
+    public static final Comparator<Media> cTitleAsc = new Comparator<Media>() {
+
+        String[] requiredData = {"artist=", "title=", "album="};
+
+        @Override
+        public int compare(Media o1, Media o2) {
+            return getNameFromMedia(o1).compareTo(getNameFromMedia(o2));
+        }
+
+        private String getNameFromMedia(Media audio) {
+            String name = "";
+            name = readMetadata(requiredData, audio)[1];
+
+            return name;
+        }
+    };
+    public static final Comparator<Media> cTitleDesc = new Comparator<Media>() {
+
+        String[] requiredData = {"artist=", "title=", "album="};
+
+        @Override
+        public int compare(Media o1, Media o2) {
+            return getNameFromMedia(o1).compareTo(getNameFromMedia(o2)) * (-1);
+        }
+
+        private String getNameFromMedia(Media audio) {
+            String name = "";
+            name = readMetadata(requiredData, audio)[1];
+
+            return name;
+        }
+    };
+    public static final Comparator<Media> cArtistAsc = new Comparator<Media>() {
+
+        String[] requiredData = {"artist=", "title=", "album="};
+
+        @Override
+        public int compare(Media o1, Media o2) {
+            return getNameFromMedia(o1).compareTo(getNameFromMedia(o2));
+        }
+
+        private String getNameFromMedia(Media audio) {
+            String name = "";
+            name = readMetadata(requiredData, audio)[0];
+
+            return name;
+        }
+    };
+    public static final Comparator<Media> cArtistDesc = new Comparator<Media>() {
+
+        String[] requiredData = {"artist=", "title=", "album="};
+
+        @Override
+        public int compare(Media o1, Media o2) {
+            return getNameFromMedia(o1).compareTo(getNameFromMedia(o2)) * (-1);
+        }
+
+        private String getNameFromMedia(Media audio) {
+            String name = "";
+            name = readMetadata(requiredData, audio)[0];
+
+            return name;
+        }
+    };
+    public static final Comparator<Media> cAlbumAsc = new Comparator<Media>() {
+
+        String[] requiredData = {"artist=", "title=", "album="};
+
+        @Override
+        public int compare(Media o1, Media o2) {
+            return getNameFromMedia(o1).compareTo(getNameFromMedia(o2));
+        }
+
+        private String getNameFromMedia(Media audio) {
+            String name = "";
+            name = readMetadata(requiredData, audio)[2];
+
+            return name;
+        }
+    };
+    public static final Comparator<Media> cAlbumDesc = new Comparator<Media>() {
+
+        String[] requiredData = {"artist=", "title=", "album="};
+
+        @Override
+        public int compare(Media o1, Media o2) {
+            return getNameFromMedia(o1).compareTo(getNameFromMedia(o2)) * (-1);
+        }
+
+        private String getNameFromMedia(Media audio) {
+            String name = "";
+            name = readMetadata(requiredData, audio)[2];
+
+            return name;
+        }
+    };
+    public static final Comparator<Media> cFileNameAsc = new Comparator<Media>() {
 
         @Override
         public int compare(Media o1, Media o2) {
@@ -74,7 +170,7 @@ public class NORMediaPlayer implements Serializable {
             return audioName;
         }
     };
-    private Comparator<Media> cFileNameDesc = new Comparator<Media>() {
+    public static final Comparator<Media> cFileNameDesc = new Comparator<Media>() {
 
         @Override
         public int compare(Media o1, Media o2) {
@@ -90,7 +186,7 @@ public class NORMediaPlayer implements Serializable {
             return audioName;
         }
     };
-    private Comparator<Media> cPathNameDesc = new Comparator<Media>() {
+    public static final Comparator<Media> cPathNameDesc = new Comparator<Media>() {
 
         @Override
         public int compare(Media o1, Media o2) {
@@ -103,7 +199,7 @@ public class NORMediaPlayer implements Serializable {
             return audioName;
         }
     };
-    private Comparator<Media> cPathNameAsc = new Comparator<Media>() {
+    public static final Comparator<Media> cPathNameAsc = new Comparator<Media>() {
 
         @Override
         public int compare(Media o1, Media o2) {
@@ -415,11 +511,81 @@ public class NORMediaPlayer implements Serializable {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
 
-           
             this.playlist.sort(this.cFileNameAsc);
             this.playIndex = this.playlist.indexOf(tmpM);
 
-          
+            this.listener.playlistChanged();
+
+        }
+    }
+
+    public void sortByTitleAsc() {
+        if (!this.playlist.isEmpty()) {
+            Media tmpM = getCurrentMedia();
+
+            this.playlist.sort(this.cTitleAsc);
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+            this.listener.playlistChanged();
+
+        }
+    }
+
+    public void sortByTitleDesc() {
+        if (!this.playlist.isEmpty()) {
+            Media tmpM = getCurrentMedia();
+
+            this.playlist.sort(this.cTitleDesc);
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+            this.listener.playlistChanged();
+
+        }
+    }
+
+    public void sortByArtistAsc() {
+        if (!this.playlist.isEmpty()) {
+            Media tmpM = getCurrentMedia();
+
+            this.playlist.sort(this.cArtistAsc);
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+            this.listener.playlistChanged();
+
+        }
+    }
+
+    public void sortByArtistDesc() {
+        if (!this.playlist.isEmpty()) {
+            Media tmpM = getCurrentMedia();
+
+            this.playlist.sort(this.cArtistDesc);
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+            this.listener.playlistChanged();
+
+        }
+    }
+
+    public void sortByAlbumAsc() {
+        if (!this.playlist.isEmpty()) {
+            Media tmpM = getCurrentMedia();
+
+            this.playlist.sort(this.cAlbumAsc);
+            this.playIndex = this.playlist.indexOf(tmpM);
+
+            this.listener.playlistChanged();
+
+        }
+    }
+
+    public void sortByAlbumDesc() {
+        if (!this.playlist.isEmpty()) {
+            Media tmpM = getCurrentMedia();
+
+            this.playlist.sort(this.cAlbumDesc);
+            this.playIndex = this.playlist.indexOf(tmpM);
+
             this.listener.playlistChanged();
 
         }
@@ -429,11 +595,9 @@ public class NORMediaPlayer implements Serializable {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
 
-            
             this.playlist.sort(this.cFileNameAsc);
             this.playIndex = this.playlist.indexOf(tmpM);
 
-            
             this.listener.playlistChanged();
 
         }
@@ -443,11 +607,9 @@ public class NORMediaPlayer implements Serializable {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
 
-          
             this.playlist.sort(this.cFileNameDesc);
             this.playIndex = this.playlist.indexOf(tmpM);
 
-          
             this.listener.playlistChanged();
 
         }
@@ -457,11 +619,9 @@ public class NORMediaPlayer implements Serializable {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
 
-           
             this.playlist.sort(this.cPathNameAsc);
             this.playIndex = this.playlist.indexOf(tmpM);
 
-          
             this.listener.playlistChanged();
 
         }
@@ -471,11 +631,9 @@ public class NORMediaPlayer implements Serializable {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
 
-            
             this.playlist.sort(this.cPathNameDesc);
             this.playIndex = this.playlist.indexOf(tmpM);
 
-          
             this.listener.playlistChanged();
 
         }
@@ -486,10 +644,10 @@ public class NORMediaPlayer implements Serializable {
 
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
-           
+
             Collections.shuffle(this.playlist);
             this.playIndex = this.playlist.indexOf(tmpM);
-           
+
             this.listener.playlistChanged();
 
         }
@@ -1001,6 +1159,66 @@ public class NORMediaPlayer implements Serializable {
 
         return new Media(text);
 
+    }
+
+    public static String[] readMetadata(String[] requiredData, Media m) {
+        String meta = m.getMetadata().toString();
+        String[] data = new String[requiredData.length];
+        // 0 -> artist; 1 --> title; 2 --> album
+        // searching for requiredData
+        File f = new File(m.getSource());
+        for (int x = 0; x < requiredData.length; x++) {
+            for (int i = 0; i < meta.length() && (meta.length() - i) >= requiredData[x].length(); i++) {
+                if (meta.substring(i, i + requiredData[x].length()).equalsIgnoreCase(requiredData[x])) {
+                    i += requiredData[x].length();
+                    String temp = "";
+                    for (; meta.charAt(i) != ',' && meta.charAt(i) != '}'; i++) {
+                        temp += meta.charAt(i);
+                    }
+                    data[x] = temp;
+                    i--;
+                }
+            }
+        }
+
+        if (data[1] == null && data[0] == null) {
+            if (f.getName().contains("-")) {
+                if (f.getName().split("-").length > 3) {
+                    data[0] = (f.getName().split("-")[0].replace("%20", " ") + f.getName().split("-")[1].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
+                    data[1] = (f.getName().split("-")[2].replace("%20", " ") + f.getName().split("-")[3].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
+                } else if (f.getName().split("-").length > 2) {
+                    data[0] = (f.getName().split("-")[0].replace("%20", " ") + f.getName().split("-")[1].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
+                    data[1] = f.getName().split("-")[2].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                } else {
+                    data[0] = f.getName().split("-")[0].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                    data[1] = f.getName().split("-")[1].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                }
+            } else {
+                data[1] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                data[0] = "";
+            }
+
+        } else if (data[1] == null) {
+            if (f.getName().contains("-")) {
+                data[1] = f.getName().split("-")[1].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+            } else {
+                data[1] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+
+            }
+
+        } else if (data[0] == null) {
+            if (f.getName().contains("-")) {
+                data[0] = f.getName().split("-")[0].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+            } else {
+                data[0] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+
+            }
+        }
+
+        data[1] = data[1].trim();
+        data[0] = data[0].trim();
+
+        return data;
     }
 
 }
