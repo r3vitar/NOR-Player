@@ -1137,7 +1137,10 @@ public class NORMediaPlayer{
 
         }
     }
-
+    /**
+     * clears the current playlsit and sets a new playlist
+     * @param playlist {@link ArrayList} of {@link Media}
+     */
     public void changePlaylist(ArrayList<Media> playlist) {
         boolean b = false;
         if (this.isPlaying()) {
@@ -1156,7 +1159,13 @@ public class NORMediaPlayer{
         this.listener.playlistChanged();
 
     }
-
+    /**
+     * 
+     * @param f is the {@link File}
+     * @param changePl  {@link Boolean} says if the old playlist should be deleted or not
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public void loadPlaylist(File f, boolean changePl) throws FileNotFoundException, IOException {
 
         String path = f.getAbsolutePath();
