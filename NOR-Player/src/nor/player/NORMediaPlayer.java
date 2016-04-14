@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,7 +26,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.scene.image.Image;
 import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
@@ -974,9 +972,10 @@ public class NORMediaPlayer{
             if (norPlayer == null) {
                 setCurrentToMediaPlayer();
             }
-            norPlayer.play();
-            norPlayer.stop();
-            norPlayer.play();
+            if(norPlayer.getStatus() != Status.PLAYING){
+                norPlayer.play();
+            }
+            
             norPlayer.stop();
             this.playing = false;
 

@@ -7,5 +7,6 @@ package nor.player;
 public interface MediaChangeListener {
     public void mediaChanged();
     public void playlistChanged();
+    public void changeText(String s);
     
 }
