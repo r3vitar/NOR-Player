@@ -38,10 +38,10 @@ import javax.activation.UnsupportedDataTypeException;
 
 /**
  *
- * @author Kacper Olszanski
- *
+ * @author Kacper_Olszanski
+ * Unser Media Player
  */
-public class NORMediaPlayer implements Serializable {
+public class NORMediaPlayer{
 
     public long serialVerUID = 2L;
     private ArrayList<Media> playlist;
@@ -59,6 +59,7 @@ public class NORMediaPlayer implements Serializable {
     public static final String[] supportedVideo = {".mp4", ".avi", ".mkv"};
     private int playIndex = 0;
 
+    
     public static final Comparator<Media> cTitleAsc = new Comparator<Media>() {
 
         String[] requiredData = {"artist=", "title=", "album="};
@@ -212,55 +213,94 @@ public class NORMediaPlayer implements Serializable {
             return audioName;
         }
     };
-
+    
+    /**
+     * Gets the Index
+     * @return Index of the current Media 
+     */
     public int getPlayIndex() {
         return playIndex;
     }
-
+    /**
+     * Sets the Index
+     * @param playIndex Index of the Media which should be played
+     */
     public void setPlayIndex(int playIndex) {
         this.playIndex = playIndex;
     }
-
+    /**
+     * Sets the Index to the last Media
+     */
     public void setPlayIndexToLast() {
         this.playIndex = playlist.size() - 1;
     }
-
+    /**
+     * NOT SUPPORTED YET!   
+     * @return MediaView 
+     */
     public MediaView getMv() {
         return mv;
     }
 
+    /**
+     * returns a StringArray of all playable Audio formats (example.: ".mp3")
+     * @return String[] of supported Audio
+     */
     public String[] getSupportedAudio() {
         return supportedAudio;
     }
-
+    /**
+     * returns a StringArray of all playable Media formats (example.: ".mp3")
+     * @return String[] of supported Media
+     */
     public String[] getSupportedMedia() {
         return supportedMedia;
     }
-
+    /**
+     * returns a StringArray of all playable Playlist formats (example.: ".npl")
+     * @return String[] of supported Playlists
+     */
     public String[] getSupportedPlaylists() {
         return supportedPlaylists;
     }
-
+    /**
+     * returns a StringArray of all playable Video formats (example.: ".mp34)
+     * @return String[] of supported Video
+     */
     public String[] getSupportedVideo() {
         return supportedVideo;
     }
-
+    /**
+     * 
+     * @return is List set to repeat
+     */
     public boolean isRepeatList() {
         return repeatList;
     }
-
+    /**
+     * 
+     * @return CurrentMedia List set to repeat
+     */
     public boolean isRepeatCurrent() {
         return repeatCurrent;
     }
-
+    /**
+     *  
+     * @return returns MediaPlayer
+     */
     public MediaPlayer getNorPlayer() {
         return norPlayer;
     }
-
+    /**
+     * changes the "playing" boolean
+     */
     private void changePlayOrPause() {
         playing = !playing;
     }
-
+    /**
+     * 
+     * @return 
+     */
     public boolean isPlaying() {
         return this.playing;
     }
