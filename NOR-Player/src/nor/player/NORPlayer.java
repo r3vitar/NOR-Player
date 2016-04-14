@@ -2,8 +2,10 @@ package nor.player;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -65,7 +67,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private MediaPlayer mp;
     private BorderPane root = new BorderPane();
     private Scene scene = new Scene(root, 400, 200);
-    
+
     private Slider slide = new Slider();
     private Slider vol = new Slider();
     private Slider balanceSlider = new Slider();
@@ -95,8 +97,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
 
     private Button playB = new Button();
-   private  Button pauseB = new Button();
-   private  Button stopB = new Button();
+    private Button pauseB = new Button();
+    private Button stopB = new Button();
     //Button addB = new Button("Add");
     private Button openB = new Button();
     //Button clearB = new Button("Clear");
@@ -157,7 +159,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     } catch (Exception e) {
                     }
                     try {
-                        initSliders();
+                        
                     } catch (Exception e) {
                     }
 
@@ -165,10 +167,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }
 
             }).start();
+            initSliders();
 
             mytime.setId("font");
 
-        //HBox chooseFile = new HBox();
+            //HBox chooseFile = new HBox();
             //chooseFile.getChildren().add(openB);
             //chooseFile.getChildren().addAll(l1);
             HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, openB, playlistStageB);
@@ -178,6 +181,24 @@ public class NORPlayer extends Application implements MediaChangeListener {
             bottomB = new VBox(playStop, slide, linkBox);
             BorderPane bp1 = new BorderPane(bottomB);
 
+      
+            if (new File(settingPath).exists()) {
+                new Thread(new Task() {
+
+                    @Override
+                    protected Object call() throws Exception {
+
+                        try {
+                            loadSettings();
+                        } catch (Exception e) {
+                            return false;
+                        }
+                        return true;
+                    }
+                }).start();
+
+            }
+            
             File lastSession = new File("lastSession.npl");
             if (lastSession.exists()) {
                 new Thread(new Task() {
@@ -211,6 +232,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                 @Override
                 public void handle(WindowEvent event) {
+                    try{
+                        saveSettings();
+                    }catch(Exception e){
+                        System.err.println(e);
+                    }
                     if (!norMediaPlayer.isEmpty()) {
                         norMediaPlayer.savePlaylist("lastSession.npl");
                     }
@@ -363,8 +389,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         this.playInit = true;
     }
-
-    
 
     public void chName() {
 
@@ -839,29 +863,61 @@ public class NORPlayer extends Application implements MediaChangeListener {
         ).start();
 
     }
-    
+
     private void loadSettings(){
-        
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(settingPath);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            HashMap<String, Double> input = (HashMap<String, Double>) ois.readObject();
+            this.balanceSlider.setValue(input.get("balance"));
+            this.vol.setValue(input.get("volume"));
+            this.speedSlider.setValue(input.get("speed"));
+            this.primaryStage.setX(input.get("x"));
+            this.primaryStage.setY(input.get("y"));
+            if(input.get("pOpen") > 0){
+                showActivePlaylist();
+                this.playlistStage.setX(input.get("pX"));
+                this.playlistStage.setY(input.get("pY"));
+            }
+            
+        } catch (IOException e) {
+            System.err.println(e);
+
+        }catch(ClassNotFoundException ec){
+            System.err.println(ec);
+        }finally {
+            try {
+                fis.close();
+            } catch (Exception ee) {
+                System.err.println(ee);
+
+            }
+        }
     }
-    private void saveSettings(){
+
+    private void saveSettings() {
         FileOutputStream fos = null;
-        try{
-        fos = new FileOutputStream(settingPath);
+        try {
+            fos = new FileOutputStream(settingPath);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            HashMap output = new HashMap();
+            HashMap<String, Double> output = new HashMap<String, Double>();
 
             output.put("balance", this.balanceSlider.getValue());
             output.put("volume", this.vol.getValue());
             output.put("speed", this.speedSlider.getValue());
             output.put("x", this.primaryStage.getX());
             output.put("y", this.primaryStage.getY());
+            output.put("pX", this.playlistStage.getX());
+            output.put("pY", this.playlistStage.getY());
+            output.put("pOpen", this.playlistStage.isShowing() ? -1.0 : 1.0);
 
             oos.writeObject(output);
 
             oos.flush();
 
         } catch (IOException e) {
-            System.out.println(e);
+            System.err.println(e);
 
         } finally {
             try {
