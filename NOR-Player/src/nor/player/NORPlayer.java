@@ -78,7 +78,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private MediaView view = new MediaView();
     private MediaPlayer mp;
     private BorderPane root = new BorderPane();
-    private Scene scene = new Scene(root, 350, 175);
+    private Scene scene = new Scene(root, 350, 177);
 
     private Slider slide = new Slider();
     private Slider vol = new Slider();
@@ -158,9 +158,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 protected Object call() {
                     try {
 
-                        mp = new MediaPlayer(norMediaPlayer.createMedia(new File("NOR.wav")));
+                        File nor = new File("NOR.wav");
+                        if (nor.exists()) {
+                            mp = new MediaPlayer(norMediaPlayer.createMedia(nor));
 
-                        mp.play();
+                            mp.play();
+                        }
 
                     } catch (Exception e) {
                         System.err.println(e);
@@ -230,7 +233,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             //chooseFile.getChildren().add(openB);
             //chooseFile.getChildren().addAll(l1);
             HBox playStop = new HBox(prevB, pauseB, stopB, nextB, openB, playlistStageB);
-            
+
             VBox bottomB;
             //HBox linkBox = new HBox(linkB, linkTf);
             bottomB = new VBox(slide, playStop);
@@ -238,8 +241,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             name.setId("name");
             mytime.setId("time");
-            
-            name.setMaxWidth((scene.getWidth() / 10 * 7));
+
+            name.setMaxWidth((scene.getWidth() / 10 * 5.7));
             bp1.setBottom(bottomB);
             bp1.setRight(vol);
             bp1.setTranslateY(-55);
@@ -253,10 +256,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
             sliderBox.setTranslateX(-10);
             sliderBox.translateYProperty().bind(sliderBox.translateXProperty().negate());
             VBox displayBox = new VBox(mytime, name);
-            
+
             displayBox.setTranslateX(17);
             displayBox.setTranslateY(7);
-             BorderPane topPane = new BorderPane(null, null,sliderBox , null, displayBox);
+            BorderPane topPane = new BorderPane(null, null, sliderBox, null, displayBox);
             root.setTop(topPane);
 
             primaryStage.setTitle(displayTitle.toString());
@@ -283,10 +286,20 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         norMediaPlayer.savePlaylist("lastSession.npl");
                     }
                     playlistStage.close();
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException ex) {
+                        //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     Platform.exit();
+                     try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException ex) {
+                        //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    System.exit(0);
                 }
             });
-            
 
             primaryStage.show();
         } catch (Exception e) {
@@ -377,7 +390,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         bp.setBottom(playlistMenuBar);
         bp.setCenter(playlistTable);
         root.getChildren().add(bp);
-        
+
         playlistStage.getIcons().add(primaryStage.getIcons().get(0));
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
@@ -449,40 +462,38 @@ public class NORPlayer extends Application implements MediaChangeListener {
     public void chName() {
         //interruptT = true;
         name.textProperty().unbind();
-        
+
         String[] requiredDataName = {"artist=", "title="};
 
         String[] data = NORMediaPlayer.readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
         displayName.setValue(String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", ""));
         if (displayName.getValue().length() > 25) {
             displayName.setValue(String.format("%s - %s --- ", data[0], data[1]).replace("null - ", "").replace("null", ""));
-        } 
+        }
         this.name.setText(displayName.getValue());
         primaryStage.setTitle(data[1]);
 
         ls = new Thread(new Task() {
 
             @Override
-            protected Object call() throws Exception { 
+            protected Object call() throws Exception {
                 try {
                     Thread.sleep(2000);
                     interruptT = false;
-                    
+
                     name.setWrapText(false);
                     name.setEllipsisString("");
-                    
-                    
-                    
-                    for (; !interruptT; ) {
-                        
+
+                    for (; !interruptT;) {
+
                         Platform.runLater(new Task() {
 
-                        @Override
-                        protected Object call() throws Exception {
+                            @Override
+                            protected Object call() throws Exception {
 
-                            try {
+                                try {
                                     String tmp = "";
-                                    for (int i = 1; i < displayName.getValue().length() ; i++) {
+                                    for (int i = 1; i < displayName.getValue().length(); i++) {
                                         tmp += displayName.getValue().charAt(i);
 
                                     }
@@ -490,23 +501,23 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                                     listener.changeText(tmp);
 
-                                   
                                 } catch (Exception ee) {
                                     System.err.println(ee);
                                     return false;
                                 }
-                            return true;
-                        
-                        }
-                    });
-                        
-                        for(int i = 0; i < refreshRate/2 && !interruptT ; i++){
-                            Thread.sleep(2);
-                            if(interruptT)
                                 return true;
-                            
+
+                            }
+                        });
+
+                        for (int i = 0; i < refreshRate / 2 && !interruptT; i++) {
+                            Thread.sleep(2);
+                            if (interruptT) {
+                                return true;
+                            }
+
                         }
-                        
+
                     }
                     interruptT = false;
 
@@ -517,11 +528,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 return true;
             }
         });
-         if (displayName.getValue().length() > 25) {
-        ls.setDaemon(true);
-        name.textProperty().bind(displayName);
-        
-         }
+        if (displayName.getValue().length() > 25) {
+            ls.setDaemon(true);
+            name.textProperty().bind(displayName);
+
+        }
 
     }
 
@@ -536,13 +547,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     if (norMediaPlayer.isVideo()) {
                         view.setMediaPlayer(norMediaPlayer.getNorPlayer());
                     }
-                    
-                                interruptT = true;
-                                Thread.sleep(5);
-                                interruptT = false;
-                                chName();
-                                ls.start();
-          
+
+                    interruptT = true;
+                    Thread.sleep(5);
+                    interruptT = false;
+                    chName();
+                    ls.start();
 
                     System.out.println(norMediaPlayer.getNorPlayer().getMedia().getSource());
                     norMediaPlayer.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
@@ -585,7 +595,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         norMediaPlayer.getNorPlayer().seek(Duration.millis(slide.getValue()));
                         norMediaPlayer.getNorPlayer().currentTimeProperty().addListener(Ili);
                     });
-                    
+
                     initListener();
                 } catch (Exception e) {
                     return false;
@@ -607,10 +617,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
         vol.setMajorTickUnit(25);
         vol.setMinorTickCount(5);
         vol.setSnapToTicks(true);
-        vol.setTranslateY(56);
-        
+        vol.setTranslateY(50);
+
         vol.setTooltip(new Tooltip("Volume"));
-        
+
         balanceSlider.setMax(100);
         balanceSlider.setMin(-100);
         balanceSlider.setValue(0);
@@ -620,7 +630,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         balanceSlider.setShowTickMarks(true);
         balanceSlider.setSnapToTicks(true);
         balanceSlider.setTooltip(new Tooltip("Balance"));
-      
+
         speedSlider.setMax(150);
         speedSlider.setMin(50);
         speedSlider.setValue(100);
@@ -630,8 +640,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
         speedSlider.setSnapToTicks(true);
         speedSlider.setMaxWidth(100);
         speedSlider.setTooltip(new Tooltip("SPEED!"));
-        
-        slide.setMaxWidth(scene.getWidth()/20 *18);
+
+        slide.setMaxWidth(scene.getWidth() / 20 * 18);
 
         vol.setOnScroll(new EventHandler<ScrollEvent>() {
 
@@ -688,7 +698,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     @Override
     public void playlistChanged() {
 
-      Platform.runLater(new Runnable() {
+        Platform.runLater(new Runnable() {
 
             @Override
             public void run() {
