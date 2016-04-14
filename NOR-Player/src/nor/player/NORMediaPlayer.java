@@ -1162,8 +1162,8 @@ public class NORMediaPlayer{
 
     }
     /**
-     * 
-     * @param f is the {@link File}
+     * loads an .npl or .m3u8 playlist
+     * @param f is the Playlist{@link File}
      * @param changePl  {@link Boolean} says if the old playlist should be deleted or not
      * @throws FileNotFoundException
      * @throws IOException 
@@ -1220,7 +1220,13 @@ public class NORMediaPlayer{
         this.listener.playlistChanged();
 
     }
-
+    /**
+     * loads an M3u8 playlist
+     * @param path path of the playlit
+     * @return {@link ArrayList} of {@link Media}
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     private ArrayList<Media> loadM3u8(String path) throws FileNotFoundException, IOException {
         ArrayList<String> newPlaylist = new ArrayList<>();
         ArrayList<Media> outputPlaylist = new ArrayList<>();
@@ -1279,7 +1285,11 @@ public class NORMediaPlayer{
         return outputPlaylist;
 
     }
-
+    /**
+     * loads an playlist of the npl file format
+     * @param path path of the playlsit
+     * @return {@link ArrayList} of {@link Media}
+     */
     private ArrayList<Media> loadNpl(String path) {
         InputStream fis = null;
         try {
@@ -1312,7 +1322,10 @@ public class NORMediaPlayer{
         }
         return null;
     }
-
+    /**
+     * 
+     * @return true if the playlist is empty or the playlist == null
+     */
     public boolean isEmpty() {
         if (playlist == null) {
             return true;
@@ -1321,7 +1334,12 @@ public class NORMediaPlayer{
         }
         return false;
     }
-
+    /**
+     * tells if file is supported
+     * @param name filename
+     * @param supportedList {@link String[]} of supported File endings
+     * @return 
+     */
     private boolean isSupported(String name, String[] supportedList) {
 
         ArrayList<String> tmpStr = new ArrayList<String>(Arrays.asList(supportedList));
@@ -1333,13 +1351,18 @@ public class NORMediaPlayer{
         return false;
 
     }
-
+    
     Media createMediaByLink(String text) {
 
         return new Media(text);
 
     }
-
+    /**
+     * read the Metadata(Artist, Title, Album) ofa Media
+     * @param requiredData 
+     * @param m {@link Media}
+     * @return String of metadata
+     */
     public static String[] readMetadata(String[] requiredData, Media m) {
         String meta = m.getMetadata().toString();
         String[] data = new String[requiredData.length];
