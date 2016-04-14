@@ -53,7 +53,7 @@ import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 /**
- *
+ * Dies ist die MainKlasse.
  * @author Kacper Olszanski, Philipp Radler, Julian Nenning
  */
 public class NORPlayer extends Application implements MediaChangeListener {
@@ -72,7 +72,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private Slider vol = new Slider();
     private Slider balanceSlider = new Slider();
     private Slider speedSlider = new Slider();
-
+    
     private MenuItem addB = new MenuItem("Add Media"),
             addAndPlayB = new MenuItem("Add & Play"),
             addsB = new MenuItem("Add More Media"),
@@ -127,13 +127,18 @@ public class NORPlayer extends Application implements MediaChangeListener {
     //Tests für audio per link abspielen
     private Button linkB = new Button("playByLink");
     private TextField linkTf = new TextField();
-
+    
+    /**
+     * Dies ist die Start-Methode die immer am Anfang des Programmes ausgeführt wird.
+     * @param ps Name der Stage.
+     */
     @Override
     public void start(Stage ps) {
         try {
 
             primaryStage = ps;
             primaryStage.setResizable(false);
+            
             new Thread(new Task() {
                 @Override
                 protected Object call() {
@@ -181,7 +186,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
             bottomB = new VBox(playStop, slide, linkBox);
             BorderPane bp1 = new BorderPane(bottomB);
 
-      
             if (new File(settingPath).exists()) {
                 new Thread(new Task() {
 
@@ -224,8 +228,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
             root.setBottom(bp1);
 
             primaryStage.setTitle("NOR-Player");
-            scene.getStylesheets().add("styles.css");
-            primaryStage.getIcons().add(new Image("images/nor.png"));
+            scene.getStylesheets().add("resources/styles.css");
+            primaryStage.getIcons().add(new Image("resources/nor.png"));
 
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -252,7 +256,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
             System.err.println("lastSession deleted!");
         }
     }
-
+    
+    /**
+     * Diese Methode bewirkt, dass die Playlist in einem neuen Fenster geöffnet wird.
+     */
     private void showActivePlaylist() {
         if (!this.playInit) {
             this.initPlaylist(this.norMediaPlayer.getPlaylistName());
@@ -264,7 +271,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
             playlistStage.show();
         }
     }
-
+    
+    /**
+     * Hier wird die Playlist in ein TableView gegeben, welches später angezeigt werden kann.
+     */
     private void initPlaylistTable() {
         playlistTable = new TableView();
 
@@ -306,12 +316,16 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
     }
-
+    
+    /**
+     * Hier wird die Playlist 
+     * @param playlistTitle Name der Playlist.
+     */
     private void initPlaylist(String playlistTitle) {
         Pane root = new Pane();
 
         playlistScene = new Scene(root, 750, 500);
-        playlistScene.getStylesheets().add("styles.css");
+        playlistScene.getStylesheets().add("resources/styles.css");
 
         // Init the PlaylistTable
         initPlaylistTable();

@@ -3,54 +3,54 @@
 }
 
 #pauseButton1{
-    -fx-background-image: url('images/pause20.png');
+    -fx-background-image: url('pause20.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch;   
 }
 
 #pauseButton2{
-    -fx-background-image: url('images/pause120.png');
+    -fx-background-image: url('resources/pause120.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch; 
 }
 
 #playButton{
-    -fx-background-image: url('images/play20.png');
+    -fx-background-image: url('play20.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     
 }
 
 #stopButton{
-    -fx-background-image: url('images/stop20.png');
+    -fx-background-image: url('stop20.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     
 }
 
 #nextButton{
-    -fx-background-image: url('images/next20.png');
+    -fx-background-image: url('next20.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     
 }
 
 #prevButton{
-    -fx-background-image: url('images/prev20.png');
+    -fx-background-image: url('prev20.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     
 }
 
 #loadButton{
-    -fx-background-image: url('images/load20.png');
+    -fx-background-image: url('load20.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     
 }
 
 #playlistButton{
-    -fx-background-image: url('images/playlist20.png');
+    -fx-background-image: url('playlist20.png');
     -fx-background-position: center center;
     -fx-background-repeat: stretch;
     
