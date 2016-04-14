@@ -2,9 +2,12 @@ package nor.player;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import javafx.application.Application;
@@ -54,6 +57,7 @@ import javafx.util.Duration;
 public class NORPlayer extends Application implements MediaChangeListener {
 
     Scanner sc = new Scanner(System.in);
+    private static final String settingPath = "settings.norc";
     boolean listenerSet = false;
     Scene playlistScene;
     private Duration duration;
@@ -61,6 +65,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     MediaPlayer mp;
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 400, 200);
+    
     Slider slide = new Slider();
     Slider vol = new Slider();
     Slider balanceSlider = new Slider();
@@ -75,12 +80,18 @@ public class NORPlayer extends Application implements MediaChangeListener {
             savePlaylistButton = new MenuItem("Save Playlist"),
             clearB = new MenuItem("Clear Playlist"),
             shuffleB = new MenuItem("Shuffle"),
-            sortAscB = new MenuItem("Sort ABC"),
-            sortDescB = new MenuItem("Sort ZYX");
+            sortFileAscB = new MenuItem("FileName asc"),
+            sortFileDescB = new MenuItem("FileName desc"),
+            sortTitleAscB = new MenuItem("Title asc"),
+            sortTitleDescB = new MenuItem("Title desc"),
+            sortArtistAscB = new MenuItem("Artist asc"),
+            sortArtistDescB = new MenuItem("Artist desc"),
+            sortAlbumAscB = new MenuItem("Album asc"),
+            sortAlbumDescB = new MenuItem("Album desc");
 
     Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
     Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
-    Menu sortMenu = new Menu("Sort", null, shuffleB, sortAscB, sortDescB);
+    Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
     MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
 
     Button playB = new Button();
@@ -118,8 +129,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     @Override
     public void start(Stage ps) {
         try {
-             
-            
+
             primaryStage = ps;
             primaryStage.setResizable(false);
             new Thread(new Task() {
@@ -159,7 +169,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             mytime.setId("font");
 
         //HBox chooseFile = new HBox();
-        //chooseFile.getChildren().add(openB);
+            //chooseFile.getChildren().add(openB);
             //chooseFile.getChildren().addAll(l1);
             HBox playStop = new HBox(playB, pauseB, stopB, prevB, nextB, openB, playlistStageB);
 
@@ -275,6 +285,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         Pane root = new Pane();
 
         playlistScene = new Scene(root, 750, 500);
+        playlistScene.getStylesheets().add("styles.css");
 
         // Init the PlaylistTable
         initPlaylistTable();
@@ -288,7 +299,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistStage.getIcons().add(primaryStage.getIcons().get(0));
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
-       // playlistStage.setResizable(false);
+        // playlistStage.setResizable(false);
 
         playlistScene.setOnDragOver(new EventHandler<DragEvent>() {
             @Override
@@ -799,12 +810,33 @@ public class NORPlayer extends Application implements MediaChangeListener {
         shuffleB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.shuffle();
         });
-        sortAscB.setOnAction((ActionEvent event) -> {
+        sortFileAscB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.sortByNameAsc();
         });
 
-        sortDescB.setOnAction((ActionEvent event) -> {
+        sortFileDescB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.sortByPathDesc();
+        });
+        sortTitleAscB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByTitleAsc();
+        });
+
+        sortTitleDescB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByTitleDesc();
+        });
+        sortArtistAscB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByArtistAsc();
+        });
+
+        sortArtistDescB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByArtistDesc();
+        });
+        sortAlbumAscB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByAlbumAsc();
+        });
+
+        sortAlbumDescB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.sortByAlbumDesc();
         });
 
         clearB.setOnAction((ActionEvent event) -> {
@@ -864,6 +896,40 @@ public class NORPlayer extends Application implements MediaChangeListener {
         }
         ).start();
 
+    }
+    
+    private void loadSettings(){
+        
+    }
+    private void saveSettings(){
+        FileOutputStream fos = null;
+        try{
+        fos = new FileOutputStream(settingPath);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            HashMap output = new HashMap();
+
+            output.put("balance", this.balanceSlider.getValue());
+            output.put("volume", this.vol.getValue());
+            output.put("speed", this.speedSlider.getValue());
+            output.put("x", this.primaryStage.getX());
+            output.put("y", this.primaryStage.getY());
+
+            oos.writeObject(output);
+
+            oos.flush();
+
+        } catch (IOException e) {
+            System.out.println(e);
+
+        } finally {
+            try {
+                fos.close();
+            } catch (Exception ee) {
+                System.out.println(ee);
+
+            }
+
+        }
     }
 
     public static void main(String[] args) {
