@@ -38,10 +38,10 @@ import javax.activation.UnsupportedDataTypeException;
 
 /**
  *
- * @author Kacper Olszanski
- *
+ * @author Kacper_Olszanski
+ * Unser Media Player
  */
-public class NORMediaPlayer implements Serializable {
+public class NORMediaPlayer{
 
     public long serialVerUID = 2L;
     private ArrayList<Media> playlist;
@@ -59,6 +59,7 @@ public class NORMediaPlayer implements Serializable {
     public static final String[] supportedVideo = {".mp4", ".avi", ".mkv"};
     private int playIndex = 0;
 
+    
     public static final Comparator<Media> cTitleAsc = new Comparator<Media>() {
 
         String[] requiredData = {"artist=", "title=", "album="};
@@ -212,83 +213,139 @@ public class NORMediaPlayer implements Serializable {
             return audioName;
         }
     };
-
+    
+    /**
+     * Gets the Index
+     * @return Index of the current Media 
+     */
     public int getPlayIndex() {
         return playIndex;
     }
-
+    /**
+     * Sets the Index
+     * @param playIndex Index of the Media which should be played
+     */
     public void setPlayIndex(int playIndex) {
         this.playIndex = playIndex;
     }
-
+    /**
+     * Sets the Index to the last Media
+     */
     public void setPlayIndexToLast() {
         this.playIndex = playlist.size() - 1;
     }
-
+    /**
+     * NOT SUPPORTED YET!   
+     * @return MediaView 
+     */
     public MediaView getMv() {
         return mv;
     }
 
+    /**
+     * returns a StringArray of all playable Audio formats (example.: ".mp3")
+     * @return String[] of supported Audio
+     */
     public String[] getSupportedAudio() {
         return supportedAudio;
     }
-
+    /**
+     * returns a StringArray of all playable Media formats (example.: ".mp3")
+     * @return String[] of supported Media
+     */
     public String[] getSupportedMedia() {
         return supportedMedia;
     }
-
+    /**
+     * returns a StringArray of all playable Playlist formats (example.: ".npl")
+     * @return String[] of supported Playlists
+     */
     public String[] getSupportedPlaylists() {
         return supportedPlaylists;
     }
-
+    /**
+     * returns a StringArray of all playable Video formats (example.: ".mp4)
+     * @return String[] of supported Video
+     */
     public String[] getSupportedVideo() {
         return supportedVideo;
     }
-
+    /**
+     * 
+     * @return is List set to repeat
+     */
     public boolean isRepeatList() {
         return repeatList;
     }
-
+    /**
+     * 
+     * @return CurrentMedia List set to repeat
+     */
     public boolean isRepeatCurrent() {
         return repeatCurrent;
     }
-
+    /**
+     *  
+     * @return returns MediaPlayer
+     */
     public MediaPlayer getNorPlayer() {
         return norPlayer;
     }
-
+    /**
+     * changes the "playing" {@link boolean}
+     */
     private void changePlayOrPause() {
         playing = !playing;
     }
-
+    /**
+     * 
+     * @return Returns "true" if the Player is playing. Else false
+     */
     public boolean isPlaying() {
         return this.playing;
     }
-
+    /**
+     * 
+     * @return returns an {@link ArrayList} of {@link Media} Files (the Playlist)
+     */
     public ArrayList<Media> getPlaylist() {
 
         return playlist;
     }
-
+    /**
+     * 
+     * @return returns the name of the Playlist
+     */
     public String getPlaylistName() {
         return playlistName;
     }
-
+    /**
+     * Sets the Name of the playlist
+     * @param playlistName {@link String}
+     */
     public void setPlaylistName(String playlistName) {
         this.playlistName = playlistName;
     }
-
+    /**
+     * Empty Constructor
+     */
     public NORMediaPlayer() {
 
     }
-
-    public NORMediaPlayer(Object o) {
+    /**
+     * sets playlist to new @link Arraylist and sets the listener
+     * @param listener Object which implements {@link MediaChangeListener} 
+     */
+    public NORMediaPlayer(Object listener) {
         this.playlist = new ArrayList<Media>();
 
-        this.listener = (MediaChangeListener) o;
+        this.listener = (MediaChangeListener) listener;
 
     }
-
+    /**
+     * Makes a new NORMediaPlayer with playlist
+     * @param playlist @link ArrayList of {@link Media}
+     */
     public NORMediaPlayer(ArrayList<Media> playlist) {
         if (playlist != null) {
             this.playlist = playlist;
@@ -296,7 +353,10 @@ public class NORMediaPlayer implements Serializable {
         }
 
     }
-
+    /**
+     * Makse a new NORMediaPlayer with one Media
+     * @param audio {@link Media}
+     */
     public NORMediaPlayer(Media audio) {
         this.playlist = new ArrayList<Media>();
         Media m = audio;
@@ -305,7 +365,10 @@ public class NORMediaPlayer implements Serializable {
             setCurrentToMediaPlayer();
         }
     }
-
+    /**
+     * Makes new NORMediaPlayer with one Media generated of the filePath
+     * @param filePath Path of the {@link Media}
+     */
     public NORMediaPlayer(String filePath) {
         this.playlist = new ArrayList<Media>();
         Media m = createMedia(filePath);
@@ -314,7 +377,10 @@ public class NORMediaPlayer implements Serializable {
             setCurrentToMediaPlayer();
         }
     }
-
+    /**
+     * Makes new NORMediaPlayer with one @link Media generated of a @link File
+     * @param file 
+     */
     public NORMediaPlayer(File file) {
 
         this.playlist = new ArrayList<Media>();
@@ -325,7 +391,10 @@ public class NORMediaPlayer implements Serializable {
         }
         this.listener.playlistChanged();
     }
-
+    /**
+     * Adds a {@link Media} to the Playlist
+     * @param audio {@link Media}
+     */
     public void addMedia(Media audio) {
         if (audio != null) {
             this.playlist.add(audio);
@@ -334,7 +403,10 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * Adds a {@link Media} to the Playlist
+     * @param filePath {@link String}
+     */
     public void addMedia(String filePath) {
         Media m = createMedia(filePath);
         if (m != null) {
@@ -345,7 +417,10 @@ public class NORMediaPlayer implements Serializable {
         this.listener.playlistChanged();
 
     }
-
+    /**
+     * Adds  {@link Media}s to the Playlist
+     * @param data {@link ArrayList} of {@link File}s
+     */
     public void addMedia(ArrayList<File> data) {
 
         for (File f : data) {
@@ -370,7 +445,10 @@ public class NORMediaPlayer implements Serializable {
         this.listener.playlistChanged();
 
     }
-
+    /**
+     * Adds a {@link Media} to the Playlist
+     * @param file {@link File}
+     */
     public void addMedia(File file) {
 
         Media m = createMedia(file);
@@ -381,7 +459,11 @@ public class NORMediaPlayer implements Serializable {
         this.listener.playlistChanged();
 
     }
-
+    /**
+     * creates Media from a FilePath
+     * @param filePath the Path of the File
+     * @return the created Media
+     */
     public Media createMedia(String filePath) {
         Media m;
         try {
@@ -393,7 +475,11 @@ public class NORMediaPlayer implements Serializable {
         return m;
 
     }
-
+    /**
+     * creates Media from a {@link File}
+     * @param file the Path of the File
+     * @return the created Media
+     */
     public Media createMedia(File file) {
         Media m = null;
         try {
@@ -408,7 +494,10 @@ public class NORMediaPlayer implements Serializable {
         return m;
 
     }
-
+    /**
+     * Adds a List of {@link Media} to the playlist
+     * @param mediaArray {@link ArrayList} of {@link String}, {@link Media} or {@link File}
+     */
     public void addMediaArray(ArrayList<Object> mediaArray) {
         if (mediaArray.isEmpty()) {
             throw new IllegalArgumentException("ArrayList is empty");
@@ -436,7 +525,10 @@ public class NORMediaPlayer implements Serializable {
         }
 
     }
-
+    /**
+     * deletes a Media
+     * @param audio the {@link Media} you want to delete
+     */
     public void deleteMedia(Media audio) {
         if (audio.equals(getCurrentMedia())) {
             stop();
@@ -448,7 +540,10 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * deletes a Media with the index
+     * @param index the index of the {@link Media} you want to delete
+     */
     public void deleteMedia(int index) {
         if (index == this.playIndex) {
             stop();
@@ -487,7 +582,9 @@ public class NORMediaPlayer implements Serializable {
 //        }
 
     }
-
+    /**
+     * deletes all Media
+     */
     public void deletePlaylist() {
         stop();
         this.playlist.removeAll(this.playlist);
@@ -496,7 +593,9 @@ public class NORMediaPlayer implements Serializable {
         this.listener.playlistChanged();
 
     }
-
+    /**
+     * deletes all Media
+     */
     public void clearPlaylist() {
         stop();
         norPlayer = null;
@@ -506,7 +605,9 @@ public class NORMediaPlayer implements Serializable {
         this.listener.playlistChanged();
 
     }
-
+    /**
+     * sort the Music by FileName
+     */
     public void sort() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -518,7 +619,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by title asc
+     */
     public void sortByTitleAsc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -530,7 +633,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by title desc
+     */
     public void sortByTitleDesc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -542,7 +647,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by artist asc
+     */
     public void sortByArtistAsc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -554,7 +661,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by artist desc
+     */
     public void sortByArtistDesc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -566,7 +675,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by album asc
+     */
     public void sortByAlbumAsc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -578,7 +689,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by album desc
+     */
     public void sortByAlbumDesc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -590,7 +703,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by FileName asc
+     */
     public void sortByNameAsc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -602,7 +717,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by FileName desc
+     */
     public void sortByNameDesc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -614,7 +731,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by Path asc
+     */
     public void sortByPathAsc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -626,7 +745,9 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * sort the Music by Path desc
+     */
     public void sortByPathDesc() {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -639,7 +760,9 @@ public class NORMediaPlayer implements Serializable {
         }
 
     }
-
+    /**
+     * shuffles the list
+     */
     public void shuffle() {
 
         if (!this.playlist.isEmpty()) {
@@ -652,7 +775,10 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * shuffles the List using a seed
+     * @param randomSeed the seed for shuffeling
+     */
     public void shuffle(Random randomSeed) {
         if (!this.playlist.isEmpty()) {
             Media tmpM = getCurrentMedia();
@@ -665,7 +791,10 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * gets the current {@link Media}
+     * @return returns the {@link Media} which is now loaded in the {@link MediaPlayer}
+     */
     public Media getCurrentMedia() {
         if (this.playlist.isEmpty() || this.playlist.size() <= this.playIndex) {
             return null;
@@ -674,14 +803,19 @@ public class NORMediaPlayer implements Serializable {
         }
 
     }
-
+    /**
+     * 
+     * @return true if the current {@link Media} is a Video
+     */
     public boolean isVideo() {
         if (this.mv == null) {
             return false;
         }
         return true;
     }
-
+    /**
+     * sets the Media with the current index to the {@link MediaPlayer}
+     */
     private void setCurrentToMediaPlayer() {
 
         if (getCurrentMedia() == null); else {
@@ -726,7 +860,9 @@ public class NORMediaPlayer implements Serializable {
             });
         }
     }
-
+    /**
+     * plays the Current {@link Media}
+     */
     public void play() {
 
         if (this.playlist.isEmpty()) {
@@ -750,7 +886,10 @@ public class NORMediaPlayer implements Serializable {
 
         //this.listener.mediaChanged();
     }
-
+    /**
+     * Plays a {@link Media}
+     * @param audio {@link Media} which will be played
+     */
     public void play(Media audio) {
 
         if (this.playlist.isEmpty()) {
@@ -772,7 +911,10 @@ public class NORMediaPlayer implements Serializable {
         }
         //this.listener.mediaChanged();
     }
-
+    /**
+     * Plays the {@link Media} with the given index
+     * @param index the index of the {@link Media} which will be played
+     */
     public void play(int index) {
 
         if (this.playlist.isEmpty()) {
@@ -796,7 +938,9 @@ public class NORMediaPlayer implements Serializable {
         }
         //this.listener.mediaChanged();
     }
-
+    /**
+     * if song is playing it will be paused and vice versa
+     */
     public void playOrPause() {
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
@@ -817,23 +961,30 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * Stops the playing song
+     */
     public void stop() {
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
-        } else if (this.isPlaying()) {
+        
+        }else if (this.isPlaying()) {
 
             if (norPlayer == null) {
                 setCurrentToMediaPlayer();
             }
             norPlayer.play();
             norPlayer.stop();
+            norPlayer.play();
+            norPlayer.stop();
             this.playing = false;
 
         }
     }
-
+    /**
+     * pauses the {@link MediaPlayer}
+     */
     public void pause() {
         if (this.playlist.isEmpty()) {
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
@@ -846,15 +997,22 @@ public class NORMediaPlayer implements Serializable {
             this.playing = false;
         }
     }
-
+    /**
+     * changes the repeatList to true or false
+     */
     public void setRepeat() {
         this.repeatList = !this.repeatList;
     }
-
+    /**
+     * set the repeatList to true or false
+     * @param r true or false
+     */
     public void setRepeat(boolean r) {
         this.repeatList = r;
     }
-
+    /**
+     * index++; plays the next {@link Media}
+     */
     public void nextClip() {
         stop();
         if (this.playIndex == this.playlist.size() - 1) {
@@ -867,7 +1025,9 @@ public class NORMediaPlayer implements Serializable {
         play();
 
     }
-
+    /**
+     * index--; plays the preview {@link Media} 
+     */
     public void prevClip() {
         stop();
         if (this.playIndex == 0) {
@@ -879,7 +1039,9 @@ public class NORMediaPlayer implements Serializable {
         play();
 
     }
-
+    /**
+     * set current repeat
+     */
     public void setRepeatCurrent() {
         if (this.repeatCurrent) {
             this.repeatCurrent = false;
@@ -891,7 +1053,10 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * set current repeat
+     * @param b true or false
+     */
     public void setRepeatCurrent(boolean b) {
         if (!b) {
             this.repeatCurrent = false;
@@ -903,7 +1068,10 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * saves the playlist as an ".npl" File
+     * @param path path of the location of the playlist
+     */
     public void savePlaylist(String path) {
 
         OutputStream fos = null;
@@ -969,7 +1137,10 @@ public class NORMediaPlayer implements Serializable {
 
         }
     }
-
+    /**
+     * clears the current playlsit and sets a new playlist
+     * @param playlist {@link ArrayList} of {@link Media}
+     */
     public void changePlaylist(ArrayList<Media> playlist) {
         boolean b = false;
         if (this.isPlaying()) {
@@ -988,7 +1159,13 @@ public class NORMediaPlayer implements Serializable {
         this.listener.playlistChanged();
 
     }
-
+    /**
+     * 
+     * @param f is the {@link File}
+     * @param changePl  {@link Boolean} says if the old playlist should be deleted or not
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public void loadPlaylist(File f, boolean changePl) throws FileNotFoundException, IOException {
 
         String path = f.getAbsolutePath();
