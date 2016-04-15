@@ -42,6 +42,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
@@ -64,12 +65,15 @@ import javafx.util.Duration;
 public class NORPlayer extends Application implements MediaChangeListener {
 
     MediaChangeListener listener = this;
-
+    private boolean isOnTop = false;
+    private boolean isFullScreen = false;
+    private boolean isResizable = false;
+    
     StringProperty displayName = new SimpleStringProperty("metadata");
     StringProperty displayTitle = new SimpleStringProperty("NOR Player");
     boolean interruptT = false;
     Thread ls;
-    private int refreshRate = 750;
+    private int refreshRate = 500;
     private Scanner sc = new Scanner(System.in);
     private static final String settingPath = "settings.norc";
     private boolean listenerSet = false;
@@ -158,7 +162,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 protected Object call() {
                     try {
 
-                        File nor = new File("NOR.wav");
+                        File nor = new File("resources/NOR.wav");
                         if (nor.exists()) {
                             mp = new MediaPlayer(norMediaPlayer.createMedia(nor));
 
@@ -261,7 +265,25 @@ public class NORPlayer extends Application implements MediaChangeListener {
             displayBox.setTranslateY(7);
             BorderPane topPane = new BorderPane(null, null, sliderBox, null, displayBox);
             root.setTop(topPane);
+            scene.setOnKeyPressed(new EventHandler<KeyEvent> () {
 
+                @Override
+                public void handle(KeyEvent event) {
+                    if(event.getText().equalsIgnoreCase("t")){
+                        isOnTop = !isOnTop;
+                        
+                        primaryStage.setAlwaysOnTop(isOnTop);
+                    }else if(event.getText().equalsIgnoreCase("f")){
+                        isFullScreen = !isFullScreen;
+                        primaryStage.setFullScreen(isFullScreen);
+                    }else if(event.getText().equalsIgnoreCase("r")){
+                        isResizable = !isResizable;
+                        primaryStage.setResizable(isResizable);
+                    }
+                }
+            });
+            
+            
             primaryStage.setTitle(displayTitle.toString());
             scene.getStylesheets().add("resources/styles.css");
             primaryStage.getIcons().add(new Image("resources/nor.png"));
@@ -459,18 +481,17 @@ public class NORPlayer extends Application implements MediaChangeListener {
         this.playInit = true;
     }
 
-    public void chName() {
+    public void changeDisplay() {
         //interruptT = true;
         name.textProperty().unbind();
 
         String[] requiredDataName = {"artist=", "title="};
 
         String[] data = NORMediaPlayer.readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
-        displayName.setValue(String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", ""));
+        this.listener.changeText(String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", ""));
         if (displayName.getValue().length() > 25) {
-            displayName.setValue(String.format("%s - %s --- ", data[0], data[1]).replace("null - ", "").replace("null", ""));
+            this.listener.changeText(String.format("%s - %s --- ", data[0], data[1]).replace("null - ", "").replace("null", ""));
         }
-        this.name.setText(displayName.getValue());
         primaryStage.setTitle(data[1]);
 
         ls = new Thread(new Task() {
@@ -478,9 +499,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
             @Override
             protected Object call() throws Exception {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(500);
                     interruptT = false;
-
+                    
                     name.setWrapText(false);
                     name.setEllipsisString("");
 
@@ -510,8 +531,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
                             }
                         });
 
-                        for (int i = 0; i < refreshRate / 2 && !interruptT; i++) {
-                            Thread.sleep(2);
+                        for (int i = 0; i < refreshRate && !interruptT; i++) {
+                            Thread.sleep(1);
                             if (interruptT) {
                                 return true;
                             }
@@ -551,7 +572,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     interruptT = true;
                     Thread.sleep(5);
                     interruptT = false;
-                    chName();
+                    changeDisplay();
                     ls.start();
 
                     System.out.println(norMediaPlayer.getNorPlayer().getMedia().getSource());
@@ -596,10 +617,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         norMediaPlayer.getNorPlayer().currentTimeProperty().addListener(Ili);
                     });
 
-                    initListener();
+                    
                 } catch (Exception e) {
                     return false;
                 }
+                initListener();
                 return true;
             }
         });
@@ -962,11 +984,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initListener() {
-        new Thread(new Task() {
+       
 
-            @Override
-            protected Object call() throws Exception {
-
+                
+                
                 norMediaPlayer.getNorPlayer().setOnPlaying(new Runnable() {
 
                     @Override
@@ -1007,10 +1028,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                 listenerSet = true;
 
-                return true;
-            }
-        }
-        ).start();
+            
+        
+
+        
 
     }
 

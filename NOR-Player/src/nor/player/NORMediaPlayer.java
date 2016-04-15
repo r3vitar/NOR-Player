@@ -828,6 +828,7 @@ public class NORMediaPlayer{
             }
 
             this.listener.mediaChanged();
+            
         }
         if (!isEmpty() && getCurrentMedia() != null) {
             norPlayer.setOnEndOfMedia(new Runnable() {
@@ -1417,8 +1418,8 @@ public class NORMediaPlayer{
             }
         }
 
-        data[1] = data[1].trim();
-        data[0] = data[0].trim();
+        data[1] = data[1].trim().replace("%5D", " ").replace("%6D", " ").replace("%5B", " ").replace("%6B", " ");
+        data[0] = data[0].trim().replace("%5D", " ").replace("%6D", " ").replace("%5B", " ").replace("%6B", " ");
 
         return data;
     }
