@@ -793,7 +793,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         pauseB.setMinSize(35, 35);
         pauseB.setId("playButton");
-        pauseB.setTooltip(new Tooltip("Pause"));
+        pauseB.setTooltip(new Tooltip("Play"));
         nextB.setMinSize(35, 35);
         nextB.setId("nextButton");
         nextB.setTooltip(new Tooltip("Next"));
@@ -1042,6 +1042,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                 try {
                     pauseB.setId("pauseButton");
+                    pauseB.setTooltip(new Tooltip("Pause"));
                 } catch (Exception e) {
                 }
 
@@ -1055,6 +1056,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                 try {
                     pauseB.setId("playButton");
+                    pauseB.setTooltip(new Tooltip("Play"));
                 } catch (Exception e) {
                 }
 
@@ -1067,6 +1069,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                 try {
                     pauseB.setId("playButton");
+                    pauseB.setTooltip(new Tooltip("Play"));
                 } catch (Exception e) {
                 }
 
