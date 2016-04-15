@@ -5,8 +5,21 @@ package nor.player;
  * @author Kacper Olszanski
  */
 public interface MediaChangeListener {
+
+    /**
+     *
+     */
     public void mediaChanged();
+
+    /**
+     *
+     */
     public void playlistChanged();
+
+    /**
+     *
+     * @param s
+     */
     public void changeText(String s);
     
 }

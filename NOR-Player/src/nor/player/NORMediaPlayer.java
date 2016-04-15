@@ -41,6 +41,9 @@ import javax.activation.UnsupportedDataTypeException;
  */
 public class NORMediaPlayer{
 
+    /**
+     *
+     */
     public long serialVerUID = 2L;
     private ArrayList<Media> playlist;
     private boolean repeatList = true;
@@ -51,13 +54,31 @@ public class NORMediaPlayer{
     private MediaChangeListener listener;
     private final char dot = '.';
     private MediaView mv;
+
+    /**
+     *
+     */
     public static final String[] supportedAudio = {".mp3", ".aac", ".vlb", ".wav", ".flac", ".alac"};
+
+    /**
+     *
+     */
     public static final String[] supportedMedia = {".mp3", ".aac", ".vlb", ".wav", ".flac", ".alac", ".mp4", ".avi", ".mkv"};
+
+    /**
+     *
+     */
     public static final String[] supportedPlaylists = {".npl", ".m3u8"/*, ".m3u", ".pls"*/};
+
+    /**
+     *
+     */
     public static final String[] supportedVideo = {".mp4", ".avi", ".mkv"};
     private int playIndex = 0;
 
-    
+    /**
+     *
+     */
     public static final Comparator<Media> cTitleAsc = new Comparator<Media>() {
 
         String[] requiredData = {"artist=", "title=", "album="};
@@ -74,6 +95,10 @@ public class NORMediaPlayer{
             return name;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cTitleDesc = new Comparator<Media>() {
 
         String[] requiredData = {"artist=", "title=", "album="};
@@ -90,6 +115,10 @@ public class NORMediaPlayer{
             return name;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cArtistAsc = new Comparator<Media>() {
 
         String[] requiredData = {"artist=", "title=", "album="};
@@ -106,6 +135,10 @@ public class NORMediaPlayer{
             return name;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cArtistDesc = new Comparator<Media>() {
 
         String[] requiredData = {"artist=", "title=", "album="};
@@ -122,6 +155,10 @@ public class NORMediaPlayer{
             return name;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cAlbumAsc = new Comparator<Media>() {
 
         String[] requiredData = {"artist=", "title=", "album="};
@@ -138,6 +175,10 @@ public class NORMediaPlayer{
             return name;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cAlbumDesc = new Comparator<Media>() {
 
         String[] requiredData = {"artist=", "title=", "album="};
@@ -154,6 +195,10 @@ public class NORMediaPlayer{
             return name;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cFileNameAsc = new Comparator<Media>() {
 
         @Override
@@ -169,6 +214,10 @@ public class NORMediaPlayer{
             return audioName;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cFileNameDesc = new Comparator<Media>() {
 
         @Override
@@ -185,6 +234,10 @@ public class NORMediaPlayer{
             return audioName;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cPathNameDesc = new Comparator<Media>() {
 
         @Override
@@ -198,6 +251,10 @@ public class NORMediaPlayer{
             return audioName;
         }
     };
+
+    /**
+     *
+     */
     public static final Comparator<Media> cPathNameAsc = new Comparator<Media>() {
 
         @Override
@@ -563,6 +620,10 @@ public class NORMediaPlayer{
 
     }
 
+    /**
+     *
+     * @param mediaArray
+     */
     public void deleteMediaArray(ArrayList<Object> mediaArray) {
         throw new UnsupportedOperationException();
 //        stopCurrent();

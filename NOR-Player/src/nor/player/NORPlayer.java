@@ -73,6 +73,9 @@ import javafx.util.Duration;
  */
 public class NORPlayer extends Application implements MediaChangeListener {
 
+    /**
+     *
+     */
     public boolean mlg = false;
     MediaChangeListener listener = this;
     private boolean isOnTop = false;
@@ -118,14 +121,16 @@ public class NORPlayer extends Application implements MediaChangeListener {
             sortArtistAscB = new MenuItem("Artist asc"),
             sortArtistDescB = new MenuItem("Artist desc"),
             sortAlbumAscB = new MenuItem("Album asc"),
-            sortAlbumDescB = new MenuItem("Album desc");
+            sortAlbumDescB = new MenuItem("Album desc"),
+            refresh = new MenuItem("Refresh");
             
 
     private Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
-    private Menu refresh = new Menu("Refresh");
+     
+    private Menu other = new Menu("Other", null, refresh);
     private Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
     private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
-    private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu, refresh);
+    private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu, other);
 
     private Button playB = new Button();
     private Button pauseB = new Button();
@@ -186,7 +191,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 protected Object call() {
                     try {
 
-                        Media nor = new Media(getClass().getResource("/resources/NOR.wav").toURI().toString());
+                        Media nor = new Media(getClass().getResource("/resources/NOR.mp3").toURI().toString());
 
                         if (nor != null) {
 
@@ -284,7 +289,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
             root.setBottom(bp1);
             VBox sliderBox = new VBox(balanceSlider, speedSlider);
             speedSlider.setTranslateY(5);
-            slide.setTranslateY(5);
             sliderBox.setId("slider1");
             sliderBox.setTranslateX(-10);
             sliderBox.translateYProperty().bind(sliderBox.translateXProperty().negate());
@@ -521,6 +525,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
         this.playInit = true;
     }
 
+    /**
+     *
+     */
     public void changeDisplay() {
         //interruptT = true;
         name.textProperty().unbind();
@@ -603,6 +610,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     }
 
+    /**
+     *
+     */
     @Override
     public void mediaChanged() {
 
@@ -765,6 +775,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     }
 
+    /**
+     *
+     */
     @Override
     public void playlistChanged() {
 
@@ -1140,10 +1153,18 @@ public class NORPlayer extends Application implements MediaChangeListener {
         }
     }
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     *
+     * @param s
+     */
     @Override
     public void changeText(String s) {
         this.displayName.setValue(s);
@@ -1161,7 +1182,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
             output.add(new Media(getClass().getResource("/resources/mlg/Spooky!.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/01 Earthquake (feat. Dominique Young.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/01 Make It Bun Dem.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Behmer - John Cena.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Bonfire.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Uplink & Nimbala - #JohnCena (Original Mix) [DemoDrop].mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Snoop Dogg ft. Wiz Khalifa & Bruno Mars - Young Wild & Free (Karetus Remix).mp3").toURI().toString()));
@@ -1176,7 +1196,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         primaryStage.setFullScreen(true);
         primaryStage.setTitle("MLG");
         
-        root.setBackground(new Background(new BackgroundImage(new Image("resources/mlgbg.jpg"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+        root.setBackground(new Background(new BackgroundImage(new Image("resources/mlg/mlgbg.jpg"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
         norMediaPlayer.savePlaylist(notMlg.getPath());
         norMediaPlayer.clearPlaylist();
         for (Media mlgMedia : mlgList) {
