@@ -945,7 +945,7 @@ public class NORMediaPlayer{
      */
     public void playOrPause() {
         if (this.playlist.isEmpty()) {
-            throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
+            System.err.println("keine AudioClips vorhanden");
 
         } else {
             if (norPlayer == null) {

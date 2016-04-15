@@ -6,6 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +43,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import static javafx.scene.input.DataFormat.URL;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyEvent;
@@ -90,8 +94,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private BorderPane root = new BorderPane();
     double w = 350, h = 177;
     private Scene scene = new Scene(root, w, h);
-    File notMlg = new File("resources/notmlg.npl");
-
+    File notMlg = new File("notmlg.npl");
+    ArrayList<Media> mlgList = initializeMLG();
+    HBox playStop;
     private Slider slide = new Slider();
     private Slider vol = new Slider();
     private Slider balanceSlider = new Slider();
@@ -114,11 +119,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
             sortArtistDescB = new MenuItem("Artist desc"),
             sortAlbumAscB = new MenuItem("Album asc"),
             sortAlbumDescB = new MenuItem("Album desc");
+            
 
     private Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
+    private Menu refresh = new Menu("Refresh");
     private Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
     private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
-    private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu);
+    private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu, refresh);
 
     private Button playB = new Button();
     private Button pauseB = new Button();
@@ -151,6 +158,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
     //Tests für audio per link abspielen
     private Button linkB = new Button("playByLink");
     private TextField linkTf = new TextField();
+    
+    private InvalidationListener mlgOnTopListener = new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+                primaryStage.setAlwaysOnTop(true);
+                primaryStage.setFullScreen(true);
+            }
+        };
 
     /**
      * Dies ist die Start-Methode die immer am Anfang des Programmes ausgeführt
@@ -170,11 +186,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 protected Object call() {
                     try {
 
-                        File nor = new File("resources/NOR.wav");
-                        if (nor.exists()) {
-                            mp = new MediaPlayer(norMediaPlayer.createMedia(nor));
+                        Media nor = new Media(getClass().getResource("/resources/NOR.wav").toURI().toString());
+
+                        if (nor != null) {
+
+                            mp = new MediaPlayer(nor);
 
                             mp.play();
+                        } else {
+
                         }
 
                     } catch (Exception e) {
@@ -244,7 +264,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             //HBox chooseFile = new HBox();
             //chooseFile.getChildren().add(openB);
             //chooseFile.getChildren().addAll(l1);
-            HBox playStop = new HBox(prevB, pauseB, stopB, nextB, openB, playlistStageB);
+            playStop = new HBox(prevB, pauseB, stopB, nextB, openB, playlistStageB);
 
             VBox bottomB;
             //HBox linkBox = new HBox(linkB, linkTf);
@@ -264,6 +284,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             root.setBottom(bp1);
             VBox sliderBox = new VBox(balanceSlider, speedSlider);
             speedSlider.setTranslateY(5);
+            slide.setTranslateY(5);
             sliderBox.setId("slider1");
             sliderBox.setTranslateX(-10);
             sliderBox.translateYProperty().bind(sliderBox.translateXProperty().negate());
@@ -287,18 +308,17 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     } else if (event.getText().equalsIgnoreCase("r")) {
                         isResizable = !isResizable;
                         primaryStage.setResizable(isResizable);
-                    } else if (event.getText().equalsIgnoreCase("m")) {
+                    } else if (event.getText().equals("M")) {
                         if (!mlg) {
-                            mlg = true;
-                            primaryStage.setTitle("MLG");
-                            name.setText("MLG");
-                            root.setBackground(new Background(new BackgroundImage(new Image("resources/mlgbg.jpg"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
-                            norMediaPlayer.savePlaylist(notMlg.getAbsolutePath());
-                            norMediaPlayer.addMedia(new File("resources/"));
+                            activateMLG();
+
+                        }else{
+                            deactivateMLG();
                         }
 
                     }
                 }
+
             });
 
             primaryStage.setTitle(displayTitle.toString());
@@ -330,7 +350,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
+                        
                     }
+                    notMlg.delete();
                     Platform.exit();
                     try {
                         Thread.sleep(5);
@@ -519,6 +541,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 try {
                     Thread.sleep(500);
                     interruptT = false;
+                    
+                    
 
                     name.setWrapText(false);
                     name.setEllipsisString("");
@@ -568,10 +592,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
         });
         if (displayName.getValue().length() > 25) {
-            ls.setDaemon(true);
+            //ls.setDaemon(true);
             name.textProperty().bind(displayName);
 
-        }
+        }else 
+            name.setText(String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", ""));
+        
+        
+       
 
     }
 
@@ -586,12 +614,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     if (norMediaPlayer.isVideo()) {
                         view.setMediaPlayer(norMediaPlayer.getNorPlayer());
                     }
-
+                    
                     interruptT = true;
                     Thread.sleep(5);
+                    
                     interruptT = false;
                     changeDisplay();
+                    
                     ls.start();
+                    
 
                     System.out.println(norMediaPlayer.getNorPlayer().getMedia().getSource());
                     norMediaPlayer.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
@@ -776,12 +807,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistStageB.setId("playlistButton");
         playlistStageB.setTooltip(new Tooltip("Playlist"));
 
+        refresh.setOnAction((ActionEvent event) -> playlistChanged());
+        
         //Audio by link
-        linkB.setOnAction(new EventHandler<ActionEvent>() {
-
-            public void handle(ActionEvent event) {
-                norMediaPlayer.addMedia(norMediaPlayer.createMediaByLink(linkTf.getText()));
-            }
+        linkB.setOnAction((ActionEvent event) -> {
+            norMediaPlayer.addMedia(norMediaPlayer.createMediaByLink(linkTf.getText()));
         });
 
         delB.setOnAction((ActionEvent event) -> {
@@ -1117,6 +1147,84 @@ public class NORPlayer extends Application implements MediaChangeListener {
     @Override
     public void changeText(String s) {
         this.displayName.setValue(s);
+    }
+
+    private ArrayList<Media> initializeMLG() {
+        ArrayList<Media> output = new ArrayList<Media>();
+        try {
+
+            output.add(new Media(getClass().getResource("/resources/mlg/john cena.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/2SAD4MEMLG.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/DAMN SON! WHERED YOU FIND THIS.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Illuminati Song Full (The X-Files Theme).mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Smoke Weed Everyday.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Spooky!.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/01 Earthquake (feat. Dominique Young.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/01 Make It Bun Dem.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Behmer - John Cena.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Bonfire.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Uplink & Nimbala - #JohnCena (Original Mix) [DemoDrop].mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Snoop Dogg ft. Wiz Khalifa & Bruno Mars - Young Wild & Free (Karetus Remix).mp3").toURI().toString()));
+
+        } catch (URISyntaxException ex) {
+        }
+        return output;
+    }
+
+    private void activateMLG() {
+        mlg = true;
+        primaryStage.setFullScreen(true);
+        primaryStage.setTitle("MLG");
+        
+        root.setBackground(new Background(new BackgroundImage(new Image("resources/mlgbg.jpg"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+        norMediaPlayer.savePlaylist(notMlg.getPath());
+        norMediaPlayer.clearPlaylist();
+        for (Media mlgMedia : mlgList) {
+            norMediaPlayer.addMedia(mlgMedia);
+        }
+        pauseB.setVisible(false);
+        stopB.setVisible(false);
+        openB.setVisible(false);
+        vol.setVisible(false);
+        vol.setValue(100);
+        primaryStage.setAlwaysOnTop(true);
+        primaryStage.alwaysOnTopProperty().addListener(mlgOnTopListener);
+        primaryStage.fullScreenProperty().addListener(mlgOnTopListener);
+        
+        norMediaPlayer.play();
+
+    }
+
+    private void deactivateMLG() {
+        primaryStage.alwaysOnTopProperty().removeListener(mlgOnTopListener);
+        primaryStage.fullScreenProperty().addListener(mlgOnTopListener);
+        interruptT = true;
+        try {
+            Thread.sleep(5);
+        } catch (InterruptedException ex) {
+            //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        pauseB.setVisible(true);
+        stopB.setVisible(true);
+        openB.setVisible(true);
+        vol.setVisible(true);
+     
+        primaryStage.setAlwaysOnTop(false);
+        playlistStage.setAlwaysOnTop(false);
+        
+        norMediaPlayer.stop();
+        mlg = false;
+        primaryStage.setFullScreen(false);
+        root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+        norMediaPlayer.clearPlaylist();
+        try {
+            norMediaPlayer.loadPlaylist(notMlg, false);
+        } catch (IOException ex) {
+            System.out.println("err");
+        }
+         
+        norMediaPlayer.play();
+
     }
 
 }
