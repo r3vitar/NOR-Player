@@ -6,24 +6,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -43,7 +37,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import static javafx.scene.input.DataFormat.URL;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyEvent;
@@ -69,7 +62,7 @@ import javafx.util.Duration;
 /**
  * Dies ist die MainKlasse.
  *
- * @author Kacper Olszanski, Philipp Radler, Julian Nenning
+ * @author Kacper Olszanski, Philipp Radler
  */
 public class NORPlayer extends Application implements MediaChangeListener {
 
@@ -86,7 +79,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     StringProperty displayTitle = new SimpleStringProperty("NOR Player");
     boolean interruptT = false;
     Thread ls;
-    private int refreshRate = 500;
+    private int refreshRate = 250;
     private Scanner sc = new Scanner(System.in);
     private static final String settingPath = "settings.norc";
     private boolean listenerSet = false;
@@ -266,13 +259,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             mytime.setId("font");
 
-            //HBox chooseFile = new HBox();
-            //chooseFile.getChildren().add(openB);
-            //chooseFile.getChildren().addAll(l1);
+
             playStop = new HBox(prevB, pauseB, stopB, nextB, openB, playlistStageB);
 
             VBox bottomB;
-            //HBox linkBox = new HBox(linkB, linkTf);
             bottomB = new VBox(slide, playStop);
             BorderPane bp1 = new BorderPane();
 

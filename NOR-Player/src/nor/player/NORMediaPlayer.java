@@ -37,7 +37,7 @@ import javax.activation.UnsupportedDataTypeException;
 /**
  *
  * @author Kacper_Olszanski
- * Unser Media Player
+ * The Media Player
  */
 public class NORMediaPlayer{
 
