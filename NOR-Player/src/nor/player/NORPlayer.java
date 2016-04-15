@@ -46,6 +46,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -64,11 +69,12 @@ import javafx.util.Duration;
  */
 public class NORPlayer extends Application implements MediaChangeListener {
 
+    public boolean mlg = false;
     MediaChangeListener listener = this;
     private boolean isOnTop = false;
     private boolean isFullScreen = false;
     private boolean isResizable = false;
-    
+
     StringProperty displayName = new SimpleStringProperty("metadata");
     StringProperty displayTitle = new SimpleStringProperty("NOR Player");
     boolean interruptT = false;
@@ -82,7 +88,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private MediaView view = new MediaView();
     private MediaPlayer mp;
     private BorderPane root = new BorderPane();
-    private Scene scene = new Scene(root, 350, 177);
+    double w = 350, h = 177;
+    private Scene scene = new Scene(root, w, h);
+    File notMlg = new File("resources/notmlg.npl");
 
     private Slider slide = new Slider();
     private Slider vol = new Slider();
@@ -265,29 +273,39 @@ public class NORPlayer extends Application implements MediaChangeListener {
             displayBox.setTranslateY(7);
             BorderPane topPane = new BorderPane(null, null, sliderBox, null, displayBox);
             root.setTop(topPane);
-            scene.setOnKeyPressed(new EventHandler<KeyEvent> () {
+            scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
                 @Override
                 public void handle(KeyEvent event) {
-                    if(event.getText().equalsIgnoreCase("t")){
+                    if (event.getText().equalsIgnoreCase("t")) {
                         isOnTop = !isOnTop;
-                        
+
                         primaryStage.setAlwaysOnTop(isOnTop);
-                    }else if(event.getText().equalsIgnoreCase("f")){
+                    } else if (event.getText().equalsIgnoreCase("f")) {
                         isFullScreen = !isFullScreen;
                         primaryStage.setFullScreen(isFullScreen);
-                    }else if(event.getText().equalsIgnoreCase("r")){
+                    } else if (event.getText().equalsIgnoreCase("r")) {
                         isResizable = !isResizable;
                         primaryStage.setResizable(isResizable);
+                    } else if (event.getText().equalsIgnoreCase("m")) {
+                        if (!mlg) {
+                            mlg = true;
+                            primaryStage.setTitle("MLG");
+                            name.setText("MLG");
+                            root.setBackground(new Background(new BackgroundImage(new Image("resources/mlgbg.jpg"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+                            norMediaPlayer.savePlaylist(notMlg.getAbsolutePath());
+                            norMediaPlayer.addMedia(new File("resources/"));
+                        }
+
                     }
                 }
             });
-            
-            
+
             primaryStage.setTitle(displayTitle.toString());
             scene.getStylesheets().add("resources/styles.css");
             primaryStage.getIcons().add(new Image("resources/nor.png"));
-            root.setId("bg");
+
+            root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
@@ -314,7 +332,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     Platform.exit();
-                     try {
+                    try {
                         Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
@@ -501,7 +519,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 try {
                     Thread.sleep(500);
                     interruptT = false;
-                    
+
                     name.setWrapText(false);
                     name.setEllipsisString("");
 
@@ -617,7 +635,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         norMediaPlayer.getNorPlayer().currentTimeProperty().addListener(Ili);
                     });
 
-                    
                 } catch (Exception e) {
                     return false;
                 }
@@ -984,54 +1001,46 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initListener() {
-       
 
-                
-                
-                norMediaPlayer.getNorPlayer().setOnPlaying(new Runnable() {
+        norMediaPlayer.getNorPlayer().setOnPlaying(new Runnable() {
 
-                    @Override
-                    public void run() {
+            @Override
+            public void run() {
 
-                        try {
-                            pauseB.setId("pauseButton");
-                        } catch (Exception e) {
-                        }
+                try {
+                    pauseB.setId("pauseButton");
+                } catch (Exception e) {
+                }
 
-                    }
-                });
+            }
+        });
 
-                norMediaPlayer.getNorPlayer().setOnStopped(new Runnable() {
+        norMediaPlayer.getNorPlayer().setOnStopped(new Runnable() {
 
-                    @Override
-                    public void run() {
+            @Override
+            public void run() {
 
-                        try {
-                            pauseB.setId("playButton");
-                        } catch (Exception e) {
-                        }
+                try {
+                    pauseB.setId("playButton");
+                } catch (Exception e) {
+                }
 
-                    }
-                });
-                norMediaPlayer.getNorPlayer().setOnPaused(new Runnable() {
+            }
+        });
+        norMediaPlayer.getNorPlayer().setOnPaused(new Runnable() {
 
-                    @Override
-                    public void run() {
+            @Override
+            public void run() {
 
-                        try {
-                            pauseB.setId("playButton");
-                        } catch (Exception e) {
-                        }
+                try {
+                    pauseB.setId("playButton");
+                } catch (Exception e) {
+                }
 
-                    }
-                });
+            }
+        });
 
-                listenerSet = true;
-
-            
-        
-
-        
+        listenerSet = true;
 
     }
 

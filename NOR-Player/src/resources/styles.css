@@ -89,8 +89,9 @@
     -fx-border-insets: 5px;
     -fx-background-insets: 5px;
 }
-#bg{
+#bfg{
     -fx-background-image: url('bg.png');
+
     -fx-background-position: center center;
     -fx-background-repeat: stretch;   
 }
