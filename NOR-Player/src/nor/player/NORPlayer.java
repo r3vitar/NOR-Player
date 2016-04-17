@@ -23,6 +23,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -44,17 +45,20 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -116,10 +120,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
             sortAlbumAscB = new MenuItem("Album asc"),
             sortAlbumDescB = new MenuItem("Album desc"),
             refresh = new MenuItem("Refresh");
-            
 
     private Menu fileMenu = new Menu("File", null, addB, addAndPlayB, addsB, addLink, delB);
-     
+
     private Menu other = new Menu("Other", null, refresh);
     private Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
     private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
@@ -156,15 +159,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
     //Tests für audio per link abspielen
     private Button linkB = new Button("playByLink");
     private TextField linkTf = new TextField();
-    
+
     private InvalidationListener mlgOnTopListener = new InvalidationListener() {
 
-            @Override
-            public void invalidated(Observable observable) {
-                primaryStage.setAlwaysOnTop(true);
-                primaryStage.setFullScreen(true);
-            }
-        };
+        @Override
+        public void invalidated(Observable observable) {
+            primaryStage.setAlwaysOnTop(true);
+            primaryStage.setFullScreen(true);
+        }
+    };
 
     /**
      * Dies ist die Start-Methode die immer am Anfang des Programmes ausgeführt
@@ -259,7 +262,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             mytime.setId("font");
 
-
             playStop = new HBox(prevB, pauseB, stopB, nextB, openB, playlistStageB);
 
             VBox bottomB;
@@ -306,19 +308,19 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         if (!mlg) {
                             activateMLG();
 
-                        }else{
+                        } else {
                             deactivateMLG();
                         }
 
-                    }else if(event.getText().equalsIgnoreCase("o")){
-                        if(primaryStage.getOpacity() == 1.0){
+                    } else if (event.getText().equalsIgnoreCase("o")) {
+                        if (primaryStage.getOpacity() == 1.0) {
                             primaryStage.setOpacity(0.2);
-                        }else{
-                            primaryStage.setOpacity(primaryStage.getOpacity()+0.2);
+                        } else {
+                            primaryStage.setOpacity(primaryStage.getOpacity() + 0.2);
                         }
-                    }else
-                        
+                    } else {
                         System.out.println(event.getCode());
+                    }
                 }
 
             });
@@ -352,7 +354,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
-                        
+
                     }
                     notMlg.delete();
                     Platform.exit();
@@ -364,17 +366,16 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     System.exit(0);
                 }
             });
-            
-            
+
             primaryStage.titleProperty().addListener(new InvalidationListener() {
 
                 @Override
                 public void invalidated(Observable observable) {
 
-                    if(primaryStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("notmlg")) {
+                    if (primaryStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("notmlg")) {
                         primaryStage.setTitle("");
                     }
-                    
+
                 }
             });
             primaryStage.show();
@@ -471,7 +472,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
         // playlistStage.setResizable(false);
-        
+
         playlistScene.setOnDragOver(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
@@ -558,8 +559,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 try {
                     Thread.sleep(500);
                     interruptT = false;
-                    
-                    
 
                     name.setWrapText(false);
                     name.setEllipsisString("");
@@ -612,11 +611,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
             //ls.setDaemon(true);
             name.textProperty().bind(displayName);
 
-        }else 
+        } else {
             name.setText(String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", ""));
-        
-        
-       
+        }
 
     }
 
@@ -634,15 +631,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     if (norMediaPlayer.isVideo()) {
                         view.setMediaPlayer(norMediaPlayer.getNorPlayer());
                     }
-                    
+
                     interruptT = true;
                     Thread.sleep(5);
-                    
+
                     interruptT = false;
                     changeDisplay();
-                    
+
                     ls.start();
-                    
 
                     System.out.println(norMediaPlayer.getNorPlayer().getMedia().getSource());
                     norMediaPlayer.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
@@ -831,7 +827,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistStageB.setTooltip(new Tooltip("Playlist"));
 
         refresh.setOnAction((ActionEvent event) -> playlistChanged());
-        
+
         //Audio by link
         linkB.setOnAction((ActionEvent event) -> {
             norMediaPlayer.addMedia(norMediaPlayer.createMediaByLink(linkTf.getText()));
@@ -855,6 +851,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                     norMediaPlayer.addMedia(f);
                     norMediaPlayer.setPlayIndexToLast();
+                    norMediaPlayer.setCurrentToMediaPlayer();
 
                     norMediaPlayer.play();
 
@@ -1054,7 +1051,25 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initListener() {
+        primaryStage.resizableProperty().addListener(new InvalidationListener() {
 
+            @Override
+            public void invalidated(Observable observable) {
+
+                if (!primaryStage.isResizable()) {
+                    if (!primaryStage.isFullScreen()) {
+                        primaryStage.setWidth(w);
+                        primaryStage.setHeight(h);
+                    }
+                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+
+                } else {
+                    w = primaryStage.getWidth();
+                    h = primaryStage.getHeight();
+                    root.setBackground(new Background(new BackgroundFill(new Color(0.11764705882352942, 0.48627450980392155, 1, 1), CornerRadii.EMPTY, Insets.EMPTY)));
+                }
+            }
+        });
         norMediaPlayer.getNorPlayer().setOnPlaying(new Runnable() {
 
             @Override
@@ -1195,7 +1210,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             output.add(new Media(getClass().getResource("/resources/mlg/Spooky!.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Inception_AirHorn.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Darude - Dankstorm.mp3").toURI().toString()));
-            
+
             output.add(new Media(getClass().getResource("/resources/mlg/Knife Party - Centipede (Original Mix).mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Skrillex &amp; Alvin Risk - Try It Out (Neon Mix) [AUDIO].mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/01 Earthquake (feat. Dominique Young.mp3").toURI().toString()));
@@ -1214,7 +1229,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         mlg = true;
         primaryStage.setFullScreen(true);
         primaryStage.setTitle("MLG");
-        
+
         root.setBackground(new Background(new BackgroundImage(new Image("resources/mlg/mlgbg.jpg"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
         norMediaPlayer.savePlaylist(notMlg.getPath());
         norMediaPlayer.clearPlaylist();
@@ -1229,7 +1244,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         primaryStage.setAlwaysOnTop(true);
         primaryStage.alwaysOnTopProperty().addListener(mlgOnTopListener);
         primaryStage.fullScreenProperty().addListener(mlgOnTopListener);
-        
+
         norMediaPlayer.play();
 
     }
@@ -1247,10 +1262,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
         stopB.setVisible(true);
         openB.setVisible(true);
         vol.setVisible(true);
-     
+
         primaryStage.setAlwaysOnTop(false);
         playlistStage.setAlwaysOnTop(false);
-        
+
         norMediaPlayer.stop();
         mlg = false;
         primaryStage.setFullScreen(false);
@@ -1261,7 +1276,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         } catch (IOException ex) {
             System.out.println("err");
         }
-         
+
         norMediaPlayer.play();
 
     }

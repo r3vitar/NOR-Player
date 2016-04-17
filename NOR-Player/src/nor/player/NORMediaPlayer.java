@@ -5,6 +5,7 @@
  */
 package nor.player;
 
+import com.sun.javafx.binding.StringFormatter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +17,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -519,7 +521,7 @@ public class NORMediaPlayer{
      * @param filePath the Path of the File
      * @return the created Media
      */
-    public Media createMedia(String filePath) {
+    public static Media createMedia(String filePath) {
         Media m;
         try {
             m = new Media(filePath);
@@ -535,7 +537,7 @@ public class NORMediaPlayer{
      * @param file the Path of the File
      * @return the created Media
      */
-    public Media createMedia(File file) {
+    public static Media createMedia(File file) {
         Media m = null;
         try {
             if (isSupported(file.getName(), supportedMedia)) {
@@ -878,7 +880,7 @@ public class NORMediaPlayer{
     /**
      * sets the Media with the current index to the {@link MediaPlayer}
      */
-    private void setCurrentToMediaPlayer() {
+    public void setCurrentToMediaPlayer() {
 
         if (getCurrentMedia() == null); else {
             norPlayer = new MediaPlayer(getCurrentMedia());
@@ -1402,7 +1404,7 @@ public class NORMediaPlayer{
      * @param supportedList {@link String[]} of supported File endings
      * @return 
      */
-    private boolean isSupported(String name, String[] supportedList) {
+    public static boolean isSupported(String name, String[] supportedList) {
 
         ArrayList<String> tmpStr = new ArrayList<String>(Arrays.asList(supportedList));
         for (String s : tmpStr) {
@@ -1448,39 +1450,40 @@ public class NORMediaPlayer{
         if (data[1] == null && data[0] == null) {
             if (f.getName().contains("-")) {
                 if (f.getName().split("-").length > 3) {
-                    data[0] = (f.getName().split("-")[0].replace("%20", " ") + f.getName().split("-")[1].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
-                    data[1] = (f.getName().split("-")[2].replace("%20", " ") + f.getName().split("-")[3].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
+                    data[0] = (f.getName().split("-")[0] + f.getName().split("-")[1]).replace(".mp3", "").replace(".wav", "");
+                    data[1] = (f.getName().split("-")[2] + f.getName().split("-")[3]).replace(".mp3", "").replace(".wav", "");
                 } else if (f.getName().split("-").length > 2) {
-                    data[0] = (f.getName().split("-")[0].replace("%20", " ") + f.getName().split("-")[1].replace("%20", " ")).replace(".mp3", "").replace(".wav", "");
-                    data[1] = f.getName().split("-")[2].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                    data[0] = (f.getName().split("-")[0] + f.getName().split("-")[1]).replace(".mp3", "").replace(".wav", "");
+                    data[1] = f.getName().split("-")[2].replace(".mp3", "").replace(".wav", "");
                 } else {
-                    data[0] = f.getName().split("-")[0].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
-                    data[1] = f.getName().split("-")[1].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                    data[0] = f.getName().split("-")[0].replace(".mp3", "").replace(".wav", "");
+                    data[1] = f.getName().split("-")[1].replace(".mp3", "").replace(".wav", "");
                 }
             } else {
-                data[1] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                data[1] = f.getName().replace(".mp3", "").replace(".wav", "");
                 data[0] = "";
             }
 
         } else if (data[1] == null) {
             if (f.getName().contains("-")) {
-                data[1] = f.getName().split("-")[1].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                data[1] = f.getName().split("-")[1].replace(".mp3", "").replace(".wav", "");
             } else {
-                data[1] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                data[1] = f.getName().replace(".mp3", "").replace(".wav", "");
 
             }
 
         } else if (data[0] == null) {
             if (f.getName().contains("-")) {
-                data[0] = f.getName().split("-")[0].replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                data[0] = f.getName().split("-")[0].replace(".mp3", "").replace(".wav", "");
             } else {
-                data[0] = f.getName().replace("%20", " ").replace(".mp3", "").replace(".wav", "");
+                data[0] = f.getName().replace(".mp3", "").replace(".wav", "");
 
             }
         }
 
-        data[1] = data[1].trim().replace("%5D", " ").replace("%6D", " ").replace("%5B", " ").replace("%6B", " ");
-        data[0] = data[0].trim().replace("%5D", " ").replace("%6D", " ").replace("%5B", " ").replace("%6B", " ");
+        data[1] = URLDecoder.decode(data[1]).trim();
+        
+        data[0] = URLDecoder.decode(data[0]).trim();
 
         return data;
     }
