@@ -1051,6 +1051,18 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initListener() {
+        primaryStage.fullScreenProperty().addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+           
+                if(primaryStage.isFullScreen()){
+                    primaryStage.setResizable(true);
+                }else{
+                    primaryStage.setResizable(false);
+                }
+            }
+        });
         primaryStage.resizableProperty().addListener(new InvalidationListener() {
 
             @Override
