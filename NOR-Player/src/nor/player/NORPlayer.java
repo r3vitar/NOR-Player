@@ -310,7 +310,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
                             deactivateMLG();
                         }
 
-                    }
+                    }else if(event.getText().equalsIgnoreCase("o")){
+                        if(primaryStage.getOpacity() == 1.0){
+                            primaryStage.setOpacity(0.2);
+                        }else{
+                            primaryStage.setOpacity(primaryStage.getOpacity()+0.2);
+                        }
+                    }else
+                        
+                        System.out.println(event.getCode());
                 }
 
             });
@@ -356,7 +364,19 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     System.exit(0);
                 }
             });
+            
+            
+            primaryStage.titleProperty().addListener(new InvalidationListener() {
 
+                @Override
+                public void invalidated(Observable observable) {
+
+                    if(primaryStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("notmlg")) {
+                        primaryStage.setTitle("");
+                    }
+                    
+                }
+            });
             primaryStage.show();
         } catch (Exception e) {
             new File("lastSession.npl").delete();
@@ -451,7 +471,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
         // playlistStage.setResizable(false);
-
+        
         playlistScene.setOnDragOver(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
