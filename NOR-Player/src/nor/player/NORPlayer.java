@@ -1173,7 +1173,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
             output.add(new Media(getClass().getResource("/resources/mlg/Illuminati Song Full (The X-Files Theme).mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Smoke Weed Everyday.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Spooky!.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Inception_AirHorn.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Darude - Dankstorm.mp3").toURI().toString()));
+            
+            output.add(new Media(getClass().getResource("/resources/mlg/Knife Party - Centipede (Original Mix).mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Skrillex &amp; Alvin Risk - Try It Out (Neon Mix) [AUDIO].mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/01 Earthquake (feat. Dominique Young.mp3").toURI().toString()));
+            output.add(new Media(getClass().getResource("/resources/mlg/Fort Minor - Remember The Name (OFFICIAL Video) HD.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/01 Make It Bun Dem.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Bonfire.mp3").toURI().toString()));
             output.add(new Media(getClass().getResource("/resources/mlg/Uplink & Nimbala - #JohnCena (Original Mix) [DemoDrop].mp3").toURI().toString()));
