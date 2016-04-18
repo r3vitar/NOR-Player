@@ -160,15 +160,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private Button linkB = new Button("playByLink");
     private TextField linkTf = new TextField();
 
-    private InvalidationListener mlgOnTopListener = new InvalidationListener() {
-
-        @Override
-        public void invalidated(Observable observable) {
-            primaryStage.setAlwaysOnTop(true);
-            primaryStage.setFullScreen(true);
-        }
-    };
-
+   
     /**
      * Dies ist die Start-Methode die immer am Anfang des Programmes ausgeführt
      * wird.
@@ -644,7 +636,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     norMediaPlayer.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
                     norMediaPlayer.getNorPlayer().balanceProperty().bind(balanceSlider.valueProperty().divide(100.0));
                     norMediaPlayer.getNorPlayer().rateProperty().bind(speedSlider.valueProperty().divide(100.0));
-
+                    try{
                     norMediaPlayer.getNorPlayer().currentTimeProperty().addListener((Observable observable) -> {
                         int min = (int) norMediaPlayer.getNorPlayer().getCurrentTime().toMinutes();
                         int sec = (int) norMediaPlayer.getNorPlayer().getCurrentTime().toSeconds() % 60;
@@ -654,6 +646,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                         mytime.setText(df.format(min) + ':' + df.format(sec) + ':' + df.format(mili));
                     });
+                    }catch(Exception e3){
+                        System.err.println(e3);
+                    }
                     double dur = Double.NaN;
 
                     do {
@@ -1055,11 +1050,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             @Override
             public void invalidated(Observable observable) {
-           
-                if(primaryStage.isFullScreen()){
+
+                if (primaryStage.isFullScreen()) {
                     primaryStage.setResizable(true);
-                }else{
+                } else {
                     primaryStage.setResizable(false);
+                    primaryStage.setWidth(w);
+                    primaryStage.setHeight(h);
                 }
             }
         });
@@ -1233,6 +1230,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             output.add(new Media(getClass().getResource("/resources/mlg/Snoop Dogg ft. Wiz Khalifa & Bruno Mars - Young Wild & Free (Karetus Remix).mp3").toURI().toString()));
 
         } catch (URISyntaxException ex) {
+            System.err.println(ex);
         }
         return output;
     }
@@ -1243,8 +1241,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
         primaryStage.setTitle("MLG");
 
         root.setBackground(new Background(new BackgroundImage(new Image("resources/mlg/mlgbg.jpg"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
-        norMediaPlayer.savePlaylist(notMlg.getPath());
-        norMediaPlayer.clearPlaylist();
+        if (!norMediaPlayer.isEmpty()) {
+            norMediaPlayer.savePlaylist(notMlg.getPath());
+        }
+        try {
+            norMediaPlayer.clearPlaylist();
+        } catch (Exception e2) {
+            System.err.println(e2);
+        }
         for (Media mlgMedia : mlgList) {
             norMediaPlayer.addMedia(mlgMedia);
         }
@@ -1254,16 +1258,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
         vol.setVisible(false);
         vol.setValue(100);
         primaryStage.setAlwaysOnTop(true);
-        primaryStage.alwaysOnTopProperty().addListener(mlgOnTopListener);
-        primaryStage.fullScreenProperty().addListener(mlgOnTopListener);
+     
 
         norMediaPlayer.play();
 
     }
 
     private void deactivateMLG() {
-        primaryStage.alwaysOnTopProperty().removeListener(mlgOnTopListener);
-        primaryStage.fullScreenProperty().addListener(mlgOnTopListener);
+        
         interruptT = true;
         try {
             Thread.sleep(5);
@@ -1277,19 +1279,25 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         primaryStage.setAlwaysOnTop(false);
         playlistStage.setAlwaysOnTop(false);
+       
+        
 
         norMediaPlayer.stop();
         mlg = false;
         primaryStage.setFullScreen(false);
+         primaryStage.setResizable(false);
         root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
         norMediaPlayer.clearPlaylist();
         try {
-            norMediaPlayer.loadPlaylist(notMlg, false);
+            File f = notMlg;
+            if (f.exists()) {
+                norMediaPlayer.loadPlaylist(f, false);
+                norMediaPlayer.play();
+            }
+            
         } catch (IOException ex) {
-            System.out.println("err");
+            System.err.println(ex);
         }
-
-        norMediaPlayer.play();
 
     }
 
