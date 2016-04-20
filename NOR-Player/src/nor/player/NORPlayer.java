@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -122,7 +124,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private Menu other = new Menu("Other", null, refresh);
     private Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
-    private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, 
+    private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB,
             sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
     private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu, other);
 
@@ -149,7 +151,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private String[] requiredData = {"artist=", "title=", "album="};
     private TableView playlistTable = new TableView();
     private TableColumn indexColumn = new TableColumn("Nr");
-    
+
     private Stage primaryStage;
 
     private ObservableList<LineItem> playlistData = FXCollections.observableArrayList();
@@ -160,7 +162,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private Button linkB = new Button("playByLink");
     private TextField linkTf = new TextField();
 
-   
     /**
      * Dies ist die Start-Methode die immer am Anfang des Programmes ausgeführt
      * wird.
@@ -206,7 +207,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     } catch (Exception e) {
                     }
                     try {
-                        
+
                     } catch (Exception e) {
                     }
 
@@ -282,14 +283,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
             displayBox.setTranslateY(7);
             BorderPane topPane = new BorderPane(null, null, sliderBox, null, displayBox);
             root.setTop(topPane);
-            
 
             primaryStage.setTitle(displayTitle.toString());
             scene.getStylesheets().add("resources/styles.css");
             primaryStage.getIcons().add(new Image("resources/nor.png"));
 
-            root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), 
-                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+            root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"),
+                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                     new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -317,7 +317,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
 
                     }
-                    
+
                     Platform.exit();
                     try {
                         Thread.sleep(5);
@@ -328,7 +328,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }
             });
 
-            
             primaryStage.show();
         } catch (Exception e) {
             new File("lastSession.npl").delete();
@@ -360,7 +359,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private void initPlaylistTable() {
         playlistTable = new TableView();
 
-       
         playlistTable.setPrefWidth(playlistScene.getWidth());
         playlistTable.setPrefHeight(playlistScene.getHeight() - 25.0);
         playlistTable.setMaxHeight(playlistScene.getHeight());
@@ -380,11 +378,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable.getColumns()
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
-        
+
         StyledCellFactory<LineItem> scf = new StyledCellFactory<LineItem>();
         scf.setIndex(norMediaPlayer.getPlayIndex());
         indexColumn.setCellFactory(scf);
-        
+
         playlistScene.getStylesheets().add("resources/styles.css");
     }
 
@@ -412,8 +410,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistStage.setScene(playlistScene);
         playlistStage.setTitle(playlistTitle);
         // playlistStage.setResizable(false);
-
-
 
         playlistStage.setOnHiding(new EventHandler<WindowEvent>() {
 
@@ -449,77 +445,78 @@ public class NORPlayer extends Application implements MediaChangeListener {
         name.textProperty().unbind();
 
         String[] requiredDataName = {"artist=", "title="};
+        if (this.norMediaPlayer.getNorPlayer() != null) {
+            String[] data = NORMediaPlayer.readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
+            this.listener.changeText(String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", ""));
+            if (displayName.getValue().length() > 25) {
+                this.listener.changeText(String.format("%s - %s --- ", data[0], data[1]).replace("null - ", "").replace("null", ""));
+            }
+            primaryStage.setTitle(data[1]);
 
-        String[] data = NORMediaPlayer.readMetadata(requiredDataName, this.norMediaPlayer.getCurrentMedia());
-        this.listener.changeText(String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", ""));
-        if (displayName.getValue().length() > 25) {
-            this.listener.changeText(String.format("%s - %s --- ", data[0], data[1]).replace("null - ", "").replace("null", ""));
-        }
-        primaryStage.setTitle(data[1]);
+            ls = new Thread(new Task() {
 
-        ls = new Thread(new Task() {
+                @Override
+                protected Object call() throws Exception {
+                    try {
+                        Thread.sleep(500);
+                        interruptT = false;
 
-            @Override
-            protected Object call() throws Exception {
-                try {
-                    Thread.sleep(500);
-                    interruptT = false;
+                        name.setWrapText(false);
+                        name.setEllipsisString("");
 
-                    name.setWrapText(false);
-                    name.setEllipsisString("");
+                        for (; !interruptT;) {
 
-                    for (; !interruptT;) {
+                            Platform.runLater(new Task() {
 
-                        Platform.runLater(new Task() {
+                                @Override
+                                protected Object call() throws Exception {
 
-                            @Override
-                            protected Object call() throws Exception {
+                                    try {
+                                        String tmp = "";
+                                        for (int i = 1; i < displayName.getValue().length(); i++) {
+                                            tmp += displayName.getValue().charAt(i);
 
-                                try {
-                                    String tmp = "";
-                                    for (int i = 1; i < displayName.getValue().length(); i++) {
-                                        tmp += displayName.getValue().charAt(i);
+                                        }
+                                        tmp += Character.toString(displayName.getValue().charAt(0));
 
+                                        listener.changeText(tmp);
+
+                                    } catch (Exception ee) {
+                                        System.err.println(ee);
+                                        return false;
                                     }
-                                    tmp += Character.toString(displayName.getValue().charAt(0));
+                                    return true;
 
-                                    listener.changeText(tmp);
-
-                                } catch (Exception ee) {
-                                    System.err.println(ee);
-                                    return false;
                                 }
-                                return true;
+                            });
 
-                            }
-                        });
+                            for (int i = 0; i < refreshRate && !interruptT; i++) {
+                                Thread.sleep(1);
+                                if (interruptT) {
+                                    return true;
+                                }
 
-                        for (int i = 0; i < refreshRate && !interruptT; i++) {
-                            Thread.sleep(1);
-                            if (interruptT) {
-                                return true;
                             }
 
                         }
+                        interruptT = false;
 
+                    } catch (Exception e) {
+                        return false;
                     }
-                    interruptT = false;
 
-                } catch (Exception e) {
-                    return false;
+                    return true;
                 }
+            });
+        } else {
+            this.listener.changeText("");
+        }
 
-                return true;
-            }
-        });
         if (displayName.getValue().length() > 25) {
             //ls.setDaemon(true);
             name.textProperty().bind(displayName);
 
-        } else {
-            name.setText(String.format("%s - %s", data[0], data[1]).replace("null - ", "").replace("null", ""));
         }
-
     }
 
     /**
@@ -541,6 +538,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     Thread.sleep(5);
 
                     interruptT = false;
+
                     changeDisplay();
 
                     ls.start();
@@ -549,17 +547,17 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     norMediaPlayer.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
                     norMediaPlayer.getNorPlayer().balanceProperty().bind(balanceSlider.valueProperty().divide(100.0));
                     norMediaPlayer.getNorPlayer().rateProperty().bind(speedSlider.valueProperty().divide(100.0));
-                    try{
-                    norMediaPlayer.getNorPlayer().currentTimeProperty().addListener((Observable observable) -> {
-                        int min = (int) norMediaPlayer.getNorPlayer().getCurrentTime().toMinutes();
-                        int sec = (int) norMediaPlayer.getNorPlayer().getCurrentTime().toSeconds() % 60;
-                        int mili = (int) ((norMediaPlayer.getNorPlayer().getCurrentTime().toMillis() % 1000));
-                        mili /= 100;
-                        DecimalFormat df = new DecimalFormat("00");
+                    try {
+                        norMediaPlayer.getNorPlayer().currentTimeProperty().addListener((Observable observable) -> {
+                            int min = (int) norMediaPlayer.getNorPlayer().getCurrentTime().toMinutes();
+                            int sec = (int) norMediaPlayer.getNorPlayer().getCurrentTime().toSeconds() % 60;
+                            int mili = (int) ((norMediaPlayer.getNorPlayer().getCurrentTime().toMillis() % 1000));
+                            mili /= 100;
+                            DecimalFormat df = new DecimalFormat("00");
 
-                        mytime.setText(df.format(min) + ':' + df.format(sec) + ':' + df.format(mili));
-                    });
-                    }catch(Exception e3){
+                            mytime.setText(df.format(min) + ':' + df.format(sec) + ':' + df.format(mili));
+                        });
+                    } catch (Exception e3) {
                         System.err.println(e3);
                     }
                     double dur = Double.NaN;
@@ -589,10 +587,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         norMediaPlayer.getNorPlayer().seek(Duration.millis(slide.getValue()));
                         norMediaPlayer.getNorPlayer().currentTimeProperty().addListener(Ili);
                     });
-                    
+
                     StyledCellFactory<LineItem> scf = new StyledCellFactory<LineItem>();
                     scf.setIndex(norMediaPlayer.getPlayIndex());
                     indexColumn.setCellFactory(scf);
+                    playlistChanged();
                 } catch (Exception e) {
                     return false;
                 }
@@ -838,9 +837,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             try {
 
-                    List dataList = manager.chooseMultipleFiles("all");
+                List dataList = manager.chooseMultipleFiles("all");
 
-                    ArrayList<File> data = new ArrayList<File>(dataList);
+                ArrayList<File> data = new ArrayList<File>(dataList);
                 if (data != null && !data.isEmpty()) {
                     if (!norMediaPlayer.isEmpty()) {
                         norMediaPlayer.stop();
@@ -961,7 +960,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         scene.setOnKeyPressed((KeyEvent event) -> {
             if (event.getText().equalsIgnoreCase("t")) {
                 isOnTop = !isOnTop;
-                
+
                 primaryStage.setAlwaysOnTop(isOnTop);
             } else if (event.getText().equalsIgnoreCase("f")) {
                 isFullScreen = !isFullScreen;
@@ -971,7 +970,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 isResizable = !isResizable;
                 primaryStage.setFullScreen(false);
                 primaryStage.setResizable(isResizable);
-            }else if (event.getText().equalsIgnoreCase("o")) {
+           } else if (event.getText().equalsIgnoreCase("o")) {
                 if (primaryStage.getOpacity() == 0.2) {
                     primaryStage.setOpacity(1);
                 } else {
@@ -981,30 +980,20 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 System.out.println(event.getCode());
             }
         });
-        
-         InvalidationListener blankName = (Observable observable) -> {
-            if(norMediaPlayer.getNorPlayer() == null)
-                displayName.set("");
-        };
-        
-        norMediaPlayer.getNorPlayer().onStoppedProperty().addListener(blankName);
-        norMediaPlayer.getNorPlayer().onErrorProperty().addListener(blankName);
-        norMediaPlayer.getNorPlayer().onHaltedProperty().addListener(blankName);
-        norMediaPlayer.getNorPlayer().onStalledProperty().addListener(blankName);
-        
+
         playlistStage.titleProperty().addListener(new InvalidationListener() {
-            
-                @Override
-                public void invalidated(Observable observable) {
 
-                    if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("noname")) {
-                        playlistStage.setTitle("");
-                    }
+            @Override
+            public void invalidated(Observable observable) {
 
+                if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("noname")) {
+                    playlistStage.setTitle("");
                 }
-            });
-        
-         playlistScene.widthProperty().addListener(new InvalidationListener() {
+
+            }
+        });
+
+        playlistScene.widthProperty().addListener(new InvalidationListener() {
 
             @Override
             public void invalidated(Observable observable) {
@@ -1022,8 +1011,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 playlistTable.setPrefHeight(playlistScene.getHeight() - playlistMenuBar.getHeight());
             }
         });
-        
-        
+
         primaryStage.fullScreenProperty().addListener(new InvalidationListener() {
 
             @Override
@@ -1048,8 +1036,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         primaryStage.setWidth(w);
                         primaryStage.setHeight(h);
                     }
-                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), 
-                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"),
+                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                             new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
 
                 } else {
@@ -1187,8 +1175,5 @@ public class NORPlayer extends Application implements MediaChangeListener {
     public void changeText(String s) {
         this.displayName.setValue(s);
     }
-
-   
-
 
 }

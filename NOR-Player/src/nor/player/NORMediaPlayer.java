@@ -1045,6 +1045,8 @@ public class NORMediaPlayer{
             
             norPlayer.stop();
             this.playing = false;
+            
+            this.listener.mediaChanged();
 
         }
     }
