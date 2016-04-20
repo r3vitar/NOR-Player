@@ -125,7 +125,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private Menu other = new Menu("Other", null, refresh);
     private Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
-    private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
+    private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB, 
+            sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
     private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu, other);
 
     private Button playB = new Button();
@@ -293,8 +294,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     } else if (event.getText().equalsIgnoreCase("f")) {
                         isFullScreen = !isFullScreen;
                         primaryStage.setFullScreen(isFullScreen);
+                        primaryStage.setResizable(false);
                     } else if (event.getText().equalsIgnoreCase("r")) {
                         isResizable = !isResizable;
+                        primaryStage.setFullScreen(false);
                         primaryStage.setResizable(isResizable);
                     } else if (event.getText().equals("M")) {
                         if (!mlg) {
@@ -321,7 +324,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
             scene.getStylesheets().add("resources/styles.css");
             primaryStage.getIcons().add(new Image("resources/nor.png"));
 
-            root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+            root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), 
+                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+                    new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
@@ -359,13 +364,13 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }
             });
 
-            primaryStage.titleProperty().addListener(new InvalidationListener() {
+            playlistStage.titleProperty().addListener(new InvalidationListener() {
 
                 @Override
                 public void invalidated(Observable observable) {
 
-                    if (primaryStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("notmlg")) {
-                        primaryStage.setTitle("");
+                    if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("notmlg")) {
+                        playlistStage.setTitle("");
                     }
 
                 }
@@ -922,21 +927,17 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             try {
 
-                File f = manager.chooseSingleFile("media");
+                    List dataList = manager.chooseMultipleFiles("all");
 
-                if (f != null) {
+                    ArrayList<File> data = new ArrayList<File>(dataList);
+                if (data != null && !data.isEmpty()) {
                     if (!norMediaPlayer.isEmpty()) {
                         norMediaPlayer.stop();
-                        norMediaPlayer.clearPlaylist();
+                        //norMediaPlayer.clearPlaylist();
                     }
 
-                    norMediaPlayer.addMedia(f);
-                    if (b) {
-                        norMediaPlayer.play();
-                        //pauseB.setText("Pause");
-                    } else {
-                        //pauseB.setText("Play");
-                    }
+                    norMediaPlayer.addMedia(data);
+                    norMediaPlayer.play();
                 }
 
             } catch (Exception e) {
@@ -1070,12 +1071,15 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         primaryStage.setWidth(w);
                         primaryStage.setHeight(h);
                     }
-                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), 
+                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+                            new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
 
                 } else {
                     w = primaryStage.getWidth();
                     h = primaryStage.getHeight();
-                    root.setBackground(new Background(new BackgroundFill(new Color(0.11764705882352942, 0.48627450980392155, 1, 1), CornerRadii.EMPTY, Insets.EMPTY)));
+                    root.setBackground(new Background(new BackgroundFill(
+                            new Color(0.11764705882352942, 0.48627450980392155, 1, 1), CornerRadii.EMPTY, Insets.EMPTY)));
                 }
             }
         });
@@ -1240,7 +1244,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
         primaryStage.setFullScreen(true);
         primaryStage.setTitle("MLG");
 
-        root.setBackground(new Background(new BackgroundImage(new Image("resources/mlg/mlgbg.jpg"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+        root.setBackground(new Background(new BackgroundImage(new Image("resources/mlg/mlgbg.jpg"), 
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+                new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
         if (!norMediaPlayer.isEmpty()) {
             norMediaPlayer.savePlaylist(notMlg.getPath());
         }
@@ -1286,7 +1292,9 @@ public class NORPlayer extends Application implements MediaChangeListener {
         mlg = false;
         primaryStage.setFullScreen(false);
          primaryStage.setResizable(false);
-        root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+        root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), 
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+                new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
         norMediaPlayer.clearPlaylist();
         try {
             File f = notMlg;
