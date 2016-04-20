@@ -380,10 +380,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
 
+        /** Setting the styledCellFactory to color the row which is currently played **/
         StyledCellFactory<LineItem> scf = new StyledCellFactory<LineItem>();
         scf.setIndex(norMediaPlayer.getPlayIndex()-1);
         indexColumn.setCellFactory(scf);
 
+        /** set Listener for double click on Row and if row is double clicked then play the song in this row  **/
         playlistTable.setRowFactory(tv -> {
             TableRow<LineItem> row = new TableRow<LineItem>();
             row.setOnMouseClicked(event -> {
