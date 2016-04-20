@@ -24,6 +24,8 @@ public class StyledCell<T> extends TableCell<LineItem, T> {
             TableRow<LineItem> tr = getTableRow();
             if (item.equals(playingIndex+1)) {
                 tr.getStyleClass().add("emphasisedRow");
+                
+                
             } else {
                 tr.getStyleClass().remove("emphasisedRow");
             }

@@ -93,3 +93,8 @@
     -fx-background-position: center center;
     -fx-background-repeat: stretch;   
 }
+
+.emphasisedRow{
+    -fx-background-color: #1e7cff;
+    -fx-text-fill: #ffffff;
+}
