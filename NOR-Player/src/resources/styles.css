@@ -53,7 +53,7 @@
 
 #name{
     
-     -fx-text-fill: #dbdbdb;
+     -fx-text-fill: #ecf0f1;
      
     -fx-font-size: 15px;
     -fx-padding: 2px;
@@ -66,7 +66,7 @@
 
 #time{
     -fx-font-weight: bold;
-    -fx-text-fill: #dbdbdb;
+    -fx-text-fill: #ecf0f1;
     -fx-font-size: 40px;
     -fx-padding: 2px;
     -fx-border-insets: 2px;
@@ -96,5 +96,36 @@
 
 .emphasisedRow{
     -fx-background-color: #1e7cff;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: #ecf0f1;
 }
+
+.slider .thumb{
+      
+     -fx-background-color: #1e7cff;
+}
+
+.slider .track{
+    -fx-background-color: #bdc3c7;
+}
+
+.button{
+        -fx-background-color: #ecf0f1;
+
+}
+
+.table-view .column-header .label {
+    -fx-background-color: #bdc3c7;
+    -fx-table-cell-border-color: transparent;
+    -fx-text-fill: #ecf0f1;
+    
+}
+
+.table-view {
+        -fx-table-cell-border-color: transparent;
+}
+
+.menu-bar{
+            -fx-background-color: #ecf0f1;
+
+}
+

@@ -27,6 +27,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -63,6 +64,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
@@ -94,7 +96,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private MediaView view = new MediaView();
     private MediaPlayer mp;
     private BorderPane root = new BorderPane();
-    double w = 350, h = 177;
+    double w = 350, h = 190;
     private Scene scene = new Scene(root, w, h);
     HBox playStop;
     private Slider slide = new Slider();
@@ -175,6 +177,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             primaryStage = ps;
             primaryStage.setResizable(false);
+            primaryStage.initStyle(StageStyle.UNIFIED);
 
             new Thread(new Task() {
                 @Override
@@ -289,9 +292,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             scene.getStylesheets().add("resources/styles.css");
             primaryStage.getIcons().add(new Image("resources/nor.png"));
 
-            root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"),
-                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                    new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+            root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
@@ -380,18 +381,24 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
 
-        /** Setting the styledCellFactory to color the row which is currently played **/
+        /**
+         * Setting the styledCellFactory to color the row which is currently
+         * played *
+         */
         StyledCellFactory<LineItem> scf = new StyledCellFactory<LineItem>();
-        scf.setIndex(norMediaPlayer.getPlayIndex()-1);
+        scf.setIndex(norMediaPlayer.getPlayIndex() - 1);
         indexColumn.setCellFactory(scf);
 
-        /** set Listener for double click on Row and if row is double clicked then play the song in this row  **/
+        /**
+         * set Listener for double click on Row and if row is double clicked
+         * then play the song in this row  *
+         */
         playlistTable.setRowFactory(tv -> {
             TableRow<LineItem> row = new TableRow<LineItem>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     LineItem rowData = row.getItem();
-                    norMediaPlayer.play(rowData.getIndex()-1);
+                    norMediaPlayer.play(rowData.getIndex() - 1);
                 }
             });
             return row;
@@ -448,8 +455,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
         });
 
-        
-
         playlistScene.widthProperty().addListener(new InvalidationListener() {
 
             @Override
@@ -468,7 +473,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 playlistTable.setPrefHeight(playlistScene.getHeight() - playlistMenuBar.getHeight());
             }
         });
-        
+
         playlistStage.titleProperty().addListener(new InvalidationListener() {
 
             @Override
@@ -657,7 +662,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         vol.setMin(0);
         vol.setValue(100);
         vol.setMaxHeight(100);
-        vol.setShowTickLabels(true);
+        // vol.setShowTickLabels(true);
         vol.setShowTickMarks(true);
         vol.setMajorTickUnit(25);
         vol.setMinorTickCount(5);
@@ -1059,18 +1064,18 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                 if (!primaryStage.isResizable()) {
                     if (!primaryStage.isFullScreen()) {
-                        primaryStage.setWidth(w);
-                        primaryStage.setHeight(h);
+                        primaryStage.setWidth(366);
+                        primaryStage.setHeight(229);
                     }
-                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"),
-                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                            new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
+                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
 
                 } else {
                     w = primaryStage.getWidth();
+
                     h = primaryStage.getHeight();
-                    root.setBackground(new Background(new BackgroundFill(
-                            new Color(0.11764705882352942, 0.48627450980392155, 1, 1), CornerRadii.EMPTY, Insets.EMPTY)));
+
+                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg2.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
+
                 }
             }
         });
