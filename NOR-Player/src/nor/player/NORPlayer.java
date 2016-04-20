@@ -516,6 +516,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
             //ls.setDaemon(true);
             name.textProperty().bind(displayName);
 
+        }else{
+            name.setText(displayName.getValue());
         }
     }
 
