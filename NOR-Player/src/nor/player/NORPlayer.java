@@ -1079,6 +1079,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }
             }
         });
+      
         norMediaPlayer.getNorPlayer().setOnPlaying(new Runnable() {
 
             @Override
