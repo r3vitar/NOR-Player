@@ -204,7 +204,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     } catch (Exception e) {
                     }
                     try {
-
+                        
                     } catch (Exception e) {
                     }
 
@@ -353,17 +353,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 }
             });
 
-            playlistStage.titleProperty().addListener(new InvalidationListener() {
-
-                @Override
-                public void invalidated(Observable observable) {
-
-                    if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("noname")) {
-                        playlistStage.setTitle("");
-                    }
-
-                }
-            });
+            
             primaryStage.show();
         } catch (Exception e) {
             new File("lastSession.npl").delete();
@@ -395,24 +385,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private void initPlaylistTable() {
         playlistTable = new TableView();
 
-        playlistScene.widthProperty().addListener(new InvalidationListener() {
-
-            @Override
-            public void invalidated(Observable observable) {
-
-                playlistTable.setPrefWidth(playlistScene.getWidth());
-            }
-        });
-        playlistScene.heightProperty().addListener(new InvalidationListener() {
-
-            @Override
-            public void invalidated(Observable observable) {
-
-                playlistTable.setMaxHeight(Double.MAX_VALUE);
-
-                playlistTable.setPrefHeight(playlistScene.getHeight() - playlistMenuBar.getHeight());
-            }
-        });
+       
         playlistTable.setPrefWidth(playlistScene.getWidth());
         playlistTable.setPrefHeight(playlistScene.getHeight() - 25.0);
         playlistTable.setMaxHeight(playlistScene.getHeight());
@@ -459,42 +432,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistStage.setTitle(playlistTitle);
         // playlistStage.setResizable(false);
 
-        playlistScene.setOnDragOver(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                Dragboard db = event.getDragboard();
-                if (db.hasFiles()) {
-                    event.acceptTransferModes(TransferMode.ANY);
-                } else {
-                    event.consume();
-                }
-            }
-        });
 
-        // Dropping over surface
-        playlistScene.setOnDragDropped(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                Dragboard db = event.getDragboard();
-                boolean success = false;
-                if (db.hasFiles()) {
-                    success = true;
-
-                    ArrayList<File> data = new ArrayList<File>();
-                    for (File file : db.getFiles()) {
-                        data.add(file);
-
-                    }
-
-                    if (data != null && !data.isEmpty()) {
-                        norMediaPlayer.addMedia(data);
-
-                    }
-                }
-                event.setDropCompleted(success);
-                event.consume();
-            }
-        });
 
         playlistStage.setOnHiding(new EventHandler<WindowEvent>() {
 
@@ -1036,6 +974,38 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initListener() {
+        playlistStage.titleProperty().addListener(new InvalidationListener() {
+
+                @Override
+                public void invalidated(Observable observable) {
+
+                    if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("noname")) {
+                        playlistStage.setTitle("");
+                    }
+
+                }
+            });
+        
+         playlistScene.widthProperty().addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+
+                playlistTable.setPrefWidth(playlistScene.getWidth());
+            }
+        });
+        playlistScene.heightProperty().addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+
+                playlistTable.setMaxHeight(Double.MAX_VALUE);
+
+                playlistTable.setPrefHeight(playlistScene.getHeight() - playlistMenuBar.getHeight());
+            }
+        });
+        
+        
         primaryStage.fullScreenProperty().addListener(new InvalidationListener() {
 
             @Override
