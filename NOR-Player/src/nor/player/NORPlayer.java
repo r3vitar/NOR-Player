@@ -73,7 +73,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
     /**
      *
      */
-    public boolean mlg = false;
     MediaChangeListener listener = this;
     private boolean isOnTop = false;
     private boolean isFullScreen = false;
@@ -94,8 +93,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private BorderPane root = new BorderPane();
     double w = 350, h = 177;
     private Scene scene = new Scene(root, w, h);
-    File notMlg = new File("notmlg.npl");
-    ArrayList<Media> mlgList = initializeMLG();
     HBox playStop;
     private Slider slide = new Slider();
     private Slider vol = new Slider();
@@ -299,19 +296,11 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         isResizable = !isResizable;
                         primaryStage.setFullScreen(false);
                         primaryStage.setResizable(isResizable);
-                    } else if (event.getText().equals("M")) {
-                        if (!mlg) {
-                            activateMLG();
-
+                    }else if (event.getText().equalsIgnoreCase("o")) {
+                        if (primaryStage.getOpacity() == 0.2) {
+                            primaryStage.setOpacity(1);
                         } else {
-                            deactivateMLG();
-                        }
-
-                    } else if (event.getText().equalsIgnoreCase("o")) {
-                        if (primaryStage.getOpacity() == 1.0) {
-                            primaryStage.setOpacity(0.2);
-                        } else {
-                            primaryStage.setOpacity(primaryStage.getOpacity() + 0.2);
+                            primaryStage.setOpacity(primaryStage.getOpacity() - 0.2);
                         }
                     } else {
                         System.out.println(event.getCode());
@@ -353,7 +342,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
 
                     }
-                    notMlg.delete();
+                    
                     Platform.exit();
                     try {
                         Thread.sleep(5);
@@ -369,7 +358,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 @Override
                 public void invalidated(Observable observable) {
 
-                    if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("notmlg")) {
+                    if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("noname")) {
                         playlistStage.setTitle("");
                     }
 
@@ -1211,102 +1200,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
         this.displayName.setValue(s);
     }
 
-    private ArrayList<Media> initializeMLG() {
-        ArrayList<Media> output = new ArrayList<Media>();
-        try {
+   
 
-            output.add(new Media(getClass().getResource("/resources/mlg/john cena.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/2SAD4MEMLG.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/DAMN SON! WHERED YOU FIND THIS.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Illuminati Song Full (The X-Files Theme).mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Smoke Weed Everyday.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Spooky!.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Inception_AirHorn.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Darude - Dankstorm.mp3").toURI().toString()));
-
-            output.add(new Media(getClass().getResource("/resources/mlg/Knife Party - Centipede (Original Mix).mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Skrillex &amp; Alvin Risk - Try It Out (Neon Mix) [AUDIO].mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/01 Earthquake (feat. Dominique Young.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Fort Minor - Remember The Name (OFFICIAL Video) HD.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/01 Make It Bun Dem.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Bonfire.mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Uplink & Nimbala - #JohnCena (Original Mix) [DemoDrop].mp3").toURI().toString()));
-            output.add(new Media(getClass().getResource("/resources/mlg/Snoop Dogg ft. Wiz Khalifa & Bruno Mars - Young Wild & Free (Karetus Remix).mp3").toURI().toString()));
-
-        } catch (URISyntaxException ex) {
-            System.err.println(ex);
-        }
-        return output;
-    }
-
-    private void activateMLG() {
-        mlg = true;
-        primaryStage.setFullScreen(true);
-        primaryStage.setTitle("MLG");
-
-        root.setBackground(new Background(new BackgroundImage(new Image("resources/mlg/mlgbg.jpg"), 
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
-                new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
-        if (!norMediaPlayer.isEmpty()) {
-            norMediaPlayer.savePlaylist(notMlg.getPath());
-        }
-        try {
-            norMediaPlayer.clearPlaylist();
-        } catch (Exception e2) {
-            System.err.println(e2);
-        }
-        for (Media mlgMedia : mlgList) {
-            norMediaPlayer.addMedia(mlgMedia);
-        }
-        pauseB.setVisible(false);
-        stopB.setVisible(false);
-        openB.setVisible(false);
-        vol.setVisible(false);
-        vol.setValue(100);
-        primaryStage.setAlwaysOnTop(true);
-     
-
-        norMediaPlayer.play();
-
-    }
-
-    private void deactivateMLG() {
-        
-        interruptT = true;
-        try {
-            Thread.sleep(5);
-        } catch (InterruptedException ex) {
-            //Logger.getLogger(NORPlayer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        pauseB.setVisible(true);
-        stopB.setVisible(true);
-        openB.setVisible(true);
-        vol.setVisible(true);
-
-        primaryStage.setAlwaysOnTop(false);
-        playlistStage.setAlwaysOnTop(false);
-       
-        
-
-        norMediaPlayer.stop();
-        mlg = false;
-        primaryStage.setFullScreen(false);
-         primaryStage.setResizable(false);
-        root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), 
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
-                new BackgroundSize(scene.getWidth(), scene.getHeight(), false, false, true, false))));
-        norMediaPlayer.clearPlaylist();
-        try {
-            File f = notMlg;
-            if (f.exists()) {
-                norMediaPlayer.loadPlaylist(f, false);
-                norMediaPlayer.play();
-            }
-            
-        } catch (IOException ex) {
-            System.err.println(ex);
-        }
-
-    }
 
 }
