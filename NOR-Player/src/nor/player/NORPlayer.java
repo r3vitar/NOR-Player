@@ -1019,10 +1019,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 isOnTop = !isOnTop;
 
                 primaryStage.setAlwaysOnTop(isOnTop);
-            } else if (event.getText().equalsIgnoreCase("f")) {
-                isFullScreen = !isFullScreen;
-                primaryStage.setFullScreen(isFullScreen);
-                primaryStage.setResizable(false);
+//            } else if (event.getText().equalsIgnoreCase("f")) {
+//                isFullScreen = !isFullScreen;
+//                primaryStage.setFullScreen(isFullScreen);
+//                primaryStage.setResizable(false);
             } else if (event.getText().equalsIgnoreCase("r")) {
                 isResizable = !isResizable;
                 primaryStage.setFullScreen(false);
