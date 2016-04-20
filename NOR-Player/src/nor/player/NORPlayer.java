@@ -148,6 +148,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
     private Stage playlistStage = new Stage();
     private String[] requiredData = {"artist=", "title=", "album="};
     private TableView playlistTable = new TableView();
+    private TableColumn indexColumn = new TableColumn("Nr");
+    
     private Stage primaryStage;
 
     private ObservableList<LineItem> playlistData = FXCollections.observableArrayList();
@@ -392,8 +394,8 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
         TableColumn titleColumn = new TableColumn("Name"),
                 interpretColumn = new TableColumn("Interpret"),
-                albumColumn = new TableColumn("Album"),
-                indexColumn = new TableColumn("Nr");
+                albumColumn = new TableColumn("Album");
+
         indexColumn.setCellValueFactory(
                 new PropertyValueFactory<LineItem, Integer>("index"));
         titleColumn.setCellValueFactory(
@@ -405,6 +407,12 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable.getColumns()
                 .addAll(indexColumn, titleColumn, interpretColumn, albumColumn);
         playlistTable.setItems(playlistData);
+        
+        StyledCellFactory<LineItem> scf = new StyledCellFactory<LineItem>();
+        scf.setIndex(norMediaPlayer.getPlayIndex());
+        indexColumn.setCellFactory(scf);
+        
+        playlistScene.getStylesheets().add("resources/styles.css");
     }
 
     /**
@@ -608,7 +616,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         norMediaPlayer.getNorPlayer().seek(Duration.millis(slide.getValue()));
                         norMediaPlayer.getNorPlayer().currentTimeProperty().addListener(Ili);
                     });
-
+                    
+                    StyledCellFactory<LineItem> scf = new StyledCellFactory<LineItem>();
+                    scf.setIndex(norMediaPlayer.getPlayIndex());
+                    indexColumn.setCellFactory(scf);
                 } catch (Exception e) {
                     return false;
                 }
