@@ -280,34 +280,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             displayBox.setTranslateY(7);
             BorderPane topPane = new BorderPane(null, null, sliderBox, null, displayBox);
             root.setTop(topPane);
-            scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-                @Override
-                public void handle(KeyEvent event) {
-                    if (event.getText().equalsIgnoreCase("t")) {
-                        isOnTop = !isOnTop;
-
-                        primaryStage.setAlwaysOnTop(isOnTop);
-                    } else if (event.getText().equalsIgnoreCase("f")) {
-                        isFullScreen = !isFullScreen;
-                        primaryStage.setFullScreen(isFullScreen);
-                        primaryStage.setResizable(false);
-                    } else if (event.getText().equalsIgnoreCase("r")) {
-                        isResizable = !isResizable;
-                        primaryStage.setFullScreen(false);
-                        primaryStage.setResizable(isResizable);
-                    }else if (event.getText().equalsIgnoreCase("o")) {
-                        if (primaryStage.getOpacity() == 0.2) {
-                            primaryStage.setOpacity(1);
-                        } else {
-                            primaryStage.setOpacity(primaryStage.getOpacity() - 0.2);
-                        }
-                    } else {
-                        System.out.println(event.getCode());
-                    }
-                }
-
-            });
+            
 
             primaryStage.setTitle(displayTitle.toString());
             scene.getStylesheets().add("resources/styles.css");
@@ -860,7 +833,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 if (data != null && !data.isEmpty()) {
                     if (!norMediaPlayer.isEmpty()) {
                         norMediaPlayer.stop();
-                        //norMediaPlayer.clearPlaylist();
+                        norMediaPlayer.clearPlaylist();
                     }
 
                     norMediaPlayer.addMedia(data);
@@ -974,8 +947,42 @@ public class NORPlayer extends Application implements MediaChangeListener {
     }
 
     private void initListener() {
+        scene.setOnKeyPressed((KeyEvent event) -> {
+            if (event.getText().equalsIgnoreCase("t")) {
+                isOnTop = !isOnTop;
+                
+                primaryStage.setAlwaysOnTop(isOnTop);
+            } else if (event.getText().equalsIgnoreCase("f")) {
+                isFullScreen = !isFullScreen;
+                primaryStage.setFullScreen(isFullScreen);
+                primaryStage.setResizable(false);
+            } else if (event.getText().equalsIgnoreCase("r")) {
+                isResizable = !isResizable;
+                primaryStage.setFullScreen(false);
+                primaryStage.setResizable(isResizable);
+            }else if (event.getText().equalsIgnoreCase("o")) {
+                if (primaryStage.getOpacity() == 0.2) {
+                    primaryStage.setOpacity(1);
+                } else {
+                    primaryStage.setOpacity(primaryStage.getOpacity() - 0.2);
+                }
+            } else {
+                System.out.println(event.getCode());
+            }
+        });
+        
+         InvalidationListener blankName = (Observable observable) -> {
+            if(norMediaPlayer.getNorPlayer() == null)
+                displayName.set("");
+        };
+        
+        norMediaPlayer.getNorPlayer().onStoppedProperty().addListener(blankName);
+        norMediaPlayer.getNorPlayer().onErrorProperty().addListener(blankName);
+        norMediaPlayer.getNorPlayer().onHaltedProperty().addListener(blankName);
+        norMediaPlayer.getNorPlayer().onStalledProperty().addListener(blankName);
+        
         playlistStage.titleProperty().addListener(new InvalidationListener() {
-
+            
                 @Override
                 public void invalidated(Observable observable) {
 
