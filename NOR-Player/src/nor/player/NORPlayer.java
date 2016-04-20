@@ -125,7 +125,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
     private Menu other = new Menu("Other", null, refresh);
     private Menu playlistMenu = new Menu("Playlist", null, loadPlaylistButton, savePlaylistButton, clearB);
-    private Menu sortMenu = new Menu("Sort", null, shuffleB, sortFileAscB, sortFileDescB, sortTitleAscB,
+    private Menu sortMenu = new Menu("Sort", null, shuffleB, /*sortFileAscB, sortFileDescB,*/ sortTitleAscB,
             sortTitleDescB, sortArtistAscB, sortArtistDescB, sortAlbumAscB, sortAlbumDescB);
     private MenuBar playlistMenuBar = new MenuBar(fileMenu, playlistMenu, sortMenu, other);
 
