@@ -35,6 +35,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -380,8 +381,19 @@ public class NORPlayer extends Application implements MediaChangeListener {
         playlistTable.setItems(playlistData);
 
         StyledCellFactory<LineItem> scf = new StyledCellFactory<LineItem>();
-        scf.setIndex(norMediaPlayer.getPlayIndex());
+        scf.setIndex(norMediaPlayer.getPlayIndex()-1);
         indexColumn.setCellFactory(scf);
+
+        playlistTable.setRowFactory(tv -> {
+            TableRow<LineItem> row = new TableRow<LineItem>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    LineItem rowData = row.getItem();
+                    norMediaPlayer.play(rowData.getIndex()-1);
+                }
+            });
+            return row;
+        });
 
         playlistScene.getStylesheets().add("resources/styles.css");
     }
@@ -433,7 +445,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             }
         });
-        
+
         playlistStage.titleProperty().addListener(new InvalidationListener() {
 
             @Override
@@ -547,7 +559,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             //ls.setDaemon(true);
             name.textProperty().bind(displayName);
 
-        }else{
+        } else {
             name.setText(displayName.getValue());
         }
     }
@@ -1003,7 +1015,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 isResizable = !isResizable;
                 primaryStage.setFullScreen(false);
                 primaryStage.setResizable(isResizable);
-           } else if (event.getText().equalsIgnoreCase("o")) {
+            } else if (event.getText().equalsIgnoreCase("o")) {
                 if (primaryStage.getOpacity() <= 0.3) {
                     primaryStage.setOpacity(1);
                 } else {
@@ -1013,8 +1025,6 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 System.out.println(event.getCode());
             }
         });
-
-        
 
         primaryStage.fullScreenProperty().addListener(new InvalidationListener() {
 
