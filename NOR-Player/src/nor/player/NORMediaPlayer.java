@@ -1192,14 +1192,14 @@ public class NORMediaPlayer{
             oos.flush();
 
         } catch (IOException e) {
-            System.out.println(e);
+            System.err.println(e);
 
         } finally {
             try {
                 fos.close();
                 this.listener.playlistChanged();
             } catch (Exception ee) {
-                System.out.println(ee);
+                System.err.println(ee);
 
             }
 
@@ -1309,7 +1309,7 @@ public class NORMediaPlayer{
                         while (br.ready()) {
 
                             String tmpStr = br.readLine();
-                            System.out.println(tmpStr);
+                            //System.out.println(tmpStr);
 
                             if (tmpStr.charAt(0) == '#'); else if (tmpStr.charAt(0) == '\\') {
                                 newPlaylist.add(String.format("%s:%s", path.charAt(0), tmpStr));
@@ -1380,10 +1380,10 @@ public class NORMediaPlayer{
             }
 
         } catch (IOException e) {
-            System.out.println(e);
+            System.err.println(e);
 
         } catch (ClassNotFoundException ex) {
-            System.out.println(ex);
+            System.err.println(ex);
 
         }
         return null;

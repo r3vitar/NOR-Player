@@ -597,7 +597,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
                     ls.start();
 
-                    System.out.println(norMediaPlayer.getNorPlayer().getMedia().getSource());
+                    //System.out.println(norMediaPlayer.getNorPlayer().getMedia().getSource());
                     norMediaPlayer.getNorPlayer().volumeProperty().bind(vol.valueProperty().divide(100.0));
                     norMediaPlayer.getNorPlayer().balanceProperty().bind(balanceSlider.valueProperty().divide(100.0));
                     norMediaPlayer.getNorPlayer().rateProperty().bind(speedSlider.valueProperty().divide(100.0));
@@ -1039,7 +1039,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                     primaryStage.setOpacity(primaryStage.getOpacity() - 0.2);
                 }
             } else {
-                System.out.println(event.getCode());
+                //System.out.println(event.getCode());
             }
         });
 
@@ -1183,7 +1183,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             try {
                 fos.close();
             } catch (Exception ee) {
-                System.out.println(ee);
+                System.err.println(ee);
 
             }
 
