@@ -433,6 +433,37 @@ public class NORPlayer extends Application implements MediaChangeListener {
 
             }
         });
+        
+        playlistStage.titleProperty().addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+
+                if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("noname")) {
+                    playlistStage.setTitle("");
+                }
+
+            }
+        });
+
+        playlistScene.widthProperty().addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+
+                playlistTable.setPrefWidth(playlistScene.getWidth());
+            }
+        });
+        playlistScene.heightProperty().addListener(new InvalidationListener() {
+
+            @Override
+            public void invalidated(Observable observable) {
+
+                playlistTable.setMaxHeight(Double.MAX_VALUE);
+
+                playlistTable.setPrefHeight(playlistScene.getHeight() - playlistMenuBar.getHeight());
+            }
+        });
 
         this.playInit = true;
     }
@@ -973,7 +1004,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
                 primaryStage.setFullScreen(false);
                 primaryStage.setResizable(isResizable);
            } else if (event.getText().equalsIgnoreCase("o")) {
-                if (primaryStage.getOpacity() == 0.2) {
+                if (primaryStage.getOpacity() <= 0.3) {
                     primaryStage.setOpacity(1);
                 } else {
                     primaryStage.setOpacity(primaryStage.getOpacity() - 0.2);
@@ -983,36 +1014,7 @@ public class NORPlayer extends Application implements MediaChangeListener {
             }
         });
 
-        playlistStage.titleProperty().addListener(new InvalidationListener() {
-
-            @Override
-            public void invalidated(Observable observable) {
-
-                if (playlistStage.getTitle().equalsIgnoreCase("lastsession") || primaryStage.getTitle().equalsIgnoreCase("noname")) {
-                    playlistStage.setTitle("");
-                }
-
-            }
-        });
-
-        playlistScene.widthProperty().addListener(new InvalidationListener() {
-
-            @Override
-            public void invalidated(Observable observable) {
-
-                playlistTable.setPrefWidth(playlistScene.getWidth());
-            }
-        });
-        playlistScene.heightProperty().addListener(new InvalidationListener() {
-
-            @Override
-            public void invalidated(Observable observable) {
-
-                playlistTable.setMaxHeight(Double.MAX_VALUE);
-
-                playlistTable.setPrefHeight(playlistScene.getHeight() - playlistMenuBar.getHeight());
-            }
-        });
+        
 
         primaryStage.fullScreenProperty().addListener(new InvalidationListener() {
 
