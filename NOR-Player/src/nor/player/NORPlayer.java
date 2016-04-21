@@ -1067,14 +1067,14 @@ public class NORPlayer extends Application implements MediaChangeListener {
                         primaryStage.setWidth(366);
                         primaryStage.setHeight(229);
                     }
-                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
+                    //root.setBackground(new Background(new BackgroundImage(new Image("resources/bg.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
 
                 } else {
                     w = primaryStage.getWidth();
 
                     h = primaryStage.getHeight();
 
-                    root.setBackground(new Background(new BackgroundImage(new Image("resources/bg2.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
+                    //root.setBackground(new Background(new BackgroundImage(new Image("resources/bg2.png"), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT)));
 
                 }
             }
