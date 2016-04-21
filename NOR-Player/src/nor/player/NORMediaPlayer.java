@@ -986,6 +986,7 @@ public class NORMediaPlayer{
             throw new ArrayIndexOutOfBoundsException("keine AudioClips vorhanden");
 
         } else {
+            norPlayer.stop();
             if (norPlayer == null && playIndex != index) {
 
             } else if (norPlayer.getMedia().equals(playlist.get(index))) {
@@ -995,8 +996,7 @@ public class NORMediaPlayer{
                 setCurrentToMediaPlayer();
             }
 
-            norPlayer.play();
-            norPlayer.stop();
+            
             norPlayer.play();
             this.playing = true;
 
