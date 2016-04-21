@@ -2,8 +2,6 @@ package nor.player;
 
 import javafx.util.*;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.*;
-import javafx.event.*;
 
 /**
  * Equips cells with CSS class
