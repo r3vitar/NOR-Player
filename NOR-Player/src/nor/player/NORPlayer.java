@@ -333,8 +333,10 @@ public class NORPlayer extends Application implements MediaChangeListener {
             primaryStage.show();
         } catch (Exception e) {
             new File("lastSession.npl").delete();
+            new File(settingPath).delete();
             System.err.println(e);
             System.err.println("lastSession deleted!");
+            System.err.println("settings deleted!");
         }
     }
 
